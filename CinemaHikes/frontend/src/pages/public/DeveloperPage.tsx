@@ -35,17 +35,17 @@ const DEVELOPER_DATA: Record<string, DeveloperProfileDto> = {
       "Mechanic",
     ],
   },
-  andrvol: {
-    username: "andrvol",
+  n0rtx: {
+    username: "n0rtx",
     role: "Backend & Frontend Developer",
     age: 16,
     city: "Odessa,Ukraine",
     hobby: "Software architecture, backend development, and tech automation",
     gifURL:"https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDA1amNkaXZwMnRkNXVoMmFyMHIwdHJ4dG5yNm96bmNxcGhqY2VxYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ig6ziBl0Ygs7sOtYs8/giphy.gif",
-    avatarURL: "https://github.com/andrvol.png",
-    githubURL: "https://github.com/andrvol",
+    avatarURL: "https://github.com/n0rtx.png",
+    githubURL: "https://github.com/n0rtx",
     skills: ["C#", ".NET Core", "SQL Server", "TypeScript", "React", "Git"],
-    favoriteMovies: ["The Dark Knight", "Fight Club", "Gladiator"],
+    favoriteMovies: ["Inglourious Basterds", "Fight Club", "Gladiator"],
   },
 };
 export const DeveloperPage = () => {

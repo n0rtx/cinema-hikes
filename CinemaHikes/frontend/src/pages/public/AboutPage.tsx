@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 const { Title, Paragraph, Text } = Typography;
 export const AboutPage = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", paddingTop: "40px" }}>
       <div style={{ textAlign: "center", marginBottom: "60px" }}>
@@ -66,7 +66,7 @@ export const AboutPage = () => {
               <Avatar
                 size={80}
                 icon={<UserOutlined />}
-                style={{  marginBottom: "16px" }}
+                style={{ marginBottom: "16px" }}
                 src="https://github.com/b1mq.png"
               />
               <Title level={4} style={{ margin: 0, color: "#fff" }}>
@@ -83,7 +83,7 @@ export const AboutPage = () => {
               <div style={{ marginTop: "16px", color: "#E50914" }}>
                 <CodeOutlined style={{ fontSize: "24px" }} />
               </div>
-              <div style={{ marginTop: "16px" }}>
+              <div style={{ marginTop: "16px", height: "150px", overflow: "hidden" }}>
                 <img
                   src="https://camo.githubusercontent.com/ab4e1e7c0b9c43c44b78ba6714ec8bb49517c9db4b7e1a74d24ce8744acc31d9/68747470733a2f2f6d65646961302e67697068792e636f6d2f6d656469612f76312e59326c6b505463354d4749334e6a45784e4756354e6e70325a6d46784f57706c636e4e724e47566b5a5852794e6a6c6d4f474a6a4e4849784f4468326457357a646e42695a535a6c634431324d563970626e526c636d35686246396e61575a66596e6c666157516d593351395a772f4138556f3469643657436b38724a6b4a6b352f67697068792e676966"
                   alt="animation"
@@ -98,25 +98,25 @@ export const AboutPage = () => {
                 backgroundColor: "#1f1f1f",
                 border: "none",
                 textAlign: "center",
-                
+
               }}
-              onClick={() => navigate('/developer/andrvol')}
+              onClick={() => navigate('/developer/n0rtx')}
               bodyStyle={{ padding: "32px 24px" }}
             >
               <Avatar
                 size={80}
                 icon={<UserOutlined />}
                 style={{ backgroundColor: "#333", marginBottom: "16px" }}
-                src="https://github.com/andrvol.png"
+                src="https://github.com/n0rtx.png"
               />
               <Title level={4} style={{ margin: 0, color: "#fff" }}>
                 <a
-                  href="https://github.com/andrvol"
+                  href="https://github.com/n0rtx"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: "#fff" }}
                 >
-                  andrvol
+                  n0rtx
                 </a>
               </Title>
               <Text type="secondary">
@@ -125,10 +125,10 @@ export const AboutPage = () => {
               <div style={{ marginTop: "16px", color: "#E50914" }}>
                 <RocketOutlined style={{ fontSize: "24px" }} />
               </div>
-              <div style={{marginTop:'16px'}}>
+              <div style={{ marginTop: "16px", height: "150px", overflow: "hidden" }}>
                 <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExODB2d2d0Nm5ueGJrZjloMXR5M2Y5bDIxd2wybjVuaWFxNjBweXBmNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ig6ziBl0Ygs7sOtYs8/giphy.gif"
-                 alt="animation"
-                 style={{maxWidth:"100%",borderRadius:"4px"}} />
+                  alt="animation"
+                  style={{ maxWidth: "100%", borderRadius: "4px" }} />
               </div>
             </Card>
           </Col>
