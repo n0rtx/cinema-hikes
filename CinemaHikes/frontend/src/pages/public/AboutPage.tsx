@@ -59,6 +59,7 @@ export const AboutPage = () => {
                 backgroundColor: "#1f1f1f",
                 border: "none",
                 textAlign: "center",
+                cursor: "pointer"
               }}
               bodyStyle={{ padding: "32px 24px" }}
               onClick={() => navigate('/developer/b1mq')}
@@ -98,7 +99,7 @@ export const AboutPage = () => {
                 backgroundColor: "#1f1f1f",
                 border: "none",
                 textAlign: "center",
-
+                cursor: "pointer"
               }}
               onClick={() => navigate('/developer/n0rtx')}
               bodyStyle={{ padding: "32px 24px" }}
