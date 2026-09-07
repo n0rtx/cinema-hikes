@@ -7,8 +7,6 @@ import {
   SearchOutlined,
   ShareAltOutlined,
   SendOutlined,
-  InstagramOutlined,
-  YoutubeOutlined,
 } from "@ant-design/icons";
 const { Header, Content, Footer } = Layout;
 export const MainLayout = () => {
@@ -29,7 +27,7 @@ export const MainLayout = () => {
       }}
     >
       <a
-        href="https://t.me/your_channel"
+        href="https://t.me/cinema_hikes_downloader_bot"
         target="_blank"
         rel="noopener noreferrer"
         style={{
@@ -41,34 +39,6 @@ export const MainLayout = () => {
         }}
       >
         <SendOutlined style={{ color: "#0088cc" }} /> Telegram
-      </a>
-      <a
-        href="https://instagram.com/your_profile"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          textDecoration: "none",
-        }}
-      >
-        <InstagramOutlined style={{ color: "#E1306C" }} /> Instagram
-      </a>
-      <a
-        href="https://youtube.com/your_channel"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          textDecoration: "none",
-        }}
-      >
-        <YoutubeOutlined style={{ color: "#FF0000" }} /> YouTube
       </a>
     </div>
   );
