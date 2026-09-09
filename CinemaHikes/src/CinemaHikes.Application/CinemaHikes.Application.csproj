@@ -7,4 +7,14 @@
         <RootNamespace>CinemaHikes.Application</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="12.1.1" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CinemaHikes.Infrastructure\CinemaHikes.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
