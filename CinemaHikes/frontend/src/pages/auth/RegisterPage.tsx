@@ -60,7 +60,7 @@ export const RegisterPage = () => {
       localStorage.setItem("username", response.data.username);
       localStorage.setItem("email", response.data.email);
 
-      message.success("Welcome aboard, Captain! 🏴‍☠️");
+      message.success("Welcome aboard, Captain! ");
 
       setTimeout(() => {
         navigate("/");

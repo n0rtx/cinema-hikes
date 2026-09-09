@@ -7,7 +7,9 @@ import { AboutPage } from "../../pages/public/AboutPage";
 import { DeveloperPage } from '../../pages/public/DeveloperPage';
 import { NotFoundPage } from "../../pages/public/NotFoundPage";
 import { LoginPage } from "../../pages/auth/LoginPage";
+import { RegisterPage } from "../../pages/auth/RegisterPage";
 export const router = createBrowserRouter([
+  {path:"/register",element:<RegisterPage/>},
   { 
     path: "/login", 
     element: <LoginPage /> 
