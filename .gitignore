@@ -475,9 +475,6 @@ $RECYCLE.BIN/
 
 telegram-bot-api-data/
 
-# Appsettings (safe connection to db)
-appsettings.json
-
 ##
 ## Node.js / frontend tooling
 ##
