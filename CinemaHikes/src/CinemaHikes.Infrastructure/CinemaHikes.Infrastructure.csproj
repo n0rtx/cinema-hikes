@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>CinemaHikes.Infrastructure</RootNamespace>
+        <UserSecretsId>1b2f2c73-418e-41b3-b3d1-cf0eb6c50a0b</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
