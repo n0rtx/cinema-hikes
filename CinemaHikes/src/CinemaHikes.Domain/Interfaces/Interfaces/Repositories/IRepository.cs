@@ -1,4 +1,4 @@
-using CinemaHikes.Domain.Specification;
+using CinemaHikes.Domain.Specifications;
 
 namespace CinemaHikes.Domain.Interfaces.Interfaces.Repositories;
 

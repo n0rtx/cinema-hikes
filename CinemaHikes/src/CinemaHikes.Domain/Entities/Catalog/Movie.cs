@@ -33,4 +33,6 @@ public sealed class Movie
     public ICollection<FavoriteMovie> FavoriteMovies { get; set; } = new List<FavoriteMovie>();
 
     public ICollection<ViewHistoryEntry> ViewHistoryEntries { get; set; } = new List<ViewHistoryEntry>();
+    
+    public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
 }
