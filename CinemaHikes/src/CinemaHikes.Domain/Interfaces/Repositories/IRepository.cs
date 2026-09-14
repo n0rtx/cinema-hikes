@@ -1,6 +1,6 @@
 using CinemaHikes.Domain.Specifications;
 
-namespace CinemaHikes.Domain.Interfaces.Interfaces.Repositories;
+namespace CinemaHikes.Domain.Interfaces.Repositories;
 
 public interface IRepository<T> where T : class
 {
