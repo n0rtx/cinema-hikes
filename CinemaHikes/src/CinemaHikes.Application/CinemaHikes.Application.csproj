@@ -8,9 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="12.1.1" />
-      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.12" />
+        <PackageReference Include="FluentValidation" Version="12.1.1"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
+        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.12"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CinemaHikes.Domain\CinemaHikes.Domain.csproj"/>
     </ItemGroup>
 
 </Project>
