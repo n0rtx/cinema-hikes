@@ -89,10 +89,11 @@ export const LoginPage = () => {
       >
         <div style={{ textAlign: "center", maxWidth: "80%" }}>
           <img
-            src="https://via.placeholder.com/600x600/141414/E50914?text=CinemaHikes+Login"
-            alt="CinemaHikes Login"
+            src="https://via.placeholder.com/600x600/141414/E50914?text=PIRAT.tv+Login"
+            alt="PIRAT.tv Login"
             style={{
               maxWidth: "100%",
+              height: "auto",
               borderRadius: "24px",
               boxShadow: "0 20px 40px rgba(229, 9, 20, 0.3)",
             }}
@@ -108,10 +109,17 @@ export const LoginPage = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "40px 8%",
+          padding: "32px 16px",
         }}
       >
-        <div style={{ maxWidth: "380px", width: "100%", margin: "0 auto" }}>
+        <div
+          style={{
+            maxWidth: "380px",
+            width: "100%",
+            margin: "0 auto",
+            boxSizing: "border-box",
+          }}
+        >
           <div
             onClick={() => navigate("/")}
             style={{
