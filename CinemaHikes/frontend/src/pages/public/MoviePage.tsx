@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { Typography, Row, Col, Button, Tag, Divider } from "antd";
 import {
   ArrowLeftOutlined,
@@ -22,7 +22,7 @@ const MOCK_MOVIE_DETAILS = {
 };
 
 export const MoviePage = () => {
-  const { id } = useParams<{ id: string }>();
+//   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   return (
