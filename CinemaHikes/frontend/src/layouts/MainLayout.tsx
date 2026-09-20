@@ -59,7 +59,7 @@ export const MainLayout = () => {
           padding: screens.md ? "0 40px" : "0 16px",
         }}
       >
-        {/* Логотип */}
+        
         <div
           onClick={() => navigate("/")}
           style={{

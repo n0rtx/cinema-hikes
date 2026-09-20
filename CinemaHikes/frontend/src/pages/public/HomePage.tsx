@@ -1,6 +1,7 @@
 import { Typography, Button } from "antd";
 import { MovieCarousel } from "../private/ProfilePage";
 import { PlayCircleOutlined } from "@ant-design/icons";
+import LogoPiratTv from "../../../public/assets/logos/LogoPiratTv.jpg";
 const { Title, Text } = Typography;
 export const HomePage = () => {
   return (
@@ -9,17 +10,18 @@ export const HomePage = () => {
         style={{
           position: "relative",
           width: "100%",
-          minHeight: "450px",
-          backgroundColor: "#111",
-          backgroundImage:
-            "linear-gradient(to right, rgba(20,20,20,1) 0%, rgba(20,20,20,0.6) 50%, rgba(20,20,20,0) 100%), url('../')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          minHeight: "420px",
+          backgroundColor: "#141414",
+          backgroundImage: `
+    linear-gradient(90deg, #141414 0%, #141414 40%, rgba(20, 20, 20, 0.8) 65%, rgba(20, 20, 20, 0.2) 100%),url("${LogoPiratTv}")`,
+          backgroundSize: "contain", 
+          backgroundPosition: "right center", 
+          backgroundRepeat: "no-repeat",
           borderRadius: "16px",
           marginBottom: "48px",
           display: "flex",
           alignItems: "center",
-          padding: "40px",
+          padding: "48px",
         }}
       >
         <div style={{ maxWidth: "600px" }}>
@@ -62,7 +64,6 @@ export const HomePage = () => {
         </div>
       </div>
 
-      
       <MovieCarousel sectionTitle="Top 10 " />
       <MovieCarousel sectionTitle="New" />
     </div>
