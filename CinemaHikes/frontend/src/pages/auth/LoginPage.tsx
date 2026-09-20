@@ -11,7 +11,7 @@ import {
   Spin,
   Alert,
 } from "antd";
-import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import { MailOutlined, LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -74,6 +74,7 @@ export const LoginPage = () => {
 
   return (
     <Row style={{ minHeight: "100vh", backgroundColor: "#141414" }}>
+      {/* Left Side - Marketing */}
       <Col
         xs={0}
         md={12}
@@ -87,20 +88,59 @@ export const LoginPage = () => {
           borderRight: "1px solid #333",
         }}
       >
-        <div style={{ textAlign: "center", maxWidth: "80%" }}>
-          <img
-            src="https://via.placeholder.com/600x600/141414/E50914?text=PIRAT.tv+Login"
-            alt="PIRAT.tv Login"
+        <div
+          style={{
+            textAlign: "center",
+            maxWidth: "500px",
+          }}
+        >
+          <div
             style={{
-              maxWidth: "100%",
-              height: "auto",
-              borderRadius: "24px",
-              boxShadow: "0 20px 40px rgba(229, 9, 20, 0.3)",
+              fontSize: "64px",
+              marginBottom: "32px",
             }}
-          />
+          >
+            <PlayCircleOutlined style={{ color: "#E50914" }} />
+          </div>
+
+          <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
+            Your Cinema Awaits
+          </Title>
+
+          <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
+            Continue your adventure through our vast collection of movies and shows. Access your watchlist, recommendations, and more.
+          </Text>
+
+          <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                10K+
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Titles Available
+              </Text>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                50K+
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Active Captains
+              </Text>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                24/7
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Support
+              </Text>
+            </div>
+          </div>
         </div>
       </Col>
 
+      {/* Right Side - Form */}
       <Col
         xs={24}
         md={12}
@@ -206,7 +246,11 @@ export const LoginPage = () => {
                 />
               </Form.Item>
 
-              <Form.Item name="remember" valuePropName="checked">
+              <Form.Item 
+                name="remember" 
+                valuePropName="checked"
+                style={{ marginBottom: "16px" }}
+              >
                 <Checkbox style={{ color: "#999" }}>Remember me</Checkbox>
               </Form.Item>
 
@@ -218,6 +262,13 @@ export const LoginPage = () => {
                     textDecoration: "none",
                     fontSize: "14px",
                     cursor: "pointer",
+                    transition: "color 0.3s",
+                  }}
+                  onMouseOver={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#ff4d4f";
+                  }}
+                  onMouseOut={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#E50914";
                   }}
                 >
                   Forgot password?
@@ -255,6 +306,13 @@ export const LoginPage = () => {
                   textDecoration: "none",
                   fontWeight: "600",
                   cursor: "pointer",
+                  transition: "color 0.3s",
+                }}
+                onMouseOver={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#ff4d4f";
+                }}
+                onMouseOut={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#E50914";
                 }}
               >
                 Sign Up

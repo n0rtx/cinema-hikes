@@ -18,6 +18,7 @@ import {
   GoogleOutlined,
   GithubOutlined,
   FacebookFilled,
+  PlayCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -91,10 +92,12 @@ export const RegisterPage = () => {
     borderRadius: "4px",
     cursor: "pointer",
     transition: "all 0.3s",
+    border: "1px solid #E50914",
   };
 
   return (
     <Row style={{ minHeight: "100vh", backgroundColor: "#141414" }}>
+      {/* Left Side - Marketing */}
       <Col
         xs={0}
         md={12}
@@ -108,20 +111,59 @@ export const RegisterPage = () => {
           borderRight: "1px solid #333",
         }}
       >
-        <div style={{ textAlign: "center", maxWidth: "80%" }}>
-          <img
-            src="https://via.placeholder.com/600x600/141414/E50914?text=PIRAT.tv+Register"
-            alt="PIRAT.tv Register"
+        <div
+          style={{
+            textAlign: "center",
+            maxWidth: "500px",
+          }}
+        >
+          <div
             style={{
-              maxWidth: "100%",
-              height: "auto",
-              borderRadius: "24px",
-              boxShadow: "0 20px 40px rgba(229, 9, 20, 0.3)",
+              fontSize: "64px",
+              marginBottom: "32px",
             }}
-          />
+          >
+            <PlayCircleOutlined style={{ color: "#E50914" }} />
+          </div>
+
+          <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
+            Unlimited Movies & Shows
+          </Title>
+
+          <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
+            Join thousands of captains exploring the vast ocean of cinematic treasures. Stream, download, and enjoy your favorite content anytime, anywhere.
+          </Text>
+
+          <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                10K+
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Movies & Shows
+              </Text>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                100%
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Free Access
+              </Text>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                HD/4K
+              </div>
+              <Text style={{ color: "#999", fontSize: "14px" }}>
+                Quality
+              </Text>
+            </div>
+          </div>
         </div>
       </Col>
 
+      {/* Right Side - Form */}
       <Col
         xs={24}
         md={12}
