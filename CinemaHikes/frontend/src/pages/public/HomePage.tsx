@@ -1,5 +1,5 @@
 import { Typography, Button } from "antd";
-import { MovieCarousel } from "../private/ProfilePage";
+import { MovieCarousel } from "./MovieCarousel";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import LogoPiratTv from "../../../public/assets/logos/LogoPiratTv.jpg";
 const { Title, Text } = Typography;

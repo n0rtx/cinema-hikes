@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Row, Col, Button, Tag, Divider, Rate } from "antd";
+import { Typography, Row, Col, Button, Tag, Divider } from "antd";
 import {
   ArrowLeftOutlined,
   PlayCircleOutlined,
@@ -7,39 +7,38 @@ import {
 } from "@ant-design/icons";
 
 const { Title, Text, Paragraph } = Typography;
+
 const MOCK_MOVIE_DETAILS = {
   id: 1,
-  ruTitle: "Пираты Карибского моря: Проклятие «Черной жемчужины»",
-  ruInEngTitle: "Pirates of the Caribbean: The Curse of the Black Pearl",
+  ruTitle: "Pirates of the Caribbean: The Curse of the Black Pearl",
+  ruInEngTitle: "Pirates of the Caribbean",
   releaseYear: 2003,
   kpRating: 8.3,
   posterUrl: "https://via.placeholder.com/400x600/222/E50914?text=Pirates",
   description:
-    "Жизнь харизматичного пирата, капитана Джека Воробья, полная увлекательных приключений, стремительно меняется, когда его заклятый враг капитан Барбосса похищает корабль Джека «Черную жемчужину», а затем нападает на Порт-Ройал...",
-  genres: ["Приключения", "Фэнтези", "Боевик"],
-  duration: "143 мин.",
+    "The swashbuckling tale of captain Jack Sparrow, a charismatic pirate whose life of adventure is turned upside down when his wicked foe, Captain Barbossa, steals his ship the Black Pearl and later attacks Port Royal...",
+  genres: ["Adventure", "Fantasy", "Action"],
+  duration: "143 min.",
 };
 
 export const MoviePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   return (
     <div
       style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "40px" }}
     >
-      
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         style={{ marginBottom: "20px", paddingLeft: 0, color: "#999" }}
       >
-        Назад к каталогу
+        Back to catalog
       </Button>
 
-     
       <Row gutter={[40, 40]}>
-        
         <Col xs={24} md={8}>
           <div
             style={{
@@ -56,7 +55,6 @@ export const MoviePage = () => {
           </div>
         </Col>
 
-       
         <Col xs={24} md={16}>
           <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
             {MOCK_MOVIE_DETAILS.ruTitle}
@@ -68,7 +66,6 @@ export const MoviePage = () => {
             {MOCK_MOVIE_DETAILS.ruInEngTitle} ({MOCK_MOVIE_DETAILS.releaseYear})
           </Text>
 
-         
           <div
             style={{
               display: "flex",
@@ -113,7 +110,6 @@ export const MoviePage = () => {
             {MOCK_MOVIE_DETAILS.description}
           </Paragraph>
 
-        
           <Button
             type="primary"
             size="large"
@@ -127,20 +123,19 @@ export const MoviePage = () => {
               fontWeight: "bold",
             }}
           >
-            Смотреть фильм
+            Watch Movie
           </Button>
         </Col>
       </Row>
 
       <Divider style={{ borderColor: "#333", margin: "48px 0" }} />
 
-     
       <div>
         <Title level={3} style={{ color: "#fff", marginBottom: "24px" }}>
-          Отзывы зрителей
+          Viewer Reviews
         </Title>
         <Text style={{ color: "#666" }}>
-          Пока нет отзывов. Станьте первым капитаном, оставившим рецензию!
+          No reviews yet. Be the first captain to leave a review!
         </Text>
       </div>
     </div>

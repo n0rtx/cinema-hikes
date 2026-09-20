@@ -60,7 +60,7 @@ export const RegisterPage = () => {
       localStorage.setItem("username", response.data.username);
       localStorage.setItem("email", response.data.email);
 
-      message.success("Welcome aboard, Captain! ");
+      message.success("Welcome aboard, Captain!");
 
       setTimeout(() => {
         navigate("/");
@@ -108,17 +108,18 @@ export const RegisterPage = () => {
           borderRight: "1px solid #333",
         }}
       >
-        {/* <div style={{ textAlign: "center", maxWidth: "80%" }}>
+        <div style={{ textAlign: "center", maxWidth: "80%" }}>
           <img
-            src="https://via.placeholder.com/600x600/141414/E50914?text=CinemaHikes+Register"
-            alt="CinemaHikes Register"
+            src="https://via.placeholder.com/600x600/141414/E50914?text=PIRAT.tv+Register"
+            alt="PIRAT.tv Register"
             style={{
               maxWidth: "100%",
+              height: "auto",
               borderRadius: "24px",
               boxShadow: "0 20px 40px rgba(229, 9, 20, 0.3)",
             }}
           />
-        </div> */}
+        </div>
       </Col>
 
       <Col
@@ -129,13 +130,26 @@ export const RegisterPage = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "40px 8%",
+          padding: "32px 16px",
         }}
       >
-        <div style={{ maxWidth: "380px", width: "100%", margin: "0 auto" }}>
-          <div 
-            onClick={() => navigate('/')} 
-            style={{ color: '#E50914', fontSize: '28px', fontWeight: 900, cursor: 'pointer', marginBottom: '24px' }}
+        <div
+          style={{
+            maxWidth: "380px",
+            width: "100%",
+            margin: "0 auto",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            onClick={() => navigate("/")}
+            style={{
+              color: "#E50914",
+              fontSize: "28px",
+              fontWeight: 900,
+              cursor: "pointer",
+              marginBottom: "24px",
+            }}
           >
             PIRAT.tv
           </div>
