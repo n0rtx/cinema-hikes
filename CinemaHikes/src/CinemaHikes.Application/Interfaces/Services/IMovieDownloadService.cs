@@ -1,3 +1,4 @@
+using CinemaHikes.Application.Dtos.Bot;
 using CinemaHikes.Domain.Enums;
 
 namespace CinemaHikes.Application.Interfaces.Services;
