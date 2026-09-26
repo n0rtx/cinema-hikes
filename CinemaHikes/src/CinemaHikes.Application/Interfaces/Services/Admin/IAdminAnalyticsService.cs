@@ -1,3 +1,5 @@
+using CinemaHikes.Application.Dtos.Admin;
+
 namespace CinemaHikes.Application.Interfaces.Services.Admin;
 
 
