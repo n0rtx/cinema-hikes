@@ -1,5 +1,7 @@
 using CinemaHikes.Domain.Interfaces;
+using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Interfaces.Repositories;
+using CinemaHikes.Infrastructure.External.PoiskKino;
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
 using CinemaHikes.Infrastructure.Repositories;
 using CinemaHikes.Infrastructure.Repositories.Catalog;
@@ -30,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped(typeof(IUserMovieRelationRepository<>), typeof(UserMovieRelationRepository<>));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.Configure<PoiskKinoOptions>(configuration.GetSection(PoiskKinoOptions.SectionName));
+        services.AddHttpClient<IMovieMetadataClient, PoiskKinoClient>();
         
         return services;
     }
