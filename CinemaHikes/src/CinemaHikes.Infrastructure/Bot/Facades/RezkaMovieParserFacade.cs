@@ -1,3 +1,4 @@
+using CinemaHikes.Domain.Enums;
 using CinemaHikes.Domain.Interfaces.Bot;
 using CinemaHikes.Domain.Interfaces.Bot.Parsers;
 using CinemaHikes.Infrastructure.Bot.Configs;
@@ -8,7 +9,7 @@ namespace CinemaHikes.Infrastructure.Bot.Facades;
 
 public class RezkaMovieParserFacade : IMovieParserFacade
 {
-    public async Task<string> GetMovieSrc(string pageUrl, string videoQuality)
+    public async Task<string> GetMovieSrcAsync(string pageUrl, VideoQuality videoQuality)
     {
         IBrowserConfig kievBrowserConfig = new RandomBrowserConfig();
         
