@@ -78,6 +78,9 @@ export const RegisterPage = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
+    if(provider == "GitHub") {
+      /// тут надо будет добавить controller для логинов
+    }
     message.info(`Sign in with ${provider} is under development...`);
   };
 
@@ -97,7 +100,7 @@ export const RegisterPage = () => {
 
   return (
     <Row style={{ minHeight: "100vh", backgroundColor: "#141414" }}>
-      {/* Left Side - Marketing */}
+      
       <Col
         xs={0}
         md={12}
