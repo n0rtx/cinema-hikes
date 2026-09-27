@@ -1,6 +1,6 @@
 import { Typography,Row,Col } from "antd";
 import  { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
-import type { MovieListItem } from "../../shared/types/DTO/MoveListItemDto";
+import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
 const { Title, Text } = Typography;
 const mockMovies: MovieListItem[] = [
   // МОКИ СДЕЛАНЫ С ИИ за инфу ответственности не несу

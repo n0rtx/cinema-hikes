@@ -17,6 +17,42 @@ export const router = createBrowserRouter([
     path: "/login", 
     element: <LoginPage /> 
   },
+  //  {
+  //   path: '/admin',
+  //   children: [
+  //     {
+  //       path: 'dashboard',
+  //       element: (
+  //         <ProtectedRoute requiredRole={UserRole.Admin}>
+  //           <AdminLayout>
+  //             <DashboardPage />
+  //           </AdminLayout>
+  //         </ProtectedRoute>
+  //       ),
+  //     },
+  //     {
+  //       path: 'movies',
+  //       element: (
+  //         <ProtectedRoute requiredRole={UserRole.Admin}>
+  //           <AdminLayout>
+  //             <MoviesMgmtPage />
+  //           </AdminLayout>
+  //         </ProtectedRoute>
+  //       ),
+  //     },
+  //     {
+  //       path: 'users',
+  //       element: (
+  //         <ProtectedRoute requiredRole={UserRole.Admin}>
+  //           <AdminLayout>
+  //             <UsersMgmtPage />
+  //           </AdminLayout>
+  //         </ProtectedRoute>
+  //       ),
+  //     },
+  //   ],
+  // },
+
   {
     path: "/",
     element: <MainLayout />,

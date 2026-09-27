@@ -1,3 +1,5 @@
+import type { GenreDto } from "./GenreDto";
+
 export  interface MovieListItem  {
     id:number;
     ruTitle:string;
@@ -5,6 +7,7 @@ export  interface MovieListItem  {
     ruInEngTitle:string;
     releaseYear:number;
     posterUrl:string;
-    kpRating:number
+    kpRating:number;
+    Genres:GenreDto[];
 
 }

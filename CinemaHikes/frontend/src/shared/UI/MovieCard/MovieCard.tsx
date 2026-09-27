@@ -1,6 +1,6 @@
 import { Card, Typography, Tag } from "antd";
 import { StarFilled } from "@ant-design/icons";
-import type { MovieListItem } from "../../types/DTO/MoveListItemDto";
+import type { MovieListItem } from "../../types/DTO/CatalogDtos/MoveListItemDto";
 const { Title, Text } = Typography;
 interface MovieCardProps {
   movie: MovieListItem;
