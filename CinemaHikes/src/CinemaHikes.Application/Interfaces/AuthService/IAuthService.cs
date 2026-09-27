@@ -1,6 +1,6 @@
 ﻿using CinemaHikes.Application.Dtos.Auth;
 
-namespace CinemaHikes.Domain.Interfaces.AuthService
+namespace CinemaHikes.Application.Interfaces.AuthService
 {
     public interface IAuthService
     {

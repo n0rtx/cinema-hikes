@@ -1,4 +1,5 @@
 using CinemaHikes.Domain.Entities.Users;
+using CinemaHikes.Domain.Interfaces.Repositories;
 
 namespace CinemaHikes.Domain.Interfaces;
 

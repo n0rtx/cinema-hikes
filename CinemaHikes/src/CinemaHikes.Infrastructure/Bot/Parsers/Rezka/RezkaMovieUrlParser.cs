@@ -1,3 +1,4 @@
+using CinemaHikes.Domain.Enums;
 using CinemaHikes.Domain.Interfaces.Bot.Parsers;
 using Microsoft.Playwright;
 
@@ -5,7 +6,7 @@ namespace CinemaHikes.Infrastructure.Bot.Parsers.Rezka;
 
 public class RezkaMovieUrlParser : IMovieUrlParser
 {
-     public async Task<string> GetMovieUrlAsync(IPage page, string videoQuality)
+     public async Task<string> GetMovieUrlAsync(IPage page, VideoQuality videoQuality)
     {
         int choiceId = GetVideoIdByQuality(videoQuality);
 
@@ -19,21 +20,21 @@ public class RezkaMovieUrlParser : IMovieUrlParser
         return CleanUrl(url);
     }
 
-    private int GetVideoIdByQuality(string videoQuality)
+    private int GetVideoIdByQuality(VideoQuality videoQuality)
     {
         int id;
         switch (videoQuality)
         {
-            case "360p":
+            case VideoQuality.Low:
                 id = 1;
                 break;
-            case "480p":
+            case VideoQuality.Medium:
                 id = 2;
                 break;
-            case "720p":
+            case VideoQuality.High:
                 id = 3;
                 break;
-            case "1080p":
+            case VideoQuality.FullHd:
                 id = 4;
                 break;
             default:

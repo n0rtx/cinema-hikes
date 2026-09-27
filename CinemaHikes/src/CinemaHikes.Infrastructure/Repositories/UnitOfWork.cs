@@ -1,5 +1,6 @@
 using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
+using CinemaHikes.Domain.Interfaces.Repositories;
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
 
 namespace CinemaHikes.Infrastructure.Repositories;
