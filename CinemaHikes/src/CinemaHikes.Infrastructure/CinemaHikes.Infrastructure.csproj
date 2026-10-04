@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>CinemaHikes.Infrastructure</RootNamespace>
+        <UserSecretsId>1b2f2c73-418e-41b3-b3d1-cf0eb6c50a0b</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,6 +24,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.11" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
       <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
       <PackageReference Include="Microsoft.Playwright" Version="1.62.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />

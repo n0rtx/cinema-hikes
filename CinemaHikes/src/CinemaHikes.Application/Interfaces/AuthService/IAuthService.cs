@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CinemaHikes.Application.Dtos.Auth;
+﻿using CinemaHikes.Application.Dtos.Auth;
 
-namespace CinemaHikes.Domain.Interfaces.AuthService
+namespace CinemaHikes.Application.Interfaces.AuthService
 {
     public interface IAuthService
     {

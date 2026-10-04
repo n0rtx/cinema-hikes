@@ -1,19 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Row, Col, Card, Avatar, Tag, Button } from "antd";
+import { Typography, Row, Col, Card, Avatar, Tag, Button, Grid } from "antd";
 import {
   ArrowLeftOutlined,
   GithubOutlined,
   StarFilled,
 } from "@ant-design/icons";
-import type{ DeveloperProfileDto } from "../../shared/types/DTO/DeveloperProfileDTO";
+import type { DeveloperProfileDto } from "../../shared/types/DTO/DeveloperProfileDTO";
+
 const { Title, Paragraph, Text } = Typography;
+const { useBreakpoint } = Grid;
+
 const DEVELOPER_DATA: Record<string, DeveloperProfileDto> = {
   b1mq: {
     username: "b1mq",
     role: "Backend & Frontend",
     age: 17,
-    city: "Stuttgart,Germany",
-    hobby: "Gym,Coding, UI/UX design",
+    city: "Stuttgart, Germany",
+    hobby: "Gym, Coding, UI/UX design",
     avatarURL: "https://github.com/b1mq.png",
     githubURL: "https://github.com/b1mq",
     gifURL:
@@ -28,7 +31,7 @@ const DEVELOPER_DATA: Record<string, DeveloperProfileDto> = {
       "TypeScript",
     ],
     favoriteMovies: [
-      "Fast & Furios",
+      "Fast & Furious",
       "Avatar",
       "The Transporter",
       "Fight Club",
@@ -39,22 +42,27 @@ const DEVELOPER_DATA: Record<string, DeveloperProfileDto> = {
     username: "n0rtx",
     role: "Backend & Frontend Developer",
     age: 16,
-    city: "Odessa,Ukraine",
+    city: "Odessa, Ukraine",
     hobby: "Software architecture, backend development, and tech automation",
-    gifURL:"https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDA1amNkaXZwMnRkNXVoMmFyMHIwdHJ4dG5yNm96bmNxcGhqY2VxYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ig6ziBl0Ygs7sOtYs8/giphy.gif",
+    gifURL:
+      "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDA1amNkaXZwMnRkNXVoMmFyMHIwdHJ4dG5yNm96bmNxcGhqY2VxYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ig6ziBl0Ygs7sOtYs8/giphy.gif",
     avatarURL: "https://github.com/n0rtx.png",
     githubURL: "https://github.com/n0rtx",
     skills: ["C#", ".NET Core", "SQL Server", "TypeScript", "React", "Git"],
     favoriteMovies: ["Inglourious Basterds", "Fight Club", "Gladiator"],
   },
 };
+
 export const DeveloperPage = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
+  const screens = useBreakpoint(); 
+
   const dev = username ? DEVELOPER_DATA[username.toLowerCase()] : null;
+
   if (!dev) {
     return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <div style={{ textAlign: "center", marginTop: "100px", padding: "0 16px" }}>
         <Title level={2} style={{ color: "#fff" }}>
           Developer not found
         </Title>
@@ -68,28 +76,39 @@ export const DeveloperPage = () => {
       </div>
     );
   }
+
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", paddingTop: "24px" }}>
+    <div
+      style={{
+        maxWidth: "900px",
+        margin: "0 auto",
+        padding: screens.md ? "32px 24px" : "16px 16px", 
+      }}
+    >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate("/about")}
-        style={{ marginBottom: "24px", paddingLeft: 0, color: "#999" }}
+        style={{ marginBottom: "16px", paddingLeft: 0, color: "#999" }}
       >
         Back to About Us
       </Button>
+
       <Card
         style={{
           backgroundColor: "#1f1f1f",
           border: "none",
           borderRadius: "16px",
-          padding: "24px",
+          padding: screens.md ? "24px" : "8px", 
         }}
       >
-        <Row gutter={[32, 32]} align={"middle"}>
+        
+        <Row gutter={[32, 32]}>
+          
+          {/* Левая колонка */}
           <Col xs={24} md={8} style={{ textAlign: "center" }}>
             <Avatar
-              size={140}
+              size={screens.md ? 160 : 120} 
               src={dev.avatarURL}
               style={{ border: "3px solid #E50914", marginBottom: "16px" }}
             />
@@ -98,13 +117,13 @@ export const DeveloperPage = () => {
             </Title>
             <Text
               type="secondary"
-              style={{ display: "block", marginBottom: "4px" }}
+              style={{ display: "block", marginBottom: "4px", fontSize: "15px" }}
             >
               {dev.role}
             </Text>
             <Text
               type="secondary"
-              style={{ display: "block", marginBottom: "16px" }}
+              style={{ display: "block", marginBottom: "20px", fontSize: "14px" }}
             >
               {dev.city} & {dev.age} years old
             </Text>
@@ -117,43 +136,119 @@ export const DeveloperPage = () => {
                 backgroundColor: "#333",
                 borderColor: "#444",
                 width: "100%",
+                height: "40px", 
+                borderRadius: "8px",
               }}
             >
               GitHub Profile
             </Button>
           </Col>
+
+          {/* Правая колонка */}
           <Col xs={24} md={16}>
-            <Title level={4} style={{ color: '#fff', borderBottom: '1px solid #333', paddingBottom: '8px' }}>
+            <Title
+              level={4}
+              style={{
+                color: "#fff",
+                borderBottom: "1px solid #333",
+                paddingBottom: "8px",
+                marginTop: screens.md ? 0 : "12px", 
+              }}
+            >
               Hobby & Interests
             </Title>
-            <Paragraph style={{ color: '#ccc', fontSize: '16px', lineHeight: '1.6', marginTop: '12px' }}>
+            <Paragraph
+              style={{
+                color: "#ccc",
+                fontSize: screens.md ? "16px" : "15px",
+                lineHeight: "1.6",
+                marginTop: "12px",
+              }}
+            >
               {dev.hobby}
             </Paragraph>
 
             {dev.gifURL && (
-              <div style={{ margin: '16px 0' }}>
-                <img src={dev.gifURL} alt="animation" style={{ maxWidth: '100%', borderRadius: '8px' }} />
+              <div style={{ margin: "16px 0", textAlign: "center" }}>
+                <img
+                  src={dev.gifURL}
+                  alt="animation"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: "8px",
+                    maxHeight: "300px", 
+                    objectFit: "cover",
+                  }}
+                />
               </div>
             )}
 
-            <Title level={4} style={{ color: '#fff', borderBottom: '1px solid #333', paddingBottom: '8px', marginTop: '24px' }}>
+            <Title
+              level={4}
+              style={{
+                color: "#fff",
+                borderBottom: "1px solid #333",
+                paddingBottom: "8px",
+                marginTop: "32px",
+              }}
+            >
               Skills & Tech Stack
             </Title>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
-              {dev.skills.map(skill => (
-                <Tag key={skill} color="red" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '4px' }}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                marginTop: "12px",
+              }}
+            >
+              {dev.skills.map((skill) => (
+                <Tag
+                  key={skill}
+                  color="red"
+                  style={{
+                    fontSize: "14px",
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    margin: 0, 
+                  }}
+                >
                   {skill}
                 </Tag>
               ))}
             </div>
 
-            <Title level={4} style={{ color: '#fff', borderBottom: '1px solid #333', paddingBottom: '8px', marginTop: '24px' }}>
+            <Title
+              level={4}
+              style={{
+                color: "#fff",
+                borderBottom: "1px solid #333",
+                paddingBottom: "8px",
+                marginTop: "32px",
+              }}
+            >
               Favorite Movies
             </Title>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
-              {dev.favoriteMovies.map(movie => (
-                <div key={movie} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ddd' }}>
-                  <StarFilled style={{ color: '#faad14' }} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+                marginTop: "12px",
+              }}
+            >
+              {dev.favoriteMovies.map((movie) => (
+                <div
+                  key={movie}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#ddd",
+                    fontSize: "15px",
+                  }}
+                >
+                  <StarFilled style={{ color: "#E50914" }} />
                   <span>{movie}</span>
                 </div>
               ))}
