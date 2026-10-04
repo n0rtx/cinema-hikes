@@ -1,44 +1,12 @@
-<<<<<<< HEAD
-import {  useNavigate } from "react-router-dom";
-import { Typography, Row, Col, Button, Tag, Divider } from "antd";
-=======
-<<<<<<< Updated upstream
-=======
 import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Row, Col, Button, Tag, Divider, Spin } from "antd";
->>>>>>> 8222787 (removed some pages)
 import {
   ArrowLeftOutlined,
   PlayCircleOutlined,
   StarFilled,
 } from "@ant-design/icons";
-<<<<<<< HEAD
-
-const { Title, Text, Paragraph } = Typography;
-
-const MOCK_MOVIE_DETAILS = {
-  id: 1,
-  ruTitle: "Pirates of the Caribbean: The Curse of the Black Pearl",
-  ruInEngTitle: "Pirates of the Caribbean",
-  releaseYear: 2003,
-  kpRating: 8.3,
-  posterUrl: "https://via.placeholder.com/400x600/222/E50914?text=Pirates",
-  description:
-    "The swashbuckling tale of captain Jack Sparrow, a charismatic pirate whose life of adventure is turned upside down when his wicked foe, Captain Barbossa, steals his ship the Black Pearl and later attacks Port Royal...",
-  genres: ["Adventure", "Fantasy", "Action"],
-  duration: "143 min.",
-};
-
-export const MoviePage = () => {
-//   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-
-  return (
-    <div
-      style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "40px" }}
-=======
 import { useQuery } from "@tanstack/react-query";
-import { axiosClient } from "../../shared/api/axiosClient";
+import  axiosClient  from "../../shared/api/axiosClient";
 import type { MovieDetailsDto } from "../../shared/types/DTO/CatalogDtos/MovieDetailsDto";
 
 const { Title, Text, Paragraph } = Typography;
@@ -84,22 +52,14 @@ export const MoviePage = () => {
   return (
     <div
       style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "40px", padding: "0 16px" }}
->>>>>>> 8222787 (removed some pages)
     >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-<<<<<<< HEAD
-        onClick={() => navigate("/")}
-        style={{ marginBottom: "20px", paddingLeft: 0, color: "#999" }}
-      >
-        Back to catalog
-=======
         onClick={() => navigate(-1)}
         style={{ marginBottom: "20px", paddingLeft: 0, color: "#999" }}
       >
         Back
->>>>>>> 8222787 (removed some pages)
       </Button>
 
       <Row gutter={[40, 40]}>
@@ -112,13 +72,8 @@ export const MoviePage = () => {
             }}
           >
             <img
-<<<<<<< HEAD
-              src={MOCK_MOVIE_DETAILS.posterUrl}
-              alt={MOCK_MOVIE_DETAILS.ruTitle}
-=======
               src={movie.posterUrl || "https://via.placeholder.com/400x600/222/E50914?text=No+Poster"}
               alt={movie.ruTitle}
->>>>>>> 8222787 (removed some pages)
               style={{ width: "100%", display: "block" }}
             />
           </div>
@@ -126,16 +81,6 @@ export const MoviePage = () => {
 
         <Col xs={24} md={16}>
           <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-<<<<<<< HEAD
-            {MOCK_MOVIE_DETAILS.ruTitle}
-          </Title>
-          <Text
-            type="secondary"
-            style={{ fontSize: "16px", display: "block", marginBottom: "16px" }}
-          >
-            {MOCK_MOVIE_DETAILS.ruInEngTitle} ({MOCK_MOVIE_DETAILS.releaseYear})
-          </Text>
-=======
             {movie.ruTitle}
           </Title>
           
@@ -147,7 +92,6 @@ export const MoviePage = () => {
               {movie.ruInEngTitle} {movie.releaseYear ? `(${movie.releaseYear})` : ""}
             </Text>
           )}
->>>>>>> 8222787 (removed some pages)
 
           <div
             style={{
@@ -162,17 +106,6 @@ export const MoviePage = () => {
               style={{ fontSize: "14px", padding: "4px 8px", margin: 0 }}
             >
               <StarFilled style={{ marginRight: "4px" }} />{" "}
-<<<<<<< HEAD
-              {MOCK_MOVIE_DETAILS.kpRating} KP
-            </Tag>
-            <Text style={{ color: "#888" }}>{MOCK_MOVIE_DETAILS.duration}</Text>
-          </div>
-
-          <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
-            {MOCK_MOVIE_DETAILS.genres.map((genre) => (
-              <Tag
-                key={genre}
-=======
               {movie.kpRating ? movie.kpRating.toFixed(1) : "N/A"} KP
             </Tag>
           </div>
@@ -181,18 +114,13 @@ export const MoviePage = () => {
             {movie.genres?.map((genre: any, idx: number) => (
               <Tag
                 key={idx}
->>>>>>> 8222787 (removed some pages)
                 style={{
                   backgroundColor: "#222",
                   color: "#ccc",
                   border: "1px solid #444",
                 }}
               >
-<<<<<<< HEAD
-                {genre}
-=======
                 {typeof genre === 'string' ? genre : genre.name}
->>>>>>> 8222787 (removed some pages)
               </Tag>
             ))}
           </div>
@@ -205,11 +133,7 @@ export const MoviePage = () => {
               marginBottom: "32px",
             }}
           >
-<<<<<<< HEAD
-            {MOCK_MOVIE_DETAILS.description}
-=======
             Movie description is currently unavailable.
->>>>>>> 8222787 (removed some pages)
           </Paragraph>
 
           <Button
@@ -232,10 +156,6 @@ export const MoviePage = () => {
 
       <Divider style={{ borderColor: "#333", margin: "48px 0" }} />
 
-<<<<<<< HEAD
-      <div>
-        <Title level={3} style={{ color: "#fff", marginBottom: "24px" }}>
-=======
       <div style={{ marginBottom: "48px" }}>
         <Title level={3} style={{ color: "#fff", marginBottom: "24px", borderLeft: "4px solid #E50914", paddingLeft: "12px" }}>
           Player
@@ -259,7 +179,6 @@ export const MoviePage = () => {
 
       <div>
         <Title level={3} style={{ color: "#fff", marginBottom: "24px", borderLeft: "4px solid #E50914", paddingLeft: "12px" }}>
->>>>>>> 8222787 (removed some pages)
           Viewer Reviews
         </Title>
         <Text style={{ color: "#666" }}>
@@ -268,9 +187,4 @@ export const MoviePage = () => {
       </div>
     </div>
   );
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> Stashed changes
->>>>>>> 8222787 (removed some pages)
