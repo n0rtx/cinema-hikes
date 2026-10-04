@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaHikes.WebApi.Controllers
 {
+    [ApiController]
+
+    [Route("api/[controller]")]
     public class MoviesController:ControllerBase
     {
         private readonly IMovieService _movieService;
@@ -14,17 +17,19 @@ namespace CinemaHikes.WebApi.Controllers
         }
         [HttpGet]
         [ProducesResponseType(typeof(List<MovieListItemDto>),StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<MovieListItemDto>>> GetPaged([FromQuery] int? genreId, [FromQuery] int? year, [FromQuery] double? minRating, [FromQuery] int page = 1, [FromQuery] int pageSize = 20,CancellationToken cancellationToken = default)
+        public async Task<ActionResult<List<MovieListItemDto>>> GetPaged([FromQuery] int? genreId,
+            [FromQuery] int? year, [FromQuery] double? minRating, [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,CancellationToken ct = default)
         {
             page = Math.Max(page, 1);
             pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
-            var movies = await _movieService.GetPagedAsync(genreId, year, minRating, page,pageSize,cancellationToken);
+            var movies = await _movieService.GetPagedAsync(genreId, year, minRating, page,pageSize,ct);
             return Ok(movies);
         }
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(MovieDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<MovieDetailsDto>> GetDetails(int id,CancellationToken cancellationToken = default)
+        public async Task<ActionResult<MovieDetailsDto>> GetDetails(int id,CancellationToken cancellationToken)
         {
             var movie = await _movieService.GetDetailsAsync(id, cancellationToken);
             return movie is null ? NotFound() : Ok(movie);
