@@ -39,7 +39,7 @@ const mockMovies: MovieListItem[] = [
       },
       {
         Id: 1,
-        Name: "Приключения",
+        Name: "Приключения ",
       },
     ],
   },
