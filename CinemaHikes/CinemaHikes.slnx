@@ -4,4 +4,6 @@
     <Project Path="src\CinemaHikes.Domain\CinemaHikes.Domain.csproj" />
     <Project Path="src\CinemaHikes.Infrastructure\CinemaHikes.Infrastructure.csproj" />
     <Project Path="src\CinemaHikes.WebApi\CinemaHikes.WebApi.csproj" />
+    <Project Path="tests/CinemaHikes.Application.UnitTests/CinemaHikes.Application.UnitTests.csproj" />
+    <Project Path="tests/CinemaHikes.WebApi.IntegrationTests/CinemaHikes.WebApi.IntegrationTests.csproj" />
 </Solution>
