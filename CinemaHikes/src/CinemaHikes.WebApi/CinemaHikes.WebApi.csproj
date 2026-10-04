@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CinemaHikes.Application\CinemaHikes.Application.csproj"/>
+        <ProjectReference Include="..\CinemaHikes.Application\CinemaHikes.Application.csproj" />
     </ItemGroup>
 
 </Project>
