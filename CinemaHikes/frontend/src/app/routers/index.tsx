@@ -11,47 +11,14 @@ import { NotFoundPage } from "../../pages/public/NotFoundPage";
 import { LoginPage } from "../../pages/auth/LoginPage";
 import { RegisterPage } from "../../pages/auth/RegisterPage";
 import { ProfilePage } from "../../pages/private/ProfilePage";
+import { UnderConstructionPage } from "../../pages/public/UnderConstructionPage";
 export const router = createBrowserRouter([
   {path:"/register",element:<RegisterPage/>},
   { 
     path: "/login", 
     element: <LoginPage /> 
   },
-  //  {
-  //   path: '/admin',
-  //   children: [
-  //     {
-  //       path: 'dashboard',
-  //       element: (
-  //         <ProtectedRoute requiredRole={UserRole.Admin}>
-  //           <AdminLayout>
-  //             <DashboardPage />
-  //           </AdminLayout>
-  //         </ProtectedRoute>
-  //       ),
-  //     },
-  //     {
-  //       path: 'movies',
-  //       element: (
-  //         <ProtectedRoute requiredRole={UserRole.Admin}>
-  //           <AdminLayout>
-  //             <MoviesMgmtPage />
-  //           </AdminLayout>
-  //         </ProtectedRoute>
-  //       ),
-  //     },
-  //     {
-  //       path: 'users',
-  //       element: (
-  //         <ProtectedRoute requiredRole={UserRole.Admin}>
-  //           <AdminLayout>
-  //             <UsersMgmtPage />
-  //           </AdminLayout>
-  //         </ProtectedRoute>
-  //       ),
-  //     },
-  //   ],
-  // },
+  
 
   {
     path: "/",
@@ -65,6 +32,7 @@ export const router = createBrowserRouter([
       { path: 'developer/:username', element: <DeveloperPage /> },
       {path:"support",element:<SupportPage/>},
       {path:"*",element:<NotFoundPage/>},
+      {path:"developing",element:<UnderConstructionPage/>}
     ],
   },
 ]);
