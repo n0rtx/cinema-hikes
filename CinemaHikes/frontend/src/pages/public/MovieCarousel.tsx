@@ -3,39 +3,85 @@ import  { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
 const { Title, Text } = Typography;
 const mockMovies: MovieListItem[] = [
-  // МОКИ СДЕЛАНЫ С ИИ за инфу ответственности не несу
   {
     id: 1,
     ruTitle: "Пираты Карибского моря",
+    uaTitle: "Пірати Карибського моря",
     ruInEngTitle: "Pirates of the Caribbean",
     releaseYear: 2003,
+    posterUrl:
+      "https://via.placeholder.com/300x450/222/E50914?text=Pirates",
     kpRating: 8.3,
-    posterUrl: "https://via.placeholder.com/300x450/222/E50914?text=Pirates",
+    Genres: [
+      {
+        Id: 1,
+        Name: "Приключения",
+      },
+      {
+        Id: 2,
+        Name: "Фэнтези",
+      },
+    ],
   },
   {
     id: 2,
     ruTitle: "Дюна: Часть вторая",
+    uaTitle: "Дюна: Частина друга",
     ruInEngTitle: "Dune: Part Two",
     releaseYear: 2024,
+    posterUrl:
+      "https://via.placeholder.com/300x450/222/E50914?text=Dune+2",
     kpRating: 8.8,
-    posterUrl: "https://via.placeholder.com/300x450/222/E50914?text=Dune+2",
+    Genres: [
+      {
+        Id: 3,
+        Name: "Фантастика",
+      },
+      {
+        Id: 1,
+        Name: "Приключения",
+      },
+    ],
   },
   {
     id: 3,
     ruTitle: "Джентльмены",
+    uaTitle: "Джентльмени",
     ruInEngTitle: "The Gentlemen",
     releaseYear: 2019,
+    posterUrl:
+      "https://via.placeholder.com/300x450/222/E50914?text=Gentlemen",
     kpRating: 8.5,
-    posterUrl: "https://via.placeholder.com/300x450/222/E50914?text=Gentlemen",
+    Genres: [
+      {
+        Id: 4,
+        Name: "Комедия",
+      },
+      {
+        Id: 5,
+        Name: "Криминал",
+      },
+    ],
   },
   {
     id: 4,
     ruTitle: "Интерстеллар",
+    uaTitle: "Інтерстеллар",
     ruInEngTitle: "Interstellar",
     releaseYear: 2014,
-    kpRating: 8.6,
     posterUrl:
       "https://via.placeholder.com/300x450/222/E50914?text=Interstellar",
+    kpRating: 8.6,
+    Genres: [
+      {
+        Id: 3,
+        Name: "Фантастика",
+      },
+      {
+        Id: 6,
+        Name: "Драма",
+      },
+    ],
   },
 ];
 interface MovieCarouselProps {
