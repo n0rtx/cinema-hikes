@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
   Button,
   Typography,
   message,
-  Row,
-  Col,
   Divider,
   Spin,
   Alert,
@@ -32,11 +30,31 @@ interface RegisterFormValues {
   confirmPassword: string;
 }
 
+// Следит за media query. Начальное значение считается сразу при первом рендере.
+const useMediaQuery = (query: string) => {
+  const [matches, setMatches] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    setMatches(mql.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+};
+
 export const RegisterPage = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Левая колонка видна только на широких экранах (от 1200px)
+  const isWide = useMediaQuery("(min-width: 1200px)");
 
   const onFinish = async (values: RegisterFormValues) => {
     setLoading(true);
@@ -78,7 +96,7 @@ export const RegisterPage = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    if(provider == "GitHub") {
+    if (provider == "GitHub") {
       /// тут надо будет добавить controller для логинов
     }
     message.info(`Sign in with ${provider} is under development...`);
@@ -99,83 +117,90 @@ export const RegisterPage = () => {
   };
 
   return (
-    <Row style={{ minHeight: "100vh", backgroundColor: "#141414" }}>
-      
-      <Col
-        xs={0}
-        md={12}
-        lg={14}
-        style={{
-          backgroundColor: "#1f1f1f",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "40px",
-          borderRight: "1px solid #333",
-        }}
-      >
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        backgroundColor: "#141414",
+      }}
+    >
+      {/* Left Side - Marketing (только от 1200px) */}
+      {isWide && (
         <div
           style={{
-            textAlign: "center",
-            maxWidth: "500px",
+            flex: "0 0 58.333%",
+            backgroundColor: "#1f1f1f",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "40px",
+            borderRight: "1px solid #333",
+            boxSizing: "border-box",
           }}
         >
           <div
             style={{
-              fontSize: "64px",
-              marginBottom: "32px",
+              textAlign: "center",
+              maxWidth: "500px",
             }}
           >
-            <PlayCircleOutlined style={{ color: "#E50914" }} />
-          </div>
-
-          <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-            Безлимитные фильмы и сериалы
-          </Title>
-
-          <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-            Присоединяйтесь к тысячам капитанов, исследующих бескрайний океан кинематографических сокровищ. Смотрите, скачивайте и наслаждайтесь любимым контентом в любое время и в любом месте.
-          </Text>
-
-          <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                10K+
-              </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Movies & Shows
-              </Text>
+            <div
+              style={{
+                fontSize: "64px",
+                marginBottom: "32px",
+              }}
+            >
+              <PlayCircleOutlined style={{ color: "#E50914" }} />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                100%
+
+            <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
+              Безлимитные фильмы и сериалы
+            </Title>
+
+            <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
+              Присоединяйтесь к тысячам капитанов, исследующих бескрайний океан кинематографических сокровищ. Смотрите, скачивайте и наслаждайтесь любимым контентом в любое время и в любом месте.
+            </Text>
+
+            <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  10K+
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Movies & Shows
+                </Text>
               </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Free Access
-              </Text>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                HD/4K
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  100%
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Free Access
+                </Text>
               </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Quality
-              </Text>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  HD/4K
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Quality
+                </Text>
+              </div>
             </div>
           </div>
         </div>
-      </Col>
+      )}
 
       {/* Right Side - Form */}
-      <Col
-        xs={24}
-        md={12}
-        lg={10}
+      <div
         style={{
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           padding: "32px 16px",
+          boxSizing: "border-box",
+          minWidth: 0,
         }}
       >
         <div
@@ -442,7 +467,7 @@ export const RegisterPage = () => {
             </Text>
           </div>
         </div>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
