@@ -4,7 +4,7 @@ import { CatalogPage } from "../../pages/public/CatalogPage";
 import { HomePage } from "../../pages/public/HomePage";
 import { SupportPage } from "../../pages/public/SupportPage";
 import { MainLayout } from "../../layouts/MainLayout";
-import { MoviePage } from "../../pages/public/MoviePage";
+// import { MoviePage } from "../../pages/public/MoviePage";
 import { AboutPage } from "../../pages/public/AboutPage";
 import { DeveloperPage } from '../../pages/public/DeveloperPage';
 import { NotFoundPage } from "../../pages/public/NotFoundPage";
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "catalog", element: <CatalogPage /> },
       {path:"profile",element:<ProfilePage/>},
-      { path: "movies/:id", element: <MoviePage /> },
+      // { path: "movies/:id", element: <MoviePage /> },
       { path: "about", element: <AboutPage /> },
       { path: 'developer/:username', element: <DeveloperPage /> },
       {path:"support",element:<SupportPage/>},

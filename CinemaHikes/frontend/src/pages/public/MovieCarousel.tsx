@@ -1,7 +1,8 @@
-import { Typography,Row,Col } from "antd";
-import  { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
+import { Typography, Row, Col } from "antd";
+import { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
 const { Title, Text } = Typography;
+
 const mockMovies: MovieListItem[] = [
   {
     id: 1,
@@ -84,9 +85,11 @@ const mockMovies: MovieListItem[] = [
     ],
   },
 ];
+
 interface MovieCarouselProps {
   sectionTitle: string;
 }
+
 export const MovieCarousel = ({ sectionTitle }: MovieCarouselProps) => {
   return (
     <div style={{ marginBottom: "48px" }}>
@@ -103,9 +106,7 @@ export const MovieCarousel = ({ sectionTitle }: MovieCarouselProps) => {
       </Title>
 
       {mockMovies.length === 0 ? (
-        <Text style={{ color: "#888" }}>
-          No films in this category
-        </Text>
+        <Text style={{ color: "#888" }}>В этой категории пока нет фильмов</Text>
       ) : (
         <Row gutter={[24, 32]}>
           {mockMovies.map((movie) => (

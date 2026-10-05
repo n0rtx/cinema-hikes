@@ -3,6 +3,7 @@ import { MovieCarousel } from "./MovieCarousel";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import LogoPiratTv from "../../../public/assets/logos/LogoPiratTv.jpg";
 const { Title, Text } = Typography;
+
 export const HomePage = () => {
   return (
     <div>
@@ -14,8 +15,8 @@ export const HomePage = () => {
           backgroundColor: "#141414",
           backgroundImage: `
     linear-gradient(90deg, #141414 0%, #141414 40%, rgba(20, 20, 20, 0.8) 65%, rgba(20, 20, 20, 0.2) 100%),url("${LogoPiratTv}")`,
-          backgroundSize: "contain", 
-          backgroundPosition: "right center", 
+          backgroundSize: "contain",
+          backgroundPosition: "right center",
           backgroundRepeat: "no-repeat",
           borderRadius: "16px",
           marginBottom: "48px",
@@ -33,7 +34,7 @@ export const HomePage = () => {
               margin: 0,
             }}
           >
-            Watch films for free
+            Смотри фильмы бесплатно
           </Title>
           <Text
             style={{
@@ -43,8 +44,8 @@ export const HomePage = () => {
               margin: "16px 0 32px 0",
             }}
           >
-            Thousands of movies and TV series in excellent quality. Hoist the
-            sails and join the crew.
+            Тысячи фильмов и сериалов в отличном качестве. Поднимай паруса и
+            присоединяйся к команде.
           </Text>
           <Button
             type="primary"
@@ -59,13 +60,13 @@ export const HomePage = () => {
               fontWeight: "bold",
             }}
           >
-            Watch films
+            Смотреть фильмы
           </Button>
         </div>
       </div>
 
-      <MovieCarousel sectionTitle="Top 10 " />
-      <MovieCarousel sectionTitle="New" />
+      <MovieCarousel sectionTitle="Топ 10" />
+      <MovieCarousel sectionTitle="Новинки" />
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import { Typography, Button } from "antd";
-
 import { CompassOutlined } from "@ant-design/icons";
 
 const { Title, Paragraph } = Typography;
@@ -23,7 +22,7 @@ export const NotFoundPage = () => {
         404
       </Title>
       <Title level={3} style={{ marginTop: "8px" }}>
-        Dead Waters
+        Мёртвые воды
       </Title>
       <Paragraph
         style={{
@@ -33,9 +32,9 @@ export const NotFoundPage = () => {
           marginTop: "16px",
         }}
       >
-        Captain, looks like we’ve hit a reef! This coordinates lead nowhere.
-        Let's turn the ship around before we sink.
-      </Paragraph>  
+        Капитан, кажется, мы наткнулись на риф! Эти координаты никуда не ведут.
+        Давайте развернём корабль, пока не затонули.
+      </Paragraph>
       <Button
         type="primary"
         size="large"
@@ -46,7 +45,7 @@ export const NotFoundPage = () => {
           borderColor: "#E50914",
         }}
       >
-        Safe Harbor
+        В безопасную гавань
       </Button>
     </div>
   );

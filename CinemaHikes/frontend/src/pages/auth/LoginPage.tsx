@@ -104,11 +104,11 @@ export const LoginPage = () => {
           </div>
 
           <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-            Your Cinema Awaits
+            Ваше кино ждет
           </Title>
 
           <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-            Continue your adventure through our vast collection of movies and shows. Access your watchlist, recommendations, and more.
+            Продолжайте своё приключение в нашей огромной коллекции фильмов и сериалов. Получите доступ к списку просмотра, рекомендациям и многому другому.
           </Text>
 
           <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
@@ -175,10 +175,10 @@ export const LoginPage = () => {
 
           <div style={{ marginBottom: "32px" }}>
             <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-              Welcome Back
+              С возвращением
             </Title>
             <Text style={{ color: "#999", fontSize: "14px" }}>
-              Sign in to your account to continue
+              Войдите в аккаунт, чтобы продолжить
             </Text>
           </div>
 
@@ -271,7 +271,7 @@ export const LoginPage = () => {
                     (e.currentTarget as HTMLElement).style.color = "#E50914";
                   }}
                 >
-                  Forgot password?
+                  Забыли пароль?
                 </span>
               </div>
 
@@ -298,7 +298,7 @@ export const LoginPage = () => {
 
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Text style={{ color: "#999" }}>
-              Don't have an account?{" "}
+              Нет аккаунта?{" "}
               <span
                 onClick={() => navigate("/register")}
                 style={{
@@ -315,7 +315,7 @@ export const LoginPage = () => {
                   (e.currentTarget as HTMLElement).style.color = "#E50914";
                 }}
               >
-                Sign Up
+                Присоединяйтесь
               </span>
             </Text>
           </div>

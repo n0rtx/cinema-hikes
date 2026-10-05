@@ -18,13 +18,13 @@ export const MainLayout = () => {
   const location = useLocation();
   const screens = useBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("EN");
+  const [currentLang, setCurrentLang] = useState("RU");
 
   const menuItems = [
-    { key: "/", label: "Home" },
-    { key: "/catalog", label: "Catalog" },
-    { key: "/about", label: "About us" },
-    {key:"/support",label:"Support"}
+    { key: "/", label: "Главная" },
+    { key: "/catalog", label: "Каталог" },
+    { key: "/about", label: "О нас" },
+    { key: "/support", label: "Поддержка" },
   ];
 
   const languageContent = (
@@ -36,16 +36,6 @@ export const MainLayout = () => {
         minWidth: "100px",
       }}
     >
-      <Button
-        type="text"
-        onClick={() => setCurrentLang("EN")}
-        style={{
-          color: currentLang === "EN" ? "#E50914" : "#fff",
-          textAlign: "left",
-        }}
-      >
-        English
-      </Button>
       <Button
         type="text"
         onClick={() => setCurrentLang("RU")}
@@ -130,7 +120,6 @@ export const MainLayout = () => {
           />
         )}
 
-        
         <div
           style={{
             display: "flex",
@@ -140,7 +129,7 @@ export const MainLayout = () => {
         >
           <Popover
             content={languageContent}
-            title={<span style={{ color: "#fff" }}>Select Language</span>}
+            title={<span style={{ color: "#fff" }}>Выберите язык</span>}
             trigger="click"
             placement="bottomRight"
             overlayInnerStyle={{
@@ -167,7 +156,7 @@ export const MainLayout = () => {
 
           <Popover
             content={socialContent}
-            title={<span style={{ color: "#fff" }}>Follow Us</span>}
+            title={<span style={{ color: "#fff" }}>Подписаться</span>}
             trigger="hover"
             placement="bottomRight"
             overlayInnerStyle={{
@@ -188,7 +177,7 @@ export const MainLayout = () => {
               <ShareAltOutlined
                 style={{ fontSize: "18px", color: "#E50914" }}
               />
-              {screens.md && <span>Follow</span>}
+              {screens.md && <span>Подписаться</span>}
             </Button>
           </Popover>
 
@@ -266,7 +255,7 @@ export const MainLayout = () => {
           padding: screens.md ? "24px 50px" : "24px 16px",
         }}
       >
-        CinemaHikes ©{new Date().getFullYear()} — FindYourMovie
+        CinemaHikes ©{new Date().getFullYear()}
       </Footer>
     </Layout>
   );
