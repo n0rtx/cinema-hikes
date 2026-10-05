@@ -1,7 +1,6 @@
 using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Entities.Parsing;
 using CinemaHikes.Domain.Entities.Users;
-using CinemaHikes.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

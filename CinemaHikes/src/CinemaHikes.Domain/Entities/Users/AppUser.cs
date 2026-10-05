@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace CinemaHikes.Infrastructure.Identity;
+namespace CinemaHikes.Domain.Entities.Users;
 
 public sealed class AppUser : IdentityUser<int>
 {

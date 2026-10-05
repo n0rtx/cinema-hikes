@@ -1,5 +1,4 @@
 using CinemaHikes.Domain.Entities.Users;
-using CinemaHikes.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
