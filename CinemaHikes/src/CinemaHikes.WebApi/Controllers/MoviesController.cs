@@ -14,7 +14,7 @@ namespace CinemaHikes.WebApi.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<MovieListItemDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<MovieListItemDto>>> GetPaged([FromQuery] int? genreId,
+        public async Task<ActionResult<List<MovieListItemDto>>> GetPagedAsync([FromQuery] int? genreId,
             [FromQuery] int? year, [FromQuery] double? minRating,
             CancellationToken ct, [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20)
@@ -28,7 +28,7 @@ namespace CinemaHikes.WebApi.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(MovieDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<MovieDetailsDto>> GetDetails(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<MovieDetailsDto>> GetDetailsAsync(int id, CancellationToken cancellationToken)
         {
             var movie = await MovieService.GetDetailsAsync(id, cancellationToken);
             return movie is null ? NotFound() : Ok(movie);
@@ -37,7 +37,7 @@ namespace CinemaHikes.WebApi.Controllers
         [HttpGet("search")]
         [ProducesResponseType(typeof(List<MovieListItemDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<MovieListItemDto>>> Search([FromQuery] string query,
+        public async Task<ActionResult<List<MovieListItemDto>>> SearchAsync([FromQuery] string query,
             CancellationToken cancellationToken,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20)
