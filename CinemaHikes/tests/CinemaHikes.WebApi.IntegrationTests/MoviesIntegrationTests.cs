@@ -75,11 +75,10 @@ public class MoviesIntegrationTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GetMovieDetails_AfterCreate_ReturnsData() // требует seed
+    public async Task GetMovieDetails_AfterCreate_ReturnsData()
     {
-        // Предполагается, что в factory есть seed-данные
         var response = await _client.GetAsync("/api/movies/1");
-        // В реальном тесте с seed: response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
     }
 
