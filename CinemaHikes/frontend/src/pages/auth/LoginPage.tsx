@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
   Button,
   Typography,
   message,
-  Row,
-  Col,
   Checkbox,
   Spin,
   Alert,
@@ -23,11 +21,31 @@ interface LoginFormValues {
   remember: boolean;
 }
 
+// Следит за media query. Начальное значение считается сразу при первом рендере.
+const useMediaQuery = (query: string) => {
+  const [matches, setMatches] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    setMatches(mql.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+};
+
 export const LoginPage = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Левая колонка видна только на широких экранах (от 1200px)
+  const isWide = useMediaQuery("(min-width: 1200px)");
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
@@ -73,83 +91,90 @@ export const LoginPage = () => {
   };
 
   return (
-    <Row style={{ minHeight: "100vh", backgroundColor: "#141414" }}>
-      {/* Left Side - Marketing */}
-      <Col
-        xs={0}
-        md={12}
-        lg={14}
-        style={{
-          backgroundColor: "#1f1f1f",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "40px",
-          borderRight: "1px solid #333",
-        }}
-      >
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        backgroundColor: "#141414",
+      }}
+    >
+      {/* Left Side - Marketing (только от 1200px) */}
+      {isWide && (
         <div
           style={{
-            textAlign: "center",
-            maxWidth: "500px",
+            flex: "0 0 58.333%",
+            backgroundColor: "#1f1f1f",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "40px",
+            borderRight: "1px solid #333",
+            boxSizing: "border-box",
           }}
         >
           <div
             style={{
-              fontSize: "64px",
-              marginBottom: "32px",
+              textAlign: "center",
+              maxWidth: "500px",
             }}
           >
-            <PlayCircleOutlined style={{ color: "#E50914" }} />
-          </div>
-
-          <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-            Ваше кино ждет
-          </Title>
-
-          <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-            Продолжайте своё приключение в нашей огромной коллекции фильмов и сериалов. Получите доступ к списку просмотра, рекомендациям и многому другому.
-          </Text>
-
-          <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                10K+
-              </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Titles Available
-              </Text>
+            <div
+              style={{
+                fontSize: "64px",
+                marginBottom: "32px",
+              }}
+            >
+              <PlayCircleOutlined style={{ color: "#E50914" }} />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                50K+
+
+            <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
+              Ваше кино ждет
+            </Title>
+
+            <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
+              Продолжайте своё приключение в нашей огромной коллекции фильмов и сериалов. Получите доступ к списку просмотра, рекомендациям и многому другому.
+            </Text>
+
+            <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  10K+
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Titles Available
+                </Text>
               </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Active Captains
-              </Text>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                24/7
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  50K+
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Active Captains
+                </Text>
               </div>
-              <Text style={{ color: "#999", fontSize: "14px" }}>
-                Support
-              </Text>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                  24/7
+                </div>
+                <Text style={{ color: "#999", fontSize: "14px" }}>
+                  Support
+                </Text>
+              </div>
             </div>
           </div>
         </div>
-      </Col>
+      )}
 
       {/* Right Side - Form */}
-      <Col
-        xs={24}
-        md={12}
-        lg={10}
+      <div
         style={{
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           padding: "32px 16px",
+          boxSizing: "border-box",
+          minWidth: 0,
         }}
       >
         <div
@@ -246,8 +271,8 @@ export const LoginPage = () => {
                 />
               </Form.Item>
 
-              <Form.Item 
-                name="remember" 
+              <Form.Item
+                name="remember"
                 valuePropName="checked"
                 style={{ marginBottom: "16px" }}
               >
@@ -320,7 +345,7 @@ export const LoginPage = () => {
             </Text>
           </div>
         </div>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
