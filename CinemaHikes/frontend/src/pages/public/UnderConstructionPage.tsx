@@ -19,36 +19,41 @@ export const UnderConstructionPage = () => {
         padding: "40px 20px",
       }}
     >
-      <div 
-        style={{ 
-          background: "rgba(229, 9, 20, 0.1)", 
-          borderRadius: "50%", 
-          width: "120px", 
-          height: "120px", 
-          display: "flex", 
-          alignItems: "center", 
+      <div
+        style={{
+          background: "rgba(229, 9, 20, 0.1)",
+          borderRadius: "50%",
+          width: "120px",
+          height: "120px",
+          display: "flex",
+          alignItems: "center",
           justifyContent: "center",
-          marginBottom: "24px"
+          marginBottom: "24px",
         }}
       >
         <ToolOutlined style={{ fontSize: "60px", color: "#E50914" }} />
       </div>
 
-      <Title level={2} style={{ color: "#fff", marginBottom: "16px", fontWeight: 800 }}>
-        Captain, we're still building this deck!
+      <Title
+        level={2}
+        style={{ color: "#fff", marginBottom: "16px", fontWeight: 800 }}
+      >
+        Капитан, мы ещё строим эту палубу!
       </Title>
-      
-      <Text 
-        style={{ 
-          color: "#aaa", 
-          fontSize: "16px", 
-          maxWidth: "500px", 
-          display: "block", 
+
+      <Text
+        style={{
+          color: "#aaa",
+          fontSize: "16px",
+          maxWidth: "500px",
+          display: "block",
           marginBottom: "40px",
-          lineHeight: "1.6"
+          lineHeight: "1.6",
         }}
       >
-        The page you are looking for is currently under construction. Our crew is working hard to hoist the sails and get it ready for you. Check back soon!
+        Страница, которую вы ищете, сейчас в разработке. Наша команда усердно
+        работает, чтобы поднять паруса и подготовить её для вас. Загляните
+        позже!
       </Text>
 
       <Button
@@ -65,7 +70,7 @@ export const UnderConstructionPage = () => {
           fontSize: "16px",
         }}
       >
-        Back to Safe Waters
+        Назад в безопасные воды
       </Button>
     </div>
   );

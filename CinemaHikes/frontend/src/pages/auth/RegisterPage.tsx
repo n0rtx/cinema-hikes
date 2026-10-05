@@ -130,11 +130,11 @@ export const RegisterPage = () => {
           </div>
 
           <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-            Unlimited Movies & Shows
+            Безлимитные фильмы и сериалы
           </Title>
 
           <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-            Join thousands of captains exploring the vast ocean of cinematic treasures. Stream, download, and enjoy your favorite content anytime, anywhere.
+            Присоединяйтесь к тысячам капитанов, исследующих бескрайний океан кинематографических сокровищ. Смотрите, скачивайте и наслаждайтесь любимым контентом в любое время и в любом месте.
           </Text>
 
           <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
@@ -201,10 +201,10 @@ export const RegisterPage = () => {
 
           <div style={{ marginBottom: "32px" }}>
             <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-              Join the Crew
+              Присоединяйтесь к команде
             </Title>
             <Text style={{ color: "#999", fontSize: "14px" }}>
-              Create an account and start your journey
+              Создайте аккаунт и пуститесь в плавание
             </Text>
           </div>
 
@@ -369,7 +369,7 @@ export const RegisterPage = () => {
             </Form>
           </Spin>
 
-          <Divider style={{ backgroundColor: "#333", margin: "24px 0" }}>
+          <Divider style={{ backgroundColor: "#141414", margin: "24px 0" }}>
             <span style={{ color: "#999" }}>or</span>
           </Divider>
 
@@ -427,7 +427,7 @@ export const RegisterPage = () => {
 
           <div style={{ textAlign: "center" }}>
             <Text style={{ color: "#999" }}>
-              Already have an account?{" "}
+              Уже есть аккаунт?{" "}
               <span
                 onClick={() => navigate("/login")}
                 style={{
@@ -437,7 +437,7 @@ export const RegisterPage = () => {
                   cursor: "pointer",
                 }}
               >
-                Log In
+                Войдите
               </span>
             </Text>
           </div>

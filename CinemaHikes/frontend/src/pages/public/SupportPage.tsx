@@ -12,11 +12,11 @@ export const SupportPage = () => {
     <div style={{ maxWidth: "900px", margin: "0 auto", paddingBottom: "40px" }}>
       <div style={{ marginBottom: "32px", textAlign: "center" }}>
         <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-          Captain's Support
+          Поддержка капитана
         </Title>
         <Text style={{ color: "#999", fontSize: "16px" }}>
-          Need help navigating or downloading cinematic treasures? We've got
-          your back.
+          Нужна помощь с навигацией или загрузкой кинематографических сокровищ?
+          Мы на вашей стороне.
         </Text>
       </div>
 
@@ -41,7 +41,7 @@ export const SupportPage = () => {
             >
               <SendOutlined style={{ fontSize: "28px", color: "#0088cc" }} />
               <Title level={4} style={{ color: "#fff", margin: 0 }}>
-                Telegram Bot
+                Telegram-бот
               </Title>
             </div>
             <Paragraph
@@ -52,13 +52,19 @@ export const SupportPage = () => {
                 marginBottom: "24px",
               }}
             >
-              Use our official Telegram bot to search for movies, choose video
-              quality, and download or stream media seamlessly.
+              Используйте нашего официального Telegram-бота для поиска фильмов,
+              выбора студии озвучки и качества видео, а также скачивания или
+              просмотра.
             </Paragraph>
             <Button
               type="primary"
               icon={<SendOutlined />}
-              onClick={() => window.open("https://t.me/cinema_hikes_downloader_bot", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://t.me/cinema_hikes_downloader_bot",
+                  "_blank",
+                )
+              }
               style={{
                 backgroundColor: "#0088cc",
                 borderColor: "#0088cc",
@@ -67,7 +73,7 @@ export const SupportPage = () => {
                 cursor: "pointer",
               }}
             >
-              Open Telegram Bot
+              Открыть Telegram-бота
             </Button>
           </Card>
         </Col>
@@ -94,7 +100,7 @@ export const SupportPage = () => {
                 style={{ fontSize: "28px", color: "#E50914" }}
               />
               <Title level={4} style={{ color: "#fff", margin: 0 }}>
-                Crew Assistance
+                Помощь команды
               </Title>
             </div>
             <Paragraph
@@ -105,12 +111,15 @@ export const SupportPage = () => {
                 marginBottom: "24px",
               }}
             >
-              Encountered a broken link, parsing error, or missing video source?
-              Reach out to the administrators directly.
+              Наткнулись на битую ссылку, ошибку парсинга или отсутствующий
+              источник? Напишите администраторам напрямую.
             </Paragraph>
             <Button
               type="primary"
-              onClick={() => window.location.href = "mailto:pirattvteam@gmail.com?subject=PIRAT.tv%20Support%20Request"}
+              onClick={() =>
+                (window.location.href =
+                  "mailto:pirattvteam@gmail.com?subject=PIRAT.tv%20Support%20Request")
+              }
               style={{
                 backgroundColor: "#E50914",
                 borderColor: "#E50914",
@@ -119,7 +128,7 @@ export const SupportPage = () => {
                 cursor: "pointer",
               }}
             >
-              Contact Support
+              Связаться с поддержкой
             </Button>
           </Card>
         </Col>
@@ -146,7 +155,7 @@ export const SupportPage = () => {
             style={{ fontSize: "24px", color: "#faad14" }}
           />
           <Title level={4} style={{ color: "#fff", margin: 0 }}>
-            Frequently Asked Questions
+            Часто задаваемые вопросы
           </Title>
         </div>
 
@@ -160,11 +169,11 @@ export const SupportPage = () => {
                 marginBottom: "4px",
               }}
             >
-              How do I download movies using the bot?
+              Как скачивать фильмы через бота?
             </Text>
             <Text style={{ color: "#aaa", fontSize: "14px" }}>
-              Send a movie title to the Telegram bot, select your desired
-              translation studio, and choose the video quality (up to 1080p).
+              Отправьте название фильма боту в Telegram, выберите студию
+              перевода и качество видео (до 1080p).
             </Text>
           </div>
 
@@ -177,11 +186,11 @@ export const SupportPage = () => {
                 marginBottom: "4px",
               }}
             >
-              Are all movies completely free?
+              Все фильмы действительно бесплатные?
             </Text>
             <Text style={{ color: "#aaa", fontSize: "14px" }}>
-              Yes, PIRAT.tv provides open access to the cinematic catalog for
-              all registered captains without hidden fees.
+              Да, PIRAT.tv предоставляет открытый доступ к каталогу для всех
+              капитанов без скрытых платежей.
             </Text>
           </div>
         </div>

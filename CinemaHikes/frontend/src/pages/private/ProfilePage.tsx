@@ -1,6 +1,22 @@
 import { useState, useEffect } from "react";
-import { Typography, Row, Col, Card, Avatar, Button, Statistic, Spin, Divider } from "antd";
-import { UserOutlined, MailOutlined, CalendarOutlined, TrophyOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+  Typography,
+  Row,
+  Col,
+  Card,
+  Avatar,
+  Button,
+  Statistic,
+  Spin,
+  Divider,
+} from "antd";
+import {
+  UserOutlined,
+  MailOutlined,
+  CalendarOutlined,
+  TrophyOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
@@ -26,9 +42,9 @@ export const ProfilePage = () => {
     }
 
     setUser({
-      username: username || "Captain",
+      username: username || "Капитан",
       email: email || "captain@pirat.tv",
-      registeredAt: "September 2026",
+      registeredAt: "Сентябрь 2026",
       amountOfHats: 5,
     });
     setLoading(false);
@@ -44,7 +60,14 @@ export const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "100px 0", backgroundColor: "#141414", minHeight: "100vh" }}>
+      <div
+        style={{
+          textAlign: "center",
+          padding: "100px 0",
+          backgroundColor: "#141414",
+          minHeight: "100vh",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -54,9 +77,11 @@ export const ProfilePage = () => {
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 16px" }}>
       <div style={{ marginBottom: "24px" }}>
         <Title level={2} style={{ color: "#fff", marginBottom: "4px" }}>
-          Captain's Cabin
+          Каюта капитана
         </Title>
-        <Text style={{ color: "#999" }}>Manage your account settings and pirate stats</Text>
+        <Text style={{ color: "#999" }}>
+          Управляйте настройками аккаунта и пиратской статистикой
+        </Text>
       </div>
 
       <Card
@@ -86,20 +111,48 @@ export const ProfilePage = () => {
           </Col>
 
           <Col xs={24} sm={16}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
                 <MailOutlined style={{ fontSize: "18px", color: "#E50914" }} />
                 <div>
-                  <Text style={{ color: "#999", fontSize: "12px", display: "block" }}>Email</Text>
-                  <Text style={{ color: "#fff", fontSize: "15px" }}>{user?.email}</Text>
+                  <Text
+                    style={{
+                      color: "#999",
+                      fontSize: "12px",
+                      display: "block",
+                    }}
+                  >
+                    Email
+                  </Text>
+                  <Text style={{ color: "#fff", fontSize: "15px" }}>
+                    {user?.email}
+                  </Text>
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <CalendarOutlined style={{ fontSize: "18px", color: "#E50914" }} />
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <CalendarOutlined
+                  style={{ fontSize: "18px", color: "#E50914" }}
+                />
                 <div>
-                  <Text style={{ color: "#999", fontSize: "12px", display: "block" }}>Member Since</Text>
-                  <Text style={{ color: "#fff", fontSize: "15px" }}>{user?.registeredAt}</Text>
+                  <Text
+                    style={{
+                      color: "#999",
+                      fontSize: "12px",
+                      display: "block",
+                    }}
+                  >
+                    В команде с
+                  </Text>
+                  <Text style={{ color: "#fff", fontSize: "15px" }}>
+                    {user?.registeredAt}
+                  </Text>
                 </div>
               </div>
             </div>
@@ -110,9 +163,16 @@ export const ProfilePage = () => {
 
         <Row gutter={16} style={{ marginBottom: "32px" }}>
           <Col span={12}>
-            <Card style={{ backgroundColor: "#141414", border: "1px solid #333", borderRadius: "12px" }} bodyStyle={{ padding: "16px" }}>
+            <Card
+              style={{
+                backgroundColor: "#141414",
+                border: "1px solid #333",
+                borderRadius: "12px",
+              }}
+              bodyStyle={{ padding: "16px" }}
+            >
               <Statistic
-                title={<span style={{ color: "#999" }}>Amount of Hats</span>}
+                title={<span style={{ color: "#999" }}>Количество шляп</span>}
                 value={user?.amountOfHats}
                 valueStyle={{ color: "#E50914", fontWeight: "bold" }}
                 prefix={<TrophyOutlined />}
@@ -120,11 +180,22 @@ export const ProfilePage = () => {
             </Card>
           </Col>
           <Col span={12}>
-            <Card style={{ backgroundColor: "#141414", border: "1px solid #333", borderRadius: "12px" }} bodyStyle={{ padding: "16px" }}>
+            <Card
+              style={{
+                backgroundColor: "#141414",
+                border: "1px solid #333",
+                borderRadius: "12px",
+              }}
+              bodyStyle={{ padding: "16px" }}
+            >
               <Statistic
-                title={<span style={{ color: "#999" }}>Account Status</span>}
-                value="Active"
-                valueStyle={{ color: "#52c41a", fontSize: "20px", fontWeight: "bold" }}
+                title={<span style={{ color: "#999" }}>Статус аккаунта</span>}
+                value="Активен"
+                valueStyle={{
+                  color: "#52c41a",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                }}
               />
             </Card>
           </Col>
@@ -143,7 +214,7 @@ export const ProfilePage = () => {
               borderColor: "#E50914",
             }}
           >
-            Log Out
+            Выйти
           </Button>
         </div>
       </Card>
