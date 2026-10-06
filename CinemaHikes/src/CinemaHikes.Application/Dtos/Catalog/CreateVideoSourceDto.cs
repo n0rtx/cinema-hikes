@@ -4,4 +4,5 @@ public sealed record CreateVideoSourceDto(
     int MovieId,
     string ProviderName,
     string PageUrl,
-    short Priority);
+    short Priority,
+    int? ParsingSourceConfigId = null);
