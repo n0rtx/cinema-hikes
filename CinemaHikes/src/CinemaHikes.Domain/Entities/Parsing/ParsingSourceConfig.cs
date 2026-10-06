@@ -1,3 +1,5 @@
+using CinemaHikes.Domain.Entities.Catalog;
+
 namespace CinemaHikes.Domain.Entities.Parsing;
 
 public sealed class ParsingSourceConfig
@@ -11,4 +13,6 @@ public sealed class ParsingSourceConfig
     public required string ParserType { get; set; }
 
     public bool IsEnabled { get; set; } = true;
+
+    public ICollection<VideoSource> VideoSources { get; set; } = new List<VideoSource>();
 }

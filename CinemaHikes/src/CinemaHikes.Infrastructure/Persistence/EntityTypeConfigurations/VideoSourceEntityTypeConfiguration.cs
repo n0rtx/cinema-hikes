@@ -16,6 +16,11 @@ public sealed class VideoSourceEntityTypeConfiguration : IEntityTypeConfiguratio
             .HasForeignKey(vs => vs.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(vs => vs.ParsingSourceConfig)
+            .WithMany(psc => psc.VideoSources)
+            .HasForeignKey(vs => vs.ParsingSourceConfigId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
         builder.Property(vs => vs.ProviderName)
             .HasMaxLength(100)
             .IsRequired();

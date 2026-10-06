@@ -8,4 +8,5 @@ public sealed record VideoSourceDto(
     string ProviderName,
     string PageUrl,
     short Priority,
-    SourceStatus Status);
+    SourceStatus Status,
+    int? ParsingSourceConfigId = null);
