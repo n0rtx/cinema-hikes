@@ -20,6 +20,6 @@ public sealed class GenreEntityTypeConfiguration : IEntityTypeConfiguration<Genr
 
         builder.ToTable(g => g.HasCheckConstraint(
             name: "CK__Genre__Name",
-            sql: $"LEN({nameof(Genre.Name)}) > 0"));
+            sql: $"LENGTH(\"{nameof(Genre.Name)}\") > 0"));
     }
 }

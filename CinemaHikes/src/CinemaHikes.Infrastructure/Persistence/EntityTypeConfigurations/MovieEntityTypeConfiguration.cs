@@ -45,44 +45,39 @@ public sealed class MovieEntityTypeConfiguration : IEntityTypeConfiguration<Movi
         builder.Property(m => m.CreatedAt)
             .HasColumnType("timestamptz")
             .IsRequired();
-
+        
         builder.HasIndex(m => m.RuTitle)
             .HasMethod("gin")
-            .HasOperators("gin_trgm_ops")
-            .IsUnique();
+            .HasOperators("gin_trgm_ops");
 
         builder.HasIndex(m => m.UaTitle)
             .HasMethod("gin")
-            .HasOperators("gin_trgm_ops")
-            .IsUnique();
+            .HasOperators("gin_trgm_ops");
 
         builder.HasIndex(m => m.RuInEngTitle)
             .HasMethod("gin")
-            .HasOperators("gin_trgm_ops")
-            .IsUnique();
+            .HasOperators("gin_trgm_ops");
 
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__RuTitle",
-            sql: $"LEN({nameof(Movie.RuTitle)}) > 0"));
-
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__UaTitle",
-            sql: $"LEN({nameof(Movie.UaTitle)}) > 0"));
-
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__RuInEngTitle",
-            sql: $"LEN({nameof(Movie.RuInEngTitle)}) > 0"));
-
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__Description",
-            sql: $"LEN({nameof(Movie.Description)}) > 0"));
-
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__Director",
-            sql: $"LEN({nameof(Movie.Director)}) > 0"));
-
-        builder.ToTable(m => m.HasCheckConstraint(
-            name: "CK__Movie__PosterUrl",
-            sql: $"LEN({nameof(Movie.PosterUrl)}) > 0"));
+        builder.ToTable(m =>
+        {
+            m.HasCheckConstraint(
+                name: "CK__Movie__RuTitle",
+                sql: $"LENGTH(\"{nameof(Movie.RuTitle)}\") > 0");
+            m.HasCheckConstraint(
+                name: "CK__Movie__UaTitle",
+                sql: $"LENGTH(\"{nameof(Movie.UaTitle)}\") > 0");
+            m.HasCheckConstraint(
+                name: "CK__Movie__RuInEngTitle",
+                sql: $"LENGTH(\"{nameof(Movie.RuInEngTitle)}\") > 0");
+            m.HasCheckConstraint(
+                name: "CK__Movie__Description",
+                sql: $"LENGTH(\"{nameof(Movie.Description)}\") > 0");
+            m.HasCheckConstraint(
+                name: "CK__Movie__Director",
+                sql: $"LENGTH(\"{nameof(Movie.Director)}\") > 0");
+            m.HasCheckConstraint(
+                name: "CK__Movie__PosterUrl",
+                sql: $"LENGTH(\"{nameof(Movie.PosterUrl)}\") > 0");
+        });
     }
 }
