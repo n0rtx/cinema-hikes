@@ -196,7 +196,7 @@ publish/
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
-# checkin your Azure Web App publish settings, but sensitive information contained
+# checkin your Azure web deploy settings, but sensitive information contained
 # in these scripts will be unencrypted
 PublishScripts/
 
@@ -260,7 +260,7 @@ orleans.codegen.cs
 Generated_Code/
 
 # Backup & report files from converting an old project file
-# to a newer Visual Studio version. Backup files are not needed,
+# to a newer project file. Backup files are not needed,
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
@@ -302,10 +302,10 @@ node_modules/
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
 
-# Visual Studio 6 auto-generated project file (contains which files were open etc.)
+# Visual Studio 6 auto-generated project file
 *.vbp
 
-# Visual Studio 6 workspace and project file (working project files containing files to include in project)
+# Visual Studio 6 workspace and project file
 *.dsw
 *.dsp
 
@@ -363,7 +363,7 @@ ASALocalRun/
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
 
-# MFractors (Xamarin productivity tool) working folder
+# MFractors (Xamarin productivity tool)
 .mfractor/
 
 # Local History for Visual Studio
@@ -375,10 +375,10 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-# Backup folder for Package Reference Convert tool in Visual Studio 2017
+# Backup folder for Package Reference Convert tool
 MigrationBackup/
 
-# Ionide (cross platform F# VS Code tools) working folder
+# Ionide (cross platform F# VS Code tools)
 .ionide/
 
 # Fody - auto-generated XML schema
@@ -491,3 +491,10 @@ lerna-debug.log*
 dist
 dist-ssr
 *.local
+
+## Explicit .NET build output
+**/bin/
+**/obj/
+
+# BuildHost generated files
+**/BuildHost-*/
