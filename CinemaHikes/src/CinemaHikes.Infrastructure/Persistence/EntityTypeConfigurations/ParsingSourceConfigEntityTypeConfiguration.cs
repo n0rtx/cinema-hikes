@@ -31,6 +31,6 @@ public sealed class ParsingSourceConfigEntityTypeConfiguration : IEntityTypeConf
 
         builder.ToTable(psc => psc.HasCheckConstraint(
             name: "CK__ParsingSourceConfig__Name",
-            sql: $"LEN({nameof(ParsingSourceConfig.Name)}) > 0"));
+            sql: $"LENGTH(\"{nameof(ParsingSourceConfig.Name)}\") > 0"));
     }
 }

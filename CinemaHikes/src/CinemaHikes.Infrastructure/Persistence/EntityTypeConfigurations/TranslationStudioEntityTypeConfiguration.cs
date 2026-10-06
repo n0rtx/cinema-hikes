@@ -20,6 +20,6 @@ public sealed class TranslationStudioEntityTypeConfiguration : IEntityTypeConfig
 
         builder.ToTable(ts => ts.HasCheckConstraint(
             name: "CK__TranslationStudio__Name",
-            sql: $"LEN({nameof(TranslationStudio.Name)}) > 0"));
+            sql: $"LENGTH(\"{nameof(TranslationStudio.Name)}\") > 0"));
     }
 }

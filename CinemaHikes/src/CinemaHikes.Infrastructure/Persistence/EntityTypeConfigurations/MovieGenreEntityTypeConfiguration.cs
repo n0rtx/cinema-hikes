@@ -12,7 +12,7 @@ public sealed class MovieGenreEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(mg => mg.Id).ValueGeneratedOnAdd();
 
         builder.HasOne(mg => mg.Movie)
-            .WithMany()
+            .WithMany(m => m.MovieGenres)
             .HasForeignKey(mg => mg.MovieId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);

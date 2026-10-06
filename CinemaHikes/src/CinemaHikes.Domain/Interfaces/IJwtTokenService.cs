@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CinemaHikes.Domain.Interfaces.Security;
 
 namespace CinemaHikes.Domain.Interfaces;

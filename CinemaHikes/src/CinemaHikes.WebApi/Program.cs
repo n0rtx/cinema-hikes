@@ -1,6 +1,7 @@
 using CinemaHikes.Application;
 using CinemaHikes.WebApi.Middlewares;
 using CinemaHikes.Infrastructure;
+using CinemaHikes.Infrastructure.Persistence.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
+
+await app.Services.InitializeDatabaseAsync(app.Lifetime.ApplicationStopping);
 
 if (app.Environment.IsDevelopment())
 {

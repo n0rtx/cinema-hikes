@@ -13,7 +13,7 @@ public sealed class ViewHistoryEntryEntityTypeConfiguration : IEntityTypeConfigu
 
         builder.HasOne(vh => vh.Movie)
             .WithMany(m => m.ViewHistoryEntries)
-            .HasForeignKey(vh => vh.Movie)
+            .HasForeignKey(vh => vh.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<AppUser>()
