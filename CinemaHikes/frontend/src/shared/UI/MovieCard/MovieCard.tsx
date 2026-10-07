@@ -6,7 +6,7 @@ interface MovieCardProps {
   movie: MovieListItem;
 }
 export const MovieCard = ({ movie }: MovieCardProps) => {
-  const displayTitle = movie.ruInEngTitle || movie.ruTitle;
+  const displayTitle = movie.ruTitle || movie.uaTitle;
   return (
     <Card
       hoverable
