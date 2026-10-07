@@ -2,6 +2,7 @@ import { Typography, Button } from "antd";
 import { MovieCarousel } from "./MovieCarousel";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import LogoPiratTv from "../../../public/assets/logos/LogoPiratTv.jpg";
+
 const { Title, Text } = Typography;
 
 export const HomePage = () => {
@@ -65,8 +66,8 @@ export const HomePage = () => {
         </div>
       </div>
 
-      <MovieCarousel sectionTitle="Топ 10" />
-      <MovieCarousel sectionTitle="Новинки" />
+      <MovieCarousel sectionTitle="Топ 10" minRating={7} pageSize={10} />
+      <MovieCarousel sectionTitle="Новинки" pageSize={10} />
     </div>
   );
 };
