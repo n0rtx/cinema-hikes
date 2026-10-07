@@ -66,8 +66,7 @@ export const HomePage = () => {
         </div>
       </div>
 
-      <MovieCarousel sectionTitle="Топ 10" minRating={7} pageSize={10} />
-      <MovieCarousel sectionTitle="Новинки" pageSize={10} />
+      <MovieCarousel sectionTitle="Топ" minRating={7} pageSize={12} />
     </div>
   );
 };

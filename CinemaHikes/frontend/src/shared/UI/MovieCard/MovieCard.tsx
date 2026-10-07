@@ -1,21 +1,29 @@
 import { Card, Typography, Tag } from "antd";
 import { StarFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import type { MovieListItem } from "../../types/DTO/CatalogDtos/MoveListItemDto";
+
 const { Title, Text } = Typography;
+
 interface MovieCardProps {
   movie: MovieListItem;
 }
+
 export const MovieCard = ({ movie }: MovieCardProps) => {
-  const displayTitle = movie.ruTitle || movie.uaTitle;
+  const navigate = useNavigate();
+  const displayTitle = movie.ruInEngTitle || movie.ruTitle;
+
   return (
     <Card
       hoverable
+      onClick={() => navigate(`/movies/${movie.id}`)}
       style={{
         width: "100%",
         backgroundColor: "#1f1f1f",
         border: "none",
         borderRadius: "12px",
         overflow: "hidden",
+        cursor: "pointer",
       }}
       bodyStyle={{ padding: "16px" }}
       cover={
