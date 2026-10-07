@@ -1,98 +1,44 @@
-import { Typography, Row, Col } from "antd";
+import { Typography, Row, Col, Alert } from "antd";
 import { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
-import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
-const { Title, Text } = Typography;
+import { useMoviesQuery } from "../../features/catalog/hooks/useMoviesQuery";
 
-const mockMovies: MovieListItem[] = [
-  {
-    id: 1,
-    ruTitle: "Пираты Карибского моря",
-    uaTitle: "Пірати Карибського моря",
-    ruInEngTitle: "Pirates of the Caribbean",
-    releaseYear: 2003,
-    posterUrl:
-      "https://via.placeholder.com/300x450/222/E50914?text=Pirates",
-    kpRating: 8.3,
-    Genres: [
-      {
-        Id: 1,
-        Name: "Приключения",
-      },
-      {
-        Id: 2,
-        Name: "Фэнтези",
-      },
-    ],
-  },
-  {
-    id: 2,
-    ruTitle: "Дюна: Часть вторая",
-    uaTitle: "Дюна: Частина друга",
-    ruInEngTitle: "Dune: Part Two",
-    releaseYear: 2024,
-    posterUrl:
-      "https://via.placeholder.com/300x450/222/E50914?text=Dune+2",
-    kpRating: 8.8,
-    Genres: [
-      {
-        Id: 3,
-        Name: "Фантастика",
-      },
-      {
-        Id: 1,
-        Name: "Приключения ",
-      },
-    ],
-  },
-  {
-    id: 3,
-    ruTitle: "Джентльмены",
-    uaTitle: "Джентльмени",
-    ruInEngTitle: "The Gentlemen",
-    releaseYear: 2019,
-    posterUrl:
-      "https://via.placeholder.com/300x450/222/E50914?text=Gentlemen",
-    kpRating: 8.5,
-    Genres: [
-      {
-        Id: 4,
-        Name: "Комедия",
-      },
-      {
-        Id: 5,
-        Name: "Криминал",
-      },
-    ],
-  },
-  {
-    id: 4,
-    ruTitle: "Интерстеллар",
-    uaTitle: "Інтерстеллар",
-    ruInEngTitle: "Interstellar",
-    releaseYear: 2014,
-    posterUrl:
-      "https://via.placeholder.com/300x450/222/E50914?text=Interstellar",
-    kpRating: 8.6,
-    Genres: [
-      {
-        Id: 3,
-        Name: "Фантастика",
-      },
-      {
-        Id: 6,
-        Name: "Драма",
-      },
-    ],
-  },
-];
+const { Title, Text } = Typography;
 
 interface MovieCarouselProps {
   sectionTitle: string;
+  minRating?: number;
+  pageSize?: number;
 }
 
-export const MovieCarousel = ({ sectionTitle }: MovieCarouselProps) => {
+const LoaderCircle = () => (
+  <div
+    style={{
+      width: 40,
+      height: 40,
+      borderRadius: "50%",
+      border: "3px solid #444",
+      borderTopColor: "#E50914",
+      animation: "spin 0.8s linear infinite",
+    }}
+  />
+);
+
+export const MovieCarousel = ({
+  sectionTitle,
+  minRating,
+  pageSize = 10,
+}: MovieCarouselProps) => {
+  const { data: movies = [], isLoading, isError, error } = useMoviesQuery({
+    minRating,
+    pageSize,
+  });
+
   return (
     <div style={{ marginBottom: "48px" }}>
+      <style>
+        {`@keyframes spin { to { transform: rotate(360deg); } }`}
+      </style>
+
       <Title
         level={3}
         style={{
@@ -105,11 +51,35 @@ export const MovieCarousel = ({ sectionTitle }: MovieCarouselProps) => {
         {sectionTitle}
       </Title>
 
-      {mockMovies.length === 0 ? (
+      {isLoading && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "32px 0",
+          }}
+        >
+          <LoaderCircle />
+        </div>
+      )}
+
+      {isError && (
+        <Alert
+          type="error"
+          message="Не удалось загрузить фильмы"
+          description={error instanceof Error ? error.message : "Ошибка сети"}
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
+      {!isLoading && !isError && movies.length === 0 && (
         <Text style={{ color: "#888" }}>В этой категории пока нет фильмов</Text>
-      ) : (
+      )}
+
+      {!isLoading && !isError && movies.length > 0 && (
         <Row gutter={[24, 32]}>
-          {mockMovies.map((movie) => (
+          {movies.map((movie) => (
             <Col xs={12} sm={8} md={6} lg={4} key={movie.id}>
               <MovieCard movie={movie} />
             </Col>
