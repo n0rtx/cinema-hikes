@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Typography, Empty } from "antd";
+import { Typography } from "antd";
 import type { MovieLinkDto } from "../../../shared/types/DTO/CatalogDtos/MovieLinkDto";
 import type { VideoSourceDto } from "../../../shared/types/DTO/CatalogDtos/VideoSourceDto";
 import { VideoQuality } from "../../../shared/types/Enums/VideoQuality";
@@ -297,18 +297,31 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
         style={{
           backgroundColor: "#1a1a1a",
           borderRadius: "8px",
-          padding: "64px 24px",
+          padding: "48px 24px",
           textAlign: "center",
           border: "1px solid #2a2a2a",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 20,
         }}
       >
-        <Empty
-          description={
-            <Text style={{ color: "#888" }}>
-              Источники видео пока недоступны (нужны MP4-ссылки)
-            </Text>
-          }
+        <img
+          src="/assets/broken_link_ship.png"
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          style={{
+            height: 220,
+            width: "auto",
+            maxWidth: "100%",
+            opacity: 0.85,
+            userSelect: "none",
+          }}
         />
+        <Text style={{ color: "#aaa", fontSize: 16, fontWeight: 500 }}>
+          Фильм недоступен
+        </Text>
       </div>
     );
   }
