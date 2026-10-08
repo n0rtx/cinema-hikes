@@ -9,22 +9,29 @@ import {
   MenuOutlined,
   GlobalOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const { Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
 
 export const MainLayout = () => {
+
+  const{t,i18n} = useTranslation();
+
   const navigate = useNavigate();
   const location = useLocation();
   const screens = useBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("RU");
-
+  
+  const currentLang = i18n.language.startsWith("uk")?"UA":"RU";
+  const changeLanguage = ((lng:"ru" | "uk") => {
+    i18n.changeLanguage(lng);
+  })
   const menuItems = [
-    { key: "/", label: "Главная" },
-    { key: "/catalog", label: "Каталог" },
-    { key: "/about", label: "О нас" },
-    { key: "/support", label: "Поддержка" },
+    { key: "/", label: t("nav.home") },
+    { key: "/catalog", label: t("nav.catalog") },
+    { key: "/about", label: t("nav.about") },
+    { key: "/support", label: t("nav.support") },
   ];
 
   const languageContent = (
@@ -38,23 +45,23 @@ export const MainLayout = () => {
     >
       <Button
         type="text"
-        onClick={() => setCurrentLang("RU")}
+        onClick={() => changeLanguage("ru")}
         style={{
           color: currentLang === "RU" ? "#E50914" : "#fff",
           textAlign: "left",
         }}
       >
-        Русский
+        {t("nav.russian")}
       </Button>
       <Button
         type="text"
-        onClick={() => setCurrentLang("UA")}
+        onClick={() => changeLanguage("uk")}
         style={{
           color: currentLang === "UA" ? "#E50914" : "#fff",
           textAlign: "left",
         }}
       >
-        Українська
+        {t("nav.ukrainian")}
       </Button>
     </div>
   );
@@ -129,7 +136,7 @@ export const MainLayout = () => {
         >
           <Popover
             content={languageContent}
-            title={<span style={{ color: "#fff" }}>Выберите язык</span>}
+            title={<span style={{ color: "#fff" }}>{t("nav.chooseLanguage")}</span>}
             trigger="click"
             placement="bottomRight"
             overlayInnerStyle={{
@@ -156,7 +163,7 @@ export const MainLayout = () => {
 
           <Popover
             content={socialContent}
-            title={<span style={{ color: "#fff" }}>Подписаться</span>}
+            title={<span style={{ color: "#fff" }}>{t("nav.subscribe")}</span>}
             trigger="hover"
             placement="bottomRight"
             overlayInnerStyle={{
@@ -177,7 +184,7 @@ export const MainLayout = () => {
               <ShareAltOutlined
                 style={{ fontSize: "18px", color: "#E50914" }}
               />
-              {screens.md && <span>Подписаться</span>}
+              {screens.md && <span>{t("nav.subscribe")}</span>}
             </Button>
           </Popover>
 

@@ -1,0 +1,48 @@
+{
+    "common":{
+        "loading":"Загрузка...",
+        "notFound":"Не найдено",
+        "error":"Ошибка",
+        "save":"Сохранить",
+        "cancel":"Отмена",
+        "search":"Поиск"
+    },
+    "movie":{
+        "notFound": "Фильм не найден",
+        "noTitle": "Без названия",
+        "noPoster": "Нет постера",
+        "ratingKp": "Рейтинг КП",
+        "year": "Год",
+        "director": "Режиссёр",
+        "genre": "Жанр",
+        "watchOnline": "Смотреть онлайн",
+        "description": "Описание",
+        "noDescription": "Описание пока отсутствует.",
+        "reviewsTitle": "Отзывы и оценки",
+        "yourRating": "Ваша оценка",
+        "comment": "Комментарий",
+        "commentPlaceholder": "Напишите, что думаете о фильме...",
+        "submitReview": "Отправить отзыв",
+        "noReviews": "Пока нет отзывов. Будьте первым!",
+        "reviewSent": "Отзыв отправлен на модерацию",
+        "reviewError": "Не удалось отправить отзыв. Войдите в аккаунт и попробуйте снова.",
+        "ratingRequired": "Поставьте оценку от 1 до 5",
+        "commentRequired": "Напишите комментарий"
+    },
+    "nav": {
+    "home": "Главная",
+    "catalog": "Каталог",
+    "about": "О нас",
+    "support": "Поддержка",
+    "subscribe": "Подписаться",
+    "chooseLanguage": "Выберите язык",
+    "russian": "Русский",
+    "ukrainian": "Українська"
+  },
+  "auth": {
+    "loginTitle": "Вход",
+    "registerTitle": "Регистрация",
+    "email": "Email",
+    "password": "Пароль"
+  }
+}

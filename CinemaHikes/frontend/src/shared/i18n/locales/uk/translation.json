@@ -1,0 +1,48 @@
+{
+    "common":{
+        "loading":"Завантаження...",
+        "notFound":"Не знайдено",
+        "error":"Помилка",
+        "save":"Зберегти",
+        "cancel":"Скасувати",
+        "search":"Пошук"
+    },
+    "movie":{
+        "notFound": "Фільм не знайдено",
+        "noTitle": "Без назви",
+        "noPoster": "Немає постера",
+        "ratingKp": "Рейтинг КП",
+        "year": "Рік",
+        "director": "Режисер",
+        "genre": "Жанр",
+        "watchOnline": "Дивитися онлайн",
+        "description": "Опис",
+        "noDescription": "Опис поки відсутній.",
+        "reviewsTitle": "Відгуки та оцінки",
+        "yourRating": "Ваша оцінка",
+        "comment": "Коментар",
+        "commentPlaceholder": "Напишіть, що думаєте про фільм...",
+        "submitReview": "Надіслати відгук",
+        "noReviews": "Поки немає відгуків. Будьте першим!",
+        "reviewSent": "Відгук надіслано на модерацію",
+        "reviewError": "Не вдалося надіслати відгук. Увійдіть в акаунт і спробуйте знову.",
+        "ratingRequired": "Поставте оцінку від 1 до 5",
+        "commentRequired": "Напишіть коментар"
+    },
+    "nav": {
+    "home": "Головна",
+    "catalog": "Каталог",
+    "about": "Про нас",
+    "support": "Підтримка",
+    "subscribe": "Підписатися",
+    "chooseLanguage": "Оберіть мову",
+    "russian": "Російська",
+    "ukrainian": "Українська"
+  },
+  "auth": {
+    "loginTitle": "Вхід",
+    "registerTitle": "Реєстрація",
+    "email": "Email",
+    "password": "Пароль"
+  }
+}
