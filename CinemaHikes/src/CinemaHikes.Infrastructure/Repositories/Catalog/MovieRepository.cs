@@ -12,5 +12,7 @@ public class MovieRepository(CinemaHikesDbContext dbContext)
         => await DbContext.Movies
             .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
             .Include(m => m.VideoSources)
+            .Include(m => m.MovieLinks).ThenInclude(ml => ml.TranslationStudio)
+            .Include(m => m.Reviews)
             .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
 }
