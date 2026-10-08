@@ -11,7 +11,7 @@ interface MovieCardProps {
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
-  const displayTitle = movie.ruInEngTitle || movie.ruTitle;
+  const displayTitle = movie.ruTitle;
 
   return (
     <Card

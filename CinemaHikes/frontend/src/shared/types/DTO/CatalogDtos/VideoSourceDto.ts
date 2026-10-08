@@ -1,10 +1,11 @@
 import type { SourceStatus } from "../../Enums/SourceStatus";
 
 export interface VideoSourceDto {
-    Id:number;
-    MovieId:number;
-    ProviderName:string;
-    PageUrl:string;
-    Priority:number;
-    Status:SourceStatus;
+  id: number;
+  movieId: number;
+  providerName: string;
+  pageUrl: string;
+  priority: number;
+  status: SourceStatus;
+  parsingSourceConfigId?: number | null;
 }
