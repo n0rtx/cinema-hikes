@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -42,8 +43,13 @@ export const MoviePage = () => {
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const { t, i18n } = useTranslation();
 
-  const { data: movie, isLoading, isError } = useQuery({
+  const {
+    data: movie,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["movie", id],
     queryFn: () => fetchMovieDetails(Number(id)),
     enabled: !!id && !Number.isNaN(Number(id)),
@@ -58,13 +64,17 @@ export const MoviePage = () => {
       queryClient.invalidateQueries({ queryKey: ["movie", id] });
     },
     onError: () => {
-      message.error("Не удалось отправить отзыв. Войдите в аккаунт и попробуйте снова.");
+      message.error(
+        "Не удалось отправить отзыв. Войдите в аккаунт и попробуйте снова.",
+      );
     },
   });
 
   if (isLoading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -79,7 +89,7 @@ export const MoviePage = () => {
     );
   }
 
-  const title = movie.ruTitle || movie.uaTitle || "Без названия";
+  
   const description = movie.description || "";
   const director = movie.director || "—";
   const year = movie.releaseYear || "—";
@@ -88,8 +98,13 @@ export const MoviePage = () => {
   const genres = movie.genres ?? [];
   const movieLinks = movie.movieLinks ?? [];
   const videoSources = movie.videoSources ?? [];
+  const isUk = i18n.language.startsWith("uk");
+  const title =
+    (isUk
+      ? movie.uaTitle || movie.ruTitle
+      : movie.ruTitle || movie.uaTitle) || t("movie.noTitle");
   const reviews = (movie.reviews ?? []).filter(
-    (r) => r.status === ReviewStatus.Approved || r.status === undefined
+    (r) => r.status === ReviewStatus.Approved || r.status === undefined,
   );
 
   const handleSubmit = () => {
@@ -169,14 +184,14 @@ export const MoviePage = () => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ color: "#555" }}>Нет постера</Text>
+              <Text style={{ color: "#555" }}>{t("movie.noPoster")}</Text>
             </div>
           )}
         </div>
 
         <div style={{ flex: 1, minWidth: 260 }}>
           <div style={metaRow}>
-            <span style={metaLabel}>Рейтинг КП</span>
+            <span style={metaLabel}>{t("movie.ratingKp")}</span>
             <span style={{ color: "#E50914", fontWeight: 700, fontSize: 16 }}>
               <StarFilled style={{ marginRight: 4 }} />
               {Number(kpRating).toFixed(1)}
@@ -184,18 +199,18 @@ export const MoviePage = () => {
           </div>
 
           <div style={metaRow}>
-            <span style={metaLabel}>Год</span>
+            <span style={metaLabel}>{t("movie.year")}</span>
             <span style={{ color: "#ddd" }}>{year}</span>
           </div>
 
           <div style={metaRow}>
-            <span style={metaLabel}>Режиссёр</span>
+            <span style={metaLabel}>{t("movie.director")}</span>
             <span style={{ color: "#ddd" }}>{director}</span>
           </div>
 
           {genres.length > 0 && (
             <div style={metaRow}>
-              <span style={metaLabel}>Жанр</span>
+              <span style={metaLabel}>{t("movie.genre")}</span>
               <span style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {genres.map((g) => (
                   <Tag
@@ -227,7 +242,7 @@ export const MoviePage = () => {
               overflow: "hidden",
             }}
           >
-            {description || "Описание пока отсутствует."}
+            {description || t("movie.noDescription")}
           </Paragraph>
         </div>
       </div>
@@ -243,7 +258,7 @@ export const MoviePage = () => {
             fontSize: 18,
           }}
         >
-          Смотреть онлайн
+         {t("movie.watchOnline")}
         </Title>
         <VideoPlayer
           movieLinks={movieLinks}
@@ -263,10 +278,15 @@ export const MoviePage = () => {
             marginBottom: 32,
           }}
         >
-          <Title level={5} style={{ color: "#fff", marginTop: 0, marginBottom: 12 }}>
-            Описание
+          <Title
+            level={5}
+            style={{ color: "#fff", marginTop: 0, marginBottom: 12 }}
+          >
+            {t("movie.description")}
           </Title>
-          <Paragraph style={{ color: "#ccc", fontSize: 15, lineHeight: 1.7, margin: 0 }}>
+          <Paragraph
+            style={{ color: "#ccc", fontSize: 15, lineHeight: 1.7, margin: 0 }}
+          >
             {description}
           </Paragraph>
         </div>
@@ -281,8 +301,11 @@ export const MoviePage = () => {
           padding: "20px 24px",
         }}
       >
-        <Title level={5} style={{ color: "#fff", marginTop: 0, marginBottom: 16 }}>
-          Отзывы и оценки
+        <Title
+          level={5}
+          style={{ color: "#fff", marginTop: 0, marginBottom: 16 }}
+        >
+         {t("movie.reviewsTitle")}
         </Title>
 
         {/* Form */}
@@ -296,7 +319,7 @@ export const MoviePage = () => {
           }}
         >
           <Text style={{ color: "#aaa", display: "block", marginBottom: 8 }}>
-            Ваша оценка
+            {t("movie.yourRating")}
           </Text>
           <Rate
             value={rating}
@@ -305,12 +328,12 @@ export const MoviePage = () => {
           />
 
           <Text style={{ color: "#aaa", display: "block", marginBottom: 8 }}>
-            Комментарий
+            {t("movie.comment")}
           </Text>
           <TextArea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Напишите, что думаете о фильме..."
+            placeholder={t("movie.commentPlaceholder")}
             rows={4}
             maxLength={2000}
             showCount
@@ -332,7 +355,7 @@ export const MoviePage = () => {
               fontWeight: 600,
             }}
           >
-            Отправить отзыв
+            {t("movie.submitReview")}
           </Button>
         </div>
 
@@ -340,7 +363,9 @@ export const MoviePage = () => {
         {reviews.length === 0 ? (
           <Empty
             description={
-              <Text style={{ color: "#666" }}>Пока нет отзывов. Будьте первым!</Text>
+              <Text style={{ color: "#666" }}>
+                {t("movie.noReviews")}
+              </Text>
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
