@@ -31,11 +31,13 @@
     },
     "nav": {
     "home": "Головна",
-    "favorites": "Обране",
-    "history": "Історія",
-    "login": "Увійти",
-    "register": "Реєстрація",
-    "logout": "Вийти"
+    "catalog": "Каталог",
+    "about": "Про нас",
+    "support": "Підтримка",
+    "subscribe": "Підписатися",
+    "chooseLanguage": "Оберіть мову",
+    "russian": "Російська",
+    "ukrainian": "Українська"
   },
   "auth": {
     "loginTitle": "Вхід",
