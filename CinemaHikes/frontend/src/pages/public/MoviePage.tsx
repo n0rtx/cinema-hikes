@@ -80,7 +80,6 @@ export const MoviePage = () => {
   }
 
   const title = movie.ruTitle || movie.uaTitle || "Без названия";
-  const origTitle = movie.ruInEngTitle || "";
   const description = movie.description || "";
   const director = movie.director || "—";
   const year = movie.releaseYear || "—";
@@ -131,9 +130,6 @@ export const MoviePage = () => {
             </Text>
           )}
         </Title>
-        {origTitle && (
-          <Text style={{ color: "#888", fontSize: 15 }}>{origTitle}</Text>
-        )}
       </div>
 
       {/* INFO: poster + meta */}
