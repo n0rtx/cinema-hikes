@@ -4,17 +4,18 @@ import type { ReviewDto } from "./ReviewDto";
 import type { VideoSourceDto } from "./VideoSourceDto";
 
 export interface MovieDetailsDto {
-  Id: string;
-  RuTitle: string;
-  UaTitle: string;
-  RuInEngTitle: string;
-  Description: string;
-  Director: string;
-  ReleaseYear: number;
-  PosterUrl: string;
-  KpRating: number;
-  Genres:GenreDto[];
-  VideoSources:VideoSourceDto[];
-  MovieLinks:MovieLinkDto[];
-  Reviews:ReviewDto[];
+  id: number;
+  ruTitle: string;
+  uaTitle: string;
+  ruInEngTitle: string;
+  description: string;
+  director: string;
+  releaseYear: number;
+  posterUrl: string;
+  kpRating: number;
+  createdAt: string;
+  genres: GenreDto[];
+  videoSources: VideoSourceDto[];
+  movieLinks: MovieLinkDto[];
+  reviews: ReviewDto[];
 }

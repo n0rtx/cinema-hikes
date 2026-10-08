@@ -1,11 +1,11 @@
 import type { ReviewStatus } from "../../Enums/ReviewStatus";
 
 export interface ReviewDto {
-    Id:number;
-    MovieId:number;
-    UserId:number;
-    Text:string;
-    Rating:number;
-    Status:ReviewStatus;
-    CreatedAt:number;
+  id: number;
+  movieId: number;
+  userId: number;
+  text: string;
+  rating: number;
+  status: ReviewStatus;
+  createdAt: string;
 }

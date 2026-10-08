@@ -1,5 +1,5 @@
 export interface CreateReviewDto {
-    MovieId:number;
-    Text:string;
-    Rating:number;
+  movieId: number;
+  text: string;
+  rating: number;
 }
