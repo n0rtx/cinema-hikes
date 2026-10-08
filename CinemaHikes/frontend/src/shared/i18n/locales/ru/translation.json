@@ -1,0 +1,36 @@
+{
+    "common":{
+        "loading":"Загрузка...",
+        "notFound":"Не найдено",
+        "error":"Ошибка",
+        "save":"Сохранить",
+        "cancel":"Отмена",
+        "search":"Поиск"
+    },
+    "movie":{
+        "notFound": "Фильм не найден",
+        "noTitle": "Без названия",
+        "watch": "Смотреть",
+        "description": "Описание",
+        "noDescription": "Описание пока отсутствует.",
+        "info": "Информация",
+        "year": "Год",
+        "director": "Режиссёр",
+        "ratingKp": "Рейтинг КП",
+        "directorLabel": "Режиссёр:"
+    },
+    "nav": {
+    "home": "Главная",
+    "favorites": "Избранное",
+    "history": "История",
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти"
+  },
+  "auth": {
+    "loginTitle": "Вход",
+    "registerTitle": "Регистрация",
+    "email": "Email",
+    "password": "Пароль"
+  }
+}

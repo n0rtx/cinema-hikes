@@ -1,0 +1,36 @@
+{
+    "common":{
+        "loading":"Завантаження...",
+        "notFound":"Не знайдено",
+        "error":"Помилка",
+        "save":"Зберегти",
+        "cancel":"Скасувати",
+        "search":"Пошук"
+    },
+    "movie":{
+        "notFound": "Фільм не знайдено",
+        "noTitle": "Без назви",
+        "watch": "Дивитися",
+        "description": "Опис",
+        "noDescription": "Опис поки відсутній.",
+        "info": "Інформація",
+        "year": "Рік",
+        "director": "Режисер",
+        "ratingKp": "Рейтинг КП",
+        "directorLabel": "Режисер:"
+    },
+    "nav": {
+    "home": "Головна",
+    "favorites": "Обране",
+    "history": "Історія",
+    "login": "Увійти",
+    "register": "Реєстрація",
+    "logout": "Вийти"
+  },
+  "auth": {
+    "loginTitle": "Вхід",
+    "registerTitle": "Реєстрація",
+    "email": "Email",
+    "password": "Пароль"
+  }
+}
