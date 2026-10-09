@@ -1,11 +1,16 @@
 import { Typography, Button } from "antd";
 import { MovieCarousel } from "./MovieCarousel";
 import { PlayCircleOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import LogoPiratTv from "../../../public/assets/logos/LogoPiratTv.jpg";
 
 const { Title, Text } = Typography;
 
 export const HomePage = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <div>
       <div
@@ -35,7 +40,7 @@ export const HomePage = () => {
               margin: 0,
             }}
           >
-            Смотри фильмы бесплатно
+            {t("home.heroTitle")}
           </Title>
           <Text
             style={{
@@ -45,13 +50,13 @@ export const HomePage = () => {
               margin: "16px 0 32px 0",
             }}
           >
-            Тысячи фильмов и сериалов в отличном качестве. Поднимай паруса и
-            присоединяйся к команде.
+            {t("home.heroSubtitle")}
           </Text>
           <Button
             type="primary"
             size="large"
             icon={<PlayCircleOutlined />}
+            onClick={() => navigate("/catalog")}
             style={{
               backgroundColor: "#E50914",
               borderColor: "#E50914",
@@ -61,12 +66,12 @@ export const HomePage = () => {
               fontWeight: "bold",
             }}
           >
-            Смотреть фильмы
+            {t("home.watchMovies")}
           </Button>
         </div>
       </div>
 
-      <MovieCarousel sectionTitle="Топ" minRating={7} pageSize={12} />
+      <MovieCarousel sectionTitle={t("home.topSection")} minRating={7} pageSize={12} />
     </div>
   );
 };

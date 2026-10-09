@@ -4,19 +4,21 @@ import {
   QuestionCircleOutlined,
   CustomerServiceOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const { Title, Paragraph, Text } = Typography;
 
 export const SupportPage = () => {
+  const { t } = useTranslation();
+
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", paddingBottom: "40px" }}>
       <div style={{ marginBottom: "32px", textAlign: "center" }}>
         <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-          Поддержка капитана
+          {t("support.title")}
         </Title>
         <Text style={{ color: "#999", fontSize: "16px" }}>
-          Нужна помощь с навигацией или загрузкой кинематографических сокровищ?
-          Мы на вашей стороне.
+          {t("support.subtitle")}
         </Text>
       </div>
 
@@ -41,7 +43,7 @@ export const SupportPage = () => {
             >
               <SendOutlined style={{ fontSize: "28px", color: "#0088cc" }} />
               <Title level={4} style={{ color: "#fff", margin: 0 }}>
-                Telegram-бот
+                {t("support.telegramTitle")}
               </Title>
             </div>
             <Paragraph
@@ -52,9 +54,7 @@ export const SupportPage = () => {
                 marginBottom: "24px",
               }}
             >
-              Используйте нашего официального Telegram-бота для поиска фильмов,
-              выбора студии озвучки и качества видео, а также скачивания или
-              просмотра.
+              {t("support.telegramDesc")}
             </Paragraph>
             <Button
               type="primary"
@@ -73,7 +73,7 @@ export const SupportPage = () => {
                 cursor: "pointer",
               }}
             >
-              Открыть Telegram-бота
+              {t("support.openTelegram")}
             </Button>
           </Card>
         </Col>
@@ -100,7 +100,7 @@ export const SupportPage = () => {
                 style={{ fontSize: "28px", color: "#E50914" }}
               />
               <Title level={4} style={{ color: "#fff", margin: 0 }}>
-                Помощь команды
+                {t("support.helpTitle")}
               </Title>
             </div>
             <Paragraph
@@ -111,8 +111,7 @@ export const SupportPage = () => {
                 marginBottom: "24px",
               }}
             >
-              Наткнулись на битую ссылку, ошибку парсинга или отсутствующий
-              источник? Напишите администраторам напрямую.
+              {t("support.helpDesc")}
             </Paragraph>
             <Button
               type="primary"
@@ -128,7 +127,7 @@ export const SupportPage = () => {
                 cursor: "pointer",
               }}
             >
-              Связаться с поддержкой
+              {t("support.contactSupport")}
             </Button>
           </Card>
         </Col>
@@ -155,7 +154,7 @@ export const SupportPage = () => {
             style={{ fontSize: "24px", color: "#faad14" }}
           />
           <Title level={4} style={{ color: "#fff", margin: 0 }}>
-            Часто задаваемые вопросы
+            {t("support.faqTitle")}
           </Title>
         </div>
 
@@ -169,14 +168,12 @@ export const SupportPage = () => {
                 marginBottom: "4px",
               }}
             >
-              Как скачивать фильмы через бота?
+              {t("support.faq1q")}
             </Text>
             <Text style={{ color: "#aaa", fontSize: "14px" }}>
-              Отправьте название фильма боту в Telegram, выберите студию
-              перевода и качество видео (до 1080p).
+              {t("support.faq1a")}
             </Text>
           </div>
-
           <div>
             <Text
               style={{
@@ -186,11 +183,25 @@ export const SupportPage = () => {
                 marginBottom: "4px",
               }}
             >
-              Все фильмы действительно бесплатные?
+              {t("support.faq2q")}
             </Text>
             <Text style={{ color: "#aaa", fontSize: "14px" }}>
-              Да, PIRAT.tv предоставляет открытый доступ к каталогу для всех
-              капитанов без скрытых платежей.
+              {t("support.faq2a")}
+            </Text>
+          </div>
+          <div>
+            <Text
+              style={{
+                color: "#fff",
+                fontWeight: 600,
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
+              {t("support.faq3q")}
+            </Text>
+            <Text style={{ color: "#aaa", fontSize: "14px" }}>
+              {t("support.faq3a")}
             </Text>
           </div>
         </div>

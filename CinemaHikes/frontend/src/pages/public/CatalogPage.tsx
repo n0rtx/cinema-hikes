@@ -1,6 +1,7 @@
 import { Typography } from "antd";
+import { useTranslation } from "react-i18next";
 
 export const CatalogPage = () => {
-    return (
-    <Typography.Title>Catalog Page</Typography.Title>)
+  const { t } = useTranslation();
+  return <Typography.Title style={{ color: "#fff" }}>{t("catalog.title")}</Typography.Title>;
 };

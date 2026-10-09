@@ -6,17 +6,19 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 const { Title, Paragraph, Text } = Typography;
 
 export const AboutPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", paddingTop: "40px" }}>
       <div style={{ textAlign: "center", marginBottom: "60px" }}>
         <UnlockOutlined
           style={{ fontSize: "48px", color: "#E50914", marginBottom: "16px" }}
         />
-        <Title level={1}>Возвращаем свободу просмотра</Title>
+        <Title level={1}>{t("about.title")}</Title>
         <Paragraph
           style={{
             fontSize: "18px",
@@ -25,17 +27,13 @@ export const AboutPage = () => {
             marginTop: "24px",
           }}
         >
-          Интернет должен был быть свободным пространством для обмена
-          информацией. CinemaHikes — наш ответ современным ограничениям. Мы
-          создаём платформу, где каждый может найти и насладиться любимыми
-          фильмами в удобном интерфейсе, без искусственных барьеров и навязчивых
-          ограничений.
+          {t("about.intro")}
         </Paragraph>
       </div>
       <Divider style={{ borderColor: "#333" }} />
       <div style={{ marginTop: "60px" }}>
         <Title level={2} style={{ textAlign: "center", marginBottom: "40px" }}>
-          Кто за этим стоит?
+          {t("about.whoTitle")}
         </Title>
         <Paragraph
           style={{
@@ -45,13 +43,7 @@ export const AboutPage = () => {
             marginBottom: "40px",
           }}
         >
-          Этот проект разрабатывают два студента из
-          <Text strong style={{ color: "#fff" }}>
-            {" "}
-            IT STEP Academy
-          </Text>
-          . Мы объединили свои знания в программировании и любовь к кино, чтобы
-          воплотить этот продукт в жизнь.
+          {t("about.whoText")}
         </Paragraph>
         <Row gutter={[32, 32]} justify="center">
           <Col xs={24} sm={12}>

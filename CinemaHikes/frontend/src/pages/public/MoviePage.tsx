@@ -18,6 +18,7 @@ import { fetchMovieDetails } from "../../features/movie-details/api/fetchMovieDe
 import { createReview } from "../../features/movie-details/api/createReview";
 import { VideoPlayer } from "../../features/movie-details/components/VideoPlayer";
 import { ReviewStatus } from "../../shared/types/Enums/ReviewStatus";
+import { getMovieTitle } from "../../shared/utils/getMovieTitle";
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -58,15 +59,13 @@ export const MoviePage = () => {
   const mutation = useMutation({
     mutationFn: createReview,
     onSuccess: () => {
-      message.success("Отзыв отправлен на модерацию");
+      message.success(t("movie.reviewSent"));
       setRating(0);
       setComment("");
       queryClient.invalidateQueries({ queryKey: ["movie", id] });
     },
     onError: () => {
-      message.error(
-        "Не удалось отправить отзыв. Войдите в аккаунт и попробуйте снова.",
-      );
+      message.error(t("movie.reviewError"));
     },
   });
 
@@ -83,7 +82,7 @@ export const MoviePage = () => {
   if (isError || !movie) {
     return (
       <Empty
-        description={<Text style={{ color: "#888" }}>Фильм не найден</Text>}
+        description={<Text style={{ color: "#888" }}>{t("movie.notFound")}</Text>}
         style={{ padding: "80px 0" }}
       />
     );
@@ -98,22 +97,18 @@ export const MoviePage = () => {
   const genres = movie.genres ?? [];
   const movieLinks = movie.movieLinks ?? [];
   const videoSources = movie.videoSources ?? [];
-  const isUk = i18n.language.startsWith("uk");
-  const title =
-    (isUk
-      ? movie.uaTitle || movie.ruTitle
-      : movie.ruTitle || movie.uaTitle) || t("movie.noTitle");
+  const title = getMovieTitle(movie, i18n.language, t);
   const reviews = (movie.reviews ?? []).filter(
     (r) => r.status === ReviewStatus.Approved || r.status === undefined,
   );
 
   const handleSubmit = () => {
     if (rating < 1) {
-      message.warning("Поставьте оценку от 1 до 5");
+      message.warning(t("movie.ratingRequired"));
       return;
     }
     if (!comment.trim()) {
-      message.warning("Напишите комментарий");
+      message.warning(t("movie.commentRequired"));
       return;
     }
     mutation.mutate({

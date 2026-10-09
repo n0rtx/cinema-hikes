@@ -19,6 +19,7 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 const { Title, Text } = Typography;
@@ -30,7 +31,6 @@ interface RegisterFormValues {
   confirmPassword: string;
 }
 
-// Следит за media query. Начальное значение считается сразу при первом рендере.
 const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(
     () => typeof window !== "undefined" && window.matchMedia(query).matches,
@@ -52,8 +52,7 @@ export const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  // Левая колонка видна только на широких экранах (от 1200px)
+  const { t } = useTranslation();
   const isWide = useMediaQuery("(min-width: 1200px)");
 
   const onFinish = async (values: RegisterFormValues) => {
@@ -72,21 +71,21 @@ export const RegisterPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       localStorage.setItem("authToken", response.data.token);
       localStorage.setItem("username", response.data.username);
       localStorage.setItem("email", response.data.email);
 
-      message.success("Welcome aboard, Captain!");
+      message.success(t("auth.welcomeAboard"));
 
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message || "Registration failed. Please try again later.";
+        err.response?.data?.message || t("auth.registerFailed");
       setError(errorMessage);
       message.error(errorMessage);
       console.error("Registration error:", err);
@@ -96,10 +95,7 @@ export const RegisterPage = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    if (provider == "GitHub") {
-      /// тут надо будет добавить controller для логинов
-    }
-    message.info(`Sign in with ${provider} is under development...`);
+    message.info(t("auth.socialDev", { provider }));
   };
 
   const socialBtnStyle = {
@@ -124,7 +120,6 @@ export const RegisterPage = () => {
         backgroundColor: "#141414",
       }}
     >
-      {/* Left Side - Marketing (только от 1200px) */}
       {isWide && (
         <div
           style={{
@@ -138,27 +133,17 @@ export const RegisterPage = () => {
             boxSizing: "border-box",
           }}
         >
-          <div
-            style={{
-              textAlign: "center",
-              maxWidth: "500px",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "64px",
-                marginBottom: "32px",
-              }}
-            >
+          <div style={{ textAlign: "center", maxWidth: "500px" }}>
+            <div style={{ fontSize: "64px", marginBottom: "32px" }}>
               <PlayCircleOutlined style={{ color: "#E50914" }} />
             </div>
 
             <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-              Безлимитные фильмы и сериалы
+              {t("auth.registerHeroTitle")}
             </Title>
 
             <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-              Присоединяйтесь к тысячам капитанов, исследующих бескрайний океан кинематографических сокровищ. Смотрите, скачивайте и наслаждайтесь любимым контентом в любое время и в любом месте.
+              {t("auth.registerHeroText")}
             </Text>
 
             <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
@@ -167,7 +152,7 @@ export const RegisterPage = () => {
                   10K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Movies & Shows
+                  {t("auth.statMovies")}
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
@@ -175,15 +160,15 @@ export const RegisterPage = () => {
                   100%
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Free Access
+                  {t("auth.statFree")}
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
-                  HD/4K
+                  HD
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Quality
+                  {t("auth.statHd")}
                 </Text>
               </div>
             </div>
@@ -191,7 +176,6 @@ export const RegisterPage = () => {
         </div>
       )}
 
-      {/* Right Side - Form */}
       <div
         style={{
           flex: 1,
@@ -215,10 +199,14 @@ export const RegisterPage = () => {
             onClick={() => navigate("/")}
             style={{
               color: "#E50914",
-              fontSize: "28px",
+              fontSize: "24px",
               fontWeight: 900,
+              letterSpacing: "1px",
+              fontFamily:
+                "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
               cursor: "pointer",
               marginBottom: "24px",
+              lineHeight: 1.2,
             }}
           >
             PIRAT.tv
@@ -226,16 +214,16 @@ export const RegisterPage = () => {
 
           <div style={{ marginBottom: "32px" }}>
             <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-              Присоединяйтесь к команде
+              {t("auth.registerHeroTitle")}
             </Title>
             <Text style={{ color: "#999", fontSize: "14px" }}>
-              Создайте аккаунт и пуститесь в плавание
+              {t("auth.registerSubtitle")}
             </Text>
           </div>
 
           {error && (
             <Alert
-              message="Registration Error"
+              message={t("auth.registerError")}
               description={error}
               type="error"
               showIcon
@@ -254,30 +242,20 @@ export const RegisterPage = () => {
             >
               <Form.Item
                 name="username"
-                label={<span style={{ color: "#fff" }}>Username</span>}
+                label={<span style={{ color: "#fff" }}>{t("auth.username")}</span>}
                 rules={[
-                  {
-                    required: true,
-                    message: "Please enter your username",
-                  },
-                  {
-                    min: 3,
-                    message: "Username must be at least 3 characters",
-                  },
-                  {
-                    max: 50,
-                    message: "Username cannot exceed 50 characters",
-                  },
+                  { required: true, message: t("auth.usernameRequired") },
+                  { min: 3, message: t("auth.usernameMin") },
+                  { max: 50, message: t("auth.usernameMax") },
                   {
                     pattern: /^[a-zA-Z0-9_-]+$/,
-                    message:
-                      "Username can only contain letters, numbers, hyphens, and underscores",
+                    message: t("auth.usernamePattern"),
                   },
                 ]}
               >
                 <Input
                   prefix={<UserOutlined />}
-                  placeholder="pirat_123"
+                  placeholder={t("auth.usernamePlaceholder")}
                   size="large"
                   style={{
                     backgroundColor: "#333",
@@ -289,23 +267,17 @@ export const RegisterPage = () => {
 
               <Form.Item
                 name="email"
-                label={<span style={{ color: "#fff" }}>Email</span>}
+                label={<span style={{ color: "#fff" }}>{t("auth.email")}</span>}
                 rules={[
-                  {
-                    required: true,
-                    message: "Please enter your email",
-                  },
-                  {
-                    type: "email",
-                    message: "Please enter a valid email address",
-                  },
+                  { required: true, message: t("auth.emailRequired") },
+                  { type: "email", message: t("auth.emailInvalid") },
                 ]}
               >
                 <Input
                   prefix={<MailOutlined />}
-                  placeholder="captain@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   size="large"
-                  type="email"
+                  autoComplete="email"
                   style={{
                     backgroundColor: "#333",
                     border: "1px solid #555",
@@ -316,21 +288,15 @@ export const RegisterPage = () => {
 
               <Form.Item
                 name="password"
-                label={<span style={{ color: "#fff" }}>Password</span>}
+                label={<span style={{ color: "#fff" }}>{t("auth.password")}</span>}
                 rules={[
-                  {
-                    required: true,
-                    message: "Please enter your password",
-                  },
-                  {
-                    min: 6,
-                    message: "Password must be at least 6 characters",
-                  },
+                  { required: true, message: t("auth.passwordRequired") },
+                  { min: 6, message: t("auth.passwordMin") },
                 ]}
               >
                 <Input.Password
                   prefix={<LockOutlined />}
-                  placeholder="••••••••"
+                  placeholder={t("auth.passwordPlaceholder")}
                   size="large"
                   style={{
                     backgroundColor: "#333",
@@ -342,29 +308,24 @@ export const RegisterPage = () => {
               <Form.Item
                 name="confirmPassword"
                 label={
-                  <span style={{ color: "#fff" }}>Confirm Password</span>
+                  <span style={{ color: "#fff" }}>{t("auth.confirmPassword")}</span>
                 }
                 dependencies={["password"]}
                 rules={[
-                  {
-                    required: true,
-                    message: "Please confirm your password",
-                  },
+                  { required: true, message: t("auth.confirmRequired") },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       if (!value || getFieldValue("password") === value) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("The two passwords that you entered do not match")
-                      );
+                      return Promise.reject(new Error(t("auth.passwordsMismatch")));
                     },
                   }),
                 ]}
               >
                 <Input.Password
                   prefix={<LockOutlined />}
-                  placeholder="••••••••"
+                  placeholder={t("auth.confirmPlaceholder")}
                   size="large"
                   style={{
                     backgroundColor: "#333",
@@ -388,14 +349,14 @@ export const RegisterPage = () => {
                     fontWeight: "600",
                   }}
                 >
-                  {loading ? "Signing up..." : "Sign Up"}
+                  {loading ? t("auth.creatingAccount") : t("auth.registerButton")}
                 </Button>
               </Form.Item>
             </Form>
           </Spin>
 
           <Divider style={{ backgroundColor: "#141414", margin: "24px 0" }}>
-            <span style={{ color: "#999" }}>or</span>
+            <span style={{ color: "#999" }}>{t("auth.orContinueWith")}</span>
           </Divider>
 
           <div
@@ -452,7 +413,7 @@ export const RegisterPage = () => {
 
           <div style={{ textAlign: "center" }}>
             <Text style={{ color: "#999" }}>
-              Уже есть аккаунт?{" "}
+              {t("auth.hasAccount")}{" "}
               <span
                 onClick={() => navigate("/login")}
                 style={{
@@ -462,7 +423,7 @@ export const RegisterPage = () => {
                   cursor: "pointer",
                 }}
               >
-                Войдите
+                {t("auth.signIn")}
               </span>
             </Text>
           </div>
