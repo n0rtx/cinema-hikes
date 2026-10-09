@@ -104,6 +104,7 @@ export const MainLayout = () => {
           top: 0,
           zIndex: 1000,
           width: "100%",
+          backgroundColor: "#141414",
         }}
       >
         <div
