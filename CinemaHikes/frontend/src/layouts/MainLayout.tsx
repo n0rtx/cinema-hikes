@@ -15,18 +15,18 @@ const { Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
 
 export const MainLayout = () => {
-
-  const{t,i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const navigate = useNavigate();
   const location = useLocation();
   const screens = useBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  
-  const currentLang = i18n.language.startsWith("uk")?"UA":"RU";
-  const changeLanguage = ((lng:"ru" | "uk") => {
+
+  const currentLang = i18n.language.startsWith("uk") ? "UA" : "RU";
+  const changeLanguage = (lng: "ru" | "uk") => {
     i18n.changeLanguage(lng);
-  })
+  };
+
   const menuItems = [
     { key: "/", label: t("nav.home") },
     { key: "/catalog", label: t("nav.catalog") },
@@ -98,7 +98,12 @@ export const MainLayout = () => {
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: screens.lg ? "flex-start" : "space-between",
           padding: screens.md ? "0 40px" : "0 16px",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+          width: "100%",
         }}
       >
         <div
@@ -115,7 +120,7 @@ export const MainLayout = () => {
           PIRAT.tv
         </div>
 
-        {screens.md && (
+        {screens.lg && (
           <Menu
             theme="dark"
             mode="horizontal"
@@ -200,7 +205,7 @@ export const MainLayout = () => {
             onClick={() => navigate("/profile")}
           />
 
-          {!screens.md && (
+          {!screens.lg && (
             <Button
               type="text"
               icon={
