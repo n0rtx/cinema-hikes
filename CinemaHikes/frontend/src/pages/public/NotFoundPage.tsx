@@ -1,9 +1,14 @@
 import { Typography, Button } from "antd";
 import { CompassOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 
 export const NotFoundPage = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -22,7 +27,7 @@ export const NotFoundPage = () => {
         404
       </Title>
       <Title level={3} style={{ marginTop: "8px" }}>
-        Мёртвые воды
+        {t("notFound.title")}
       </Title>
       <Paragraph
         style={{
@@ -32,20 +37,19 @@ export const NotFoundPage = () => {
           marginTop: "16px",
         }}
       >
-        Капитан, кажется, мы наткнулись на риф! Эти координаты никуда не ведут.
-        Давайте развернём корабль, пока не затонули.
+        {t("notFound.text")}
       </Paragraph>
       <Button
         type="primary"
         size="large"
-        href="/"
+        onClick={() => navigate("/")}
         style={{
           marginTop: "24px",
           backgroundColor: "#E50914",
           borderColor: "#E50914",
         }}
       >
-        В безопасную гавань
+        {t("notFound.button")}
       </Button>
     </div>
   );

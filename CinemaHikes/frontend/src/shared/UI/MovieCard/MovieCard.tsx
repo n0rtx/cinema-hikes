@@ -1,7 +1,9 @@
 import { Card, Typography, Tag } from "antd";
 import { StarFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { MovieListItem } from "../../types/DTO/CatalogDtos/MoveListItemDto";
+import { getMovieTitle } from "../../utils/getMovieTitle";
 
 const { Title, Text } = Typography;
 
@@ -11,7 +13,8 @@ interface MovieCardProps {
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
-  const displayTitle = movie.ruTitle;
+  const { t, i18n } = useTranslation();
+  const displayTitle = getMovieTitle(movie, i18n.language, t);
 
   return (
     <Card

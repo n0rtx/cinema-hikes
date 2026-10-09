@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { MailOutlined, LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 const { Title, Text } = Typography;
@@ -21,7 +22,6 @@ interface LoginFormValues {
   remember: boolean;
 }
 
-// Следит за media query. Начальное значение считается сразу при первом рендере.
 const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(
     () => typeof window !== "undefined" && window.matchMedia(query).matches,
@@ -43,8 +43,7 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  // Левая колонка видна только на широких экранах (от 1200px)
+  const { t } = useTranslation();
   const isWide = useMediaQuery("(min-width: 1200px)");
 
   const onFinish = async (values: LoginFormValues) => {
@@ -73,15 +72,14 @@ export const LoginPage = () => {
         localStorage.setItem("rememberMe", "true");
       }
 
-      message.success("Welcome back, Captain! 🏴‍☠️");
+      message.success(t("auth.welcomeBack"));
 
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message ||
-        "Login failed. Please check your email and password.";
+        err.response?.data?.message || t("auth.loginFailed");
       setError(errorMessage);
       message.error(errorMessage);
       console.error("Login error:", err);
@@ -98,7 +96,6 @@ export const LoginPage = () => {
         backgroundColor: "#141414",
       }}
     >
-      {/* Left Side - Marketing (только от 1200px) */}
       {isWide && (
         <div
           style={{
@@ -112,27 +109,17 @@ export const LoginPage = () => {
             boxSizing: "border-box",
           }}
         >
-          <div
-            style={{
-              textAlign: "center",
-              maxWidth: "500px",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "64px",
-                marginBottom: "32px",
-              }}
-            >
+          <div style={{ textAlign: "center", maxWidth: "500px" }}>
+            <div style={{ fontSize: "64px", marginBottom: "32px" }}>
               <PlayCircleOutlined style={{ color: "#E50914" }} />
             </div>
 
             <Title level={2} style={{ color: "#fff", marginBottom: "16px" }}>
-              Ваше кино ждет
+              {t("auth.loginHeroTitle")}
             </Title>
 
             <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
-              Продолжайте своё приключение в нашей огромной коллекции фильмов и сериалов. Получите доступ к списку просмотра, рекомендациям и многому другому.
+              {t("auth.loginHeroText")}
             </Text>
 
             <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
@@ -141,7 +128,7 @@ export const LoginPage = () => {
                   10K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Titles Available
+                  {t("auth.statTitles")}
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
@@ -149,7 +136,7 @@ export const LoginPage = () => {
                   50K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Active Captains
+                  {t("auth.statCaptains")}
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
@@ -157,7 +144,7 @@ export const LoginPage = () => {
                   24/7
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
-                  Support
+                  {t("auth.statSupport")}
                 </Text>
               </div>
             </div>
@@ -165,7 +152,6 @@ export const LoginPage = () => {
         </div>
       )}
 
-      {/* Right Side - Form */}
       <div
         style={{
           flex: 1,
@@ -189,10 +175,14 @@ export const LoginPage = () => {
             onClick={() => navigate("/")}
             style={{
               color: "#E50914",
-              fontSize: "28px",
+              fontSize: "24px",
               fontWeight: 900,
+              letterSpacing: "1px",
+              fontFamily:
+                "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
               cursor: "pointer",
               marginBottom: "24px",
+              lineHeight: 1.2,
             }}
           >
             PIRAT.tv
@@ -200,16 +190,16 @@ export const LoginPage = () => {
 
           <div style={{ marginBottom: "32px" }}>
             <Title level={2} style={{ color: "#fff", marginBottom: "8px" }}>
-              С возвращением
+              {t("auth.loginTitle")}
             </Title>
             <Text style={{ color: "#999", fontSize: "14px" }}>
-              Войдите в аккаунт, чтобы продолжить
+              {t("auth.loginSubtitle")}
             </Text>
           </div>
 
           {error && (
             <Alert
-              message="Login Error"
+              message={t("auth.loginError")}
               description={error}
               type="error"
               showIcon
@@ -228,17 +218,17 @@ export const LoginPage = () => {
             >
               <Form.Item
                 name="email"
-                label={<span style={{ color: "#fff" }}>Email or Username</span>}
+                label={<span style={{ color: "#fff" }}>{t("auth.email")}</span>}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your email or username",
+                    message: t("auth.emailRequired"),
                   },
                 ]}
               >
                 <Input
                   prefix={<MailOutlined />}
-                  placeholder="captain@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   size="large"
                   autoComplete="email"
                   style={{
@@ -251,17 +241,17 @@ export const LoginPage = () => {
 
               <Form.Item
                 name="password"
-                label={<span style={{ color: "#fff" }}>Password</span>}
+                label={<span style={{ color: "#fff" }}>{t("auth.password")}</span>}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your password",
+                    message: t("auth.passwordRequired"),
                   },
                 ]}
               >
                 <Input.Password
                   prefix={<LockOutlined />}
-                  placeholder="••••••••"
+                  placeholder={t("auth.passwordPlaceholder")}
                   size="large"
                   autoComplete="current-password"
                   style={{
@@ -276,7 +266,7 @@ export const LoginPage = () => {
                 valuePropName="checked"
                 style={{ marginBottom: "16px" }}
               >
-                <Checkbox style={{ color: "#999" }}>Remember me</Checkbox>
+                <Checkbox style={{ color: "#999" }}>{t("auth.rememberMe")}</Checkbox>
               </Form.Item>
 
               <div style={{ marginBottom: "20px", textAlign: "right" }}>
@@ -296,7 +286,7 @@ export const LoginPage = () => {
                     (e.currentTarget as HTMLElement).style.color = "#E50914";
                   }}
                 >
-                  Забыли пароль?
+                  {t("auth.forgotPassword")}
                 </span>
               </div>
 
@@ -315,7 +305,7 @@ export const LoginPage = () => {
                     fontWeight: "600",
                   }}
                 >
-                  {loading ? "Signing in..." : "Log In"}
+                  {loading ? t("auth.signingIn") : t("auth.loginButton")}
                 </Button>
               </Form.Item>
             </Form>
@@ -323,7 +313,7 @@ export const LoginPage = () => {
 
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Text style={{ color: "#999" }}>
-              Нет аккаунта?{" "}
+              {t("auth.noAccount")}{" "}
               <span
                 onClick={() => navigate("/register")}
                 style={{
@@ -340,7 +330,7 @@ export const LoginPage = () => {
                   (e.currentTarget as HTMLElement).style.color = "#E50914";
                 }}
               >
-                Присоединяйтесь
+                {t("auth.joinUs")}
               </span>
             </Text>
           </div>

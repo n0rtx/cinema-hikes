@@ -51,7 +51,7 @@ export const MainLayout = () => {
           textAlign: "left",
         }}
       >
-        {t("nav.russian")}
+        Русский
       </Button>
       <Button
         type="text"
@@ -61,7 +61,7 @@ export const MainLayout = () => {
           textAlign: "left",
         }}
       >
-        {t("nav.ukrainian")}
+        Українська
       </Button>
     </div>
   );

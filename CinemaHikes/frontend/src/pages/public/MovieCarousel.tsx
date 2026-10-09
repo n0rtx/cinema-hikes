@@ -1,6 +1,7 @@
 import { Typography, Row, Col, Alert } from "antd";
 import { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
 import { useMoviesQuery } from "../../features/catalog/hooks/useMoviesQuery";
+import { useTranslation } from "react-i18next";
 
 const { Title, Text } = Typography;
 
@@ -28,6 +29,7 @@ export const MovieCarousel = ({
   minRating,
   pageSize = 10,
 }: MovieCarouselProps) => {
+  const { t } = useTranslation();
   const { data: movies = [], isLoading, isError, error } = useMoviesQuery({
     minRating,
     pageSize,
@@ -66,15 +68,15 @@ export const MovieCarousel = ({
       {isError && (
         <Alert
           type="error"
-          message="Не удалось загрузить фильмы"
-          description={error instanceof Error ? error.message : "Ошибка сети"}
+          message={t("movie.loadError")}
+          description={error instanceof Error ? error.message : t("movie.networkError")}
           showIcon
           style={{ marginBottom: 16 }}
         />
       )}
 
       {!isLoading && !isError && movies.length === 0 && (
-        <Text style={{ color: "#888" }}>В этой категории пока нет фильмов</Text>
+        <Text style={{ color: "#888" }}>{t("movie.emptyCategory")}</Text>
       )}
 
       {!isLoading && !isError && movies.length > 0 && (
