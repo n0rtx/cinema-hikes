@@ -5,7 +5,6 @@ import {
   Button,
   Typography,
   message,
-  Checkbox,
   Spin,
   Alert,
 } from "antd";
@@ -19,7 +18,6 @@ const { Title, Text } = Typography;
 interface LoginFormValues {
   email: string;
   password: string;
-  remember: boolean;
 }
 
 const useMediaQuery = (query: string) => {
@@ -59,10 +57,6 @@ export const LoginPage = () => {
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("username", data.username);
       localStorage.setItem("email", data.email);
-
-      if (values.remember) {
-        localStorage.setItem("rememberMe", "true");
-      }
 
       message.success(t("auth.welcomeBack"));
 
@@ -251,14 +245,6 @@ export const LoginPage = () => {
                     border: "1px solid #555",
                   }}
                 />
-              </Form.Item>
-
-              <Form.Item
-                name="remember"
-                valuePropName="checked"
-                style={{ marginBottom: "16px" }}
-              >
-                <Checkbox style={{ color: "#999" }}>{t("auth.rememberMe")}</Checkbox>
               </Form.Item>
 
               <div style={{ marginBottom: "20px", textAlign: "right" }}>
