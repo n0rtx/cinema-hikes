@@ -11,7 +11,12 @@ public class UserMovieRelationRepository<T>(CinemaHikesDbContext dbContext)
     private readonly DbSet<T> _dbSet = dbContext.Set<T>();
 
     public async Task<List<T>> GetByUserIdAsync(int userId, CancellationToken cancellationToken = default)
-        => await _dbSet.Where(e => e.UserId == userId).ToListAsync(cancellationToken);
+        => await _dbSet
+            .Include(e => e.Movie)
+                .ThenInclude(m => m.MovieGenres)
+                    .ThenInclude(mg => mg.Genre)
+            .Where(e => e.UserId == userId)
+            .ToListAsync(cancellationToken);
 
     public async Task<T?> FindAsync(int userId, int movieId, CancellationToken cancellationToken = default)
         => await _dbSet.FirstOrDefaultAsync(e => e.UserId == userId && e.MovieId == movieId, cancellationToken);
