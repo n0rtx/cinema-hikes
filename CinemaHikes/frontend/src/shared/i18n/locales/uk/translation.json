@@ -31,7 +31,14 @@
     "commentRequired": "Напишіть коментар",
     "loadError": "Не вдалося завантажити фільми",
     "networkError": "Помилка мережі",
-    "emptyCategory": "У цій категорії поки немає фільмів"
+    "emptyCategory": "У цій категорії поки немає фільмів",
+    "addToFavorites": "Додати до обраного",
+    "removeFromFavorites": "Видалити з обраного",
+    "addedToFavorites": "Додано до обраного",
+    "removedFromFavorites": "Видалено з обраного",
+    "favoriteError": "Не вдалося оновити обране",
+    "loginRequired": "Увійдіть, щоб додавати фільми до обраного"
+
   },
   "nav": {
     "home": "Головна",
