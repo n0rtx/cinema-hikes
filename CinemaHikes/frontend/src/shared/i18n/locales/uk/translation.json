@@ -139,6 +139,14 @@
     "accountStatus": "Статус акаунта",
     "statusActive": "Активний",
     "logout": "Вийти",
-    "defaultUsername": "Капітан"
+    "defaultUsername": "Капітан",
+    "recentlyViewed": "Нещодавно переглянуті",
+    "recentlyViewedEmpty": "Ви ще нічого не дивилися. Вітрила чекають!",
+    "favorites": "Улюблені фільми",
+    "favoritesEmpty": "Скриня поки порожня. Додавайте фільми до обраного.",
+    "viewedOn": "Переглянуто {{date}}",
+    "watchNow": "Дивитися",
+    "goToCatalog": "Перейти до каталогу",
+    "loadFailed": "Не вдалося завантажити профіль"
   }
 }
