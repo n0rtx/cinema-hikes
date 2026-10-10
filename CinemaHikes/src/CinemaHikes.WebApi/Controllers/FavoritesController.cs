@@ -27,7 +27,7 @@ namespace CinemaHikes.WebApi.Controllers
             var result = await FavoriteService.GetByUserIdAsync(userId,ct);
             return Ok(result);
         }
-        [HttpPost("movieId:{int}")]
+        [HttpPost("{movieId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddAsync(int movieId,CancellationToken ct)
@@ -40,7 +40,7 @@ namespace CinemaHikes.WebApi.Controllers
             await  FavoriteService.AddAsync(userId, movieId, ct);
             return NoContent();
         }
-        [HttpDelete("movieId:{int}")]
+        [HttpDelete("{movieId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> RemoveAsync(int movieId, CancellationToken ct)
