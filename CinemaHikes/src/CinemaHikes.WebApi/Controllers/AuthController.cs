@@ -59,4 +59,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         await authService.ChangePasswordAsync(userId, request);
         return NoContent();
     }
+    [HttpPost("github")]
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> Github(GitHubLoginRequestDto dto, CancellationToken ct) => Ok(await authService.LoginWithGitHubAsync(dto.Code, ct));
 }
