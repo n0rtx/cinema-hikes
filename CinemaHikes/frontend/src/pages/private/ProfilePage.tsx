@@ -18,11 +18,13 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const { Title, Text } = Typography;
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{
     username: string;
@@ -42,13 +44,13 @@ export const ProfilePage = () => {
     }
 
     setUser({
-      username: username || "Капитан",
+      username: username || t("profile.defaultUsername"),
       email: email || "captain@pirat.tv",
       registeredAt: "Сентябрь 2026",
       amountOfHats: 5,
     });
     setLoading(false);
-  }, [navigate]);
+  }, [navigate, t]);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -77,11 +79,9 @@ export const ProfilePage = () => {
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 16px" }}>
       <div style={{ marginBottom: "24px" }}>
         <Title level={2} style={{ color: "#fff", marginBottom: "4px" }}>
-          Каюта капитана
+          {t("profile.title")}
         </Title>
-        <Text style={{ color: "#999" }}>
-          Управляйте настройками аккаунта и пиратской статистикой
-        </Text>
+        <Text style={{ color: "#999" }}>{t("profile.subtitle")}</Text>
       </div>
 
       <Card
@@ -91,7 +91,7 @@ export const ProfilePage = () => {
           borderRadius: "16px",
           boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
         }}
-        bodyStyle={{ padding: "32px" }}
+        styles={{ body: { padding: "32px" } }}
       >
         <Row gutter={[32, 32]} align="middle">
           <Col xs={24} sm={8} style={{ textAlign: "center" }}>
@@ -126,7 +126,7 @@ export const ProfilePage = () => {
                       display: "block",
                     }}
                   >
-                    Email
+                    {t("profile.email")}
                   </Text>
                   <Text style={{ color: "#fff", fontSize: "15px" }}>
                     {user?.email}
@@ -148,7 +148,7 @@ export const ProfilePage = () => {
                       display: "block",
                     }}
                   >
-                    В команде с
+                    {t("profile.memberSince")}
                   </Text>
                   <Text style={{ color: "#fff", fontSize: "15px" }}>
                     {user?.registeredAt}
@@ -169,10 +169,14 @@ export const ProfilePage = () => {
                 border: "1px solid #333",
                 borderRadius: "12px",
               }}
-              bodyStyle={{ padding: "16px" }}
+              styles={{ body: { padding: "16px" } }}
             >
               <Statistic
-                title={<span style={{ color: "#999" }}>Количество шляп</span>}
+                title={
+                  <span style={{ color: "#999" }}>
+                    {t("profile.hatsCount")}
+                  </span>
+                }
                 value={user?.amountOfHats}
                 valueStyle={{ color: "#E50914", fontWeight: "bold" }}
                 prefix={<TrophyOutlined />}
@@ -186,11 +190,15 @@ export const ProfilePage = () => {
                 border: "1px solid #333",
                 borderRadius: "12px",
               }}
-              bodyStyle={{ padding: "16px" }}
+              styles={{ body: { padding: "16px" } }}
             >
               <Statistic
-                title={<span style={{ color: "#999" }}>Статус аккаунта</span>}
-                value="Активен"
+                title={
+                  <span style={{ color: "#999" }}>
+                    {t("profile.accountStatus")}
+                  </span>
+                }
+                value={t("profile.statusActive")}
                 valueStyle={{
                   color: "#52c41a",
                   fontSize: "20px",
@@ -214,7 +222,7 @@ export const ProfilePage = () => {
               borderColor: "#E50914",
             }}
           >
-            Выйти
+            {t("profile.logout")}
           </Button>
         </div>
       </Card>
