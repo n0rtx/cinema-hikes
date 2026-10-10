@@ -13,14 +13,15 @@ import {
   UserOutlined,
   LockOutlined,
   MailOutlined,
-  GoogleOutlined,
+
   GithubOutlined,
-  FacebookFilled,
+
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { axiosClient } from "../../shared/api/axiosClient";
+import { startGitHubLogin } from "../../features/auth/githubOAuth";
 
 const { Title, Text } = Typography;
 
@@ -87,7 +88,11 @@ export const RegisterPage = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    message.info(t("auth.socialDev", { provider }));
+      if (provider === "GitHub") {
+        startGitHubLogin();
+        return;
+      }
+      message.info(t("auth.socialDev", { provider }));
   };
 
   const socialBtnStyle = {
@@ -359,20 +364,7 @@ export const RegisterPage = () => {
               marginBottom: "24px",
             }}
           >
-            <button
-              style={socialBtnStyle as any}
-              onClick={() => handleSocialLogin("Google")}
-              onMouseOver={(e) => {
-                const target = e.currentTarget as HTMLElement;
-                target.style.backgroundColor = "rgba(229, 9, 20, 0.1)";
-              }}
-              onMouseOut={(e) => {
-                const target = e.currentTarget as HTMLElement;
-                target.style.backgroundColor = "transparent";
-              }}
-            >
-              <GoogleOutlined style={{ fontSize: "18px" }} />
-            </button>
+            
             <button
               style={socialBtnStyle as any}
               onClick={() => handleSocialLogin("GitHub")}
@@ -387,20 +379,7 @@ export const RegisterPage = () => {
             >
               <GithubOutlined style={{ fontSize: "18px" }} />
             </button>
-            <button
-              style={socialBtnStyle as any}
-              onClick={() => handleSocialLogin("Facebook")}
-              onMouseOver={(e) => {
-                const target = e.currentTarget as HTMLElement;
-                target.style.backgroundColor = "rgba(229, 9, 20, 0.1)";
-              }}
-              onMouseOut={(e) => {
-                const target = e.currentTarget as HTMLElement;
-                target.style.backgroundColor = "transparent";
-              }}
-            >
-              <FacebookFilled style={{ fontSize: "18px" }} />
-            </button>
+            
           </div>
 
           <div style={{ textAlign: "center" }}>
