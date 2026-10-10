@@ -20,7 +20,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
+import { axiosClient } from "../../shared/api/axiosClient";
 
 const { Title, Text } = Typography;
 
@@ -60,23 +60,15 @@ export const RegisterPage = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        {
-          username: values.username,
-          email: values.email,
-          password: values.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const { data } = await axiosClient.post("/api/auth/register", {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      });
 
-      localStorage.setItem("authToken", response.data.token);
-      localStorage.setItem("username", response.data.username);
-      localStorage.setItem("email", response.data.email);
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("email", data.email);
 
       message.success(t("auth.welcomeAboard"));
 
