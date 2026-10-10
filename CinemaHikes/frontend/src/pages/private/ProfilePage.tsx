@@ -21,7 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { axiosClient } from "../../shared/api/axiosClient";
-
+import { message } from "antd";
 const { Title, Text } = Typography;
 
 export const ProfilePage = () => {
@@ -34,36 +34,35 @@ export const ProfilePage = () => {
     registeredAt?: string;
     amountOfHats?: number;
   } | null>(null);
-    const handleLogout = () => {
+
+  const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("rememberMe");
     navigate("/login");
   };
+
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
       navigate("/login");
       return;
     }
+
     axiosClient
       .get("/api/auth/me")
-      .then(({ data }) => {
-        setUser({
-          username: data.username,
-          email: data.email,
-          registeredAt: data.registeredAt,
-          amountOfHats: 5,
-        });
-      })
+      .then(({ data }) => setUser(data))
       .catch((err) => {
-        if (err.response?.status === 401) handleLogout();
+        if (err.response?.status === 401) {
+          handleLogout();
+        } else {
+          message.error(t("profile.loadFailed"));
+        }
       })
       .finally(() => setLoading(false));
+
   }, [navigate]);
-
-
 
   if (loading) {
     return (
