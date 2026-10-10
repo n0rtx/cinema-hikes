@@ -3,10 +3,12 @@ using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.Bot;
 using CinemaHikes.Domain.Interfaces.External;
+using CinemaHikes.Domain.Interfaces.ExternalAuth;
 using CinemaHikes.Domain.Interfaces.Repositories;
 using CinemaHikes.Infrastructure.Bot.Checkers;
 using CinemaHikes.Infrastructure.Bot.Facades;
 using CinemaHikes.Infrastructure.External.PoiskKino;
+using CinemaHikes.Infrastructure.ExternalAuth;
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
 using CinemaHikes.Infrastructure.Repositories;
 using CinemaHikes.Infrastructure.Repositories.Catalog;
@@ -57,7 +59,8 @@ public static class DependencyInjection
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IParsingSourceRepository, ParsingSourceRepository>();
         services.AddScoped(typeof(IUserMovieRelationRepository<>), typeof(UserMovieRelationRepository<>));
-
+        services.Configure<GitHubOAuthOptions>(configuration.GetSection("GitHubOAuth"));
+        services.AddHttpClient<IGitHubOAuthClient, GitHubOAuthClient>();
         services.AddScoped<IVideoSizeChecker, VideoSizeChecker>();
         services.AddHttpClient<IVideoSizeChecker, VideoSizeChecker>();
 

@@ -8,4 +8,5 @@ public interface IAuthService
     Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
     Task<UserProfileDto> GetCurrentUserAsync(int userId);
     Task ChangePasswordAsync(int userId, ChangePasswordRequestDto request);
+    Task<AuthResponseDto> LoginWithGitHubAsync(string code,CancellationToken ct);
 }
