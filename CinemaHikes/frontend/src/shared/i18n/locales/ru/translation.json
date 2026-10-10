@@ -136,7 +136,7 @@
   "catalog": {
     "title": "Каталог",
     "found": "Найдено: {{count}}",
-    " searchPlaceholder": "Поиск по названию",
+    "searchPlaceholder": "Поиск по названию",
     "year": "Год",
     "minRating": "Рейтинг от",
     "sortRating": "По рейтингу",

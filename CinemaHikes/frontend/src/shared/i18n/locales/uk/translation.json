@@ -137,7 +137,7 @@
   "catalog": {
     "title": "Каталог",
     "found": "Знайдено: {{count}}",
-    " searchPlaceholder": "Пошук за назвою",
+    "searchPlaceholder": "Пошук за назвою",
     "year": "Рік",
     "minRating": "Рейтинг від",
     "sortRating": "За рейтингом",
