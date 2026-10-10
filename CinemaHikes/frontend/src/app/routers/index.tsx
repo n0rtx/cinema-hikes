@@ -12,10 +12,12 @@ import { LoginPage } from "../../pages/auth/LoginPage";
 import { RegisterPage } from "../../pages/auth/RegisterPage";
 import { ProfilePage } from "../../pages/private/ProfilePage";
 import { UnderConstructionPage } from "../../pages/public/UnderConstructionPage";
+import { GitHubCallbackPage } from "../../pages/auth/GithubCallbackPage";
 
 export const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   { path: "/login", element: <LoginPage /> },
+  {path:"/auth/github/callback",element:<GitHubCallbackPage />},
   {
     path: "/",
     element: <MainLayout />,
@@ -26,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "movies/:id", element: <MoviePage /> },
       { path: "about", element: <AboutPage /> },
       { path: "developer/:username", element: <DeveloperPage /> },
+      
       { path: "support", element: <SupportPage /> },
       { path: "*", element: <NotFoundPage /> },
       { path: "developing", element: <UnderConstructionPage /> },
