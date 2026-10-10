@@ -139,6 +139,14 @@
     "accountStatus": "Статус аккаунта",
     "statusActive": "Активен",
     "logout": "Выйти",
-    "defaultUsername": "Капитан"
+    "defaultUsername": "Капитан",
+    "recentlyViewed": "Недавно просмотренные",
+    "recentlyViewedEmpty": "Вы ещё ничего не смотрели. Паруса ждут!",
+    "favorites": "Любимые фильмы",
+    "favoritesEmpty": "В сундуке пока пусто. Добавляйте фильмы в избранное.",
+    "viewedOn": "Просмотрено {{date}}",
+    "watchNow": "Смотреть",
+    "goToCatalog": "Перейти в каталог",
+    "loadFailed": "Не удалось загрузить профиль"
   }
 }
