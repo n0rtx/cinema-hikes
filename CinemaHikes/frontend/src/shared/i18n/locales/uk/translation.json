@@ -129,5 +129,16 @@
   },
   "catalog": {
     "title": "Каталог"
+  },
+  "profile": {
+    "title": "Каюта капітана",
+    "subtitle": "Керуйте налаштуваннями акаунта та піратською статистикою",
+    "email": "Email",
+    "memberSince": "У команді з",
+    "hatsCount": "Кількість капелюхів",
+    "accountStatus": "Статус акаунта",
+    "statusActive": "Активний",
+    "logout": "Вийти",
+    "defaultUsername": "Капітан"
   }
 }
