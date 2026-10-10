@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { HeartFilled,HeartOutlined } from "@ant-design/icons";
 import {
   Typography,
   Tag,
@@ -19,7 +20,9 @@ import { createReview } from "../../features/movie-details/api/createReview";
 import { VideoPlayer } from "../../features/movie-details/components/VideoPlayer";
 import { ReviewStatus } from "../../shared/types/Enums/ReviewStatus";
 import { getMovieTitle } from "../../shared/utils/getMovieTitle";
-
+import { axiosClient } from "../../shared/api/axiosClient";
+import type { FavoriteDto } from "../../shared/types/DTO/UserDtos/FavoriteDto";
+import { useEffect } from "react";
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
@@ -41,7 +44,9 @@ const metaRow: React.CSSProperties = {
 export const MoviePage = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
+  const movieId = Number(id);
+  const isAuth = !!localStorage.getItem("authToken");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const { t, i18n } = useTranslation();
@@ -68,6 +73,42 @@ export const MoviePage = () => {
       message.error(t("movie.reviewError"));
     },
   });
+  const { data: favorites } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: () =>
+      axiosClient.get<FavoriteDto[]>("/api/favorites").then((r) => r.data),
+    enabled: isAuth,
+  });
+  const isFavorite = !!favorites?.some((f) => f.movieId === movieId);
+
+  const favoriteMutation = useMutation({
+    mutationFn: (add: boolean) =>
+      add
+        ? axiosClient.post(`/api/favorites/${movieId}`)
+        : axiosClient.delete(`/api/favorites/${movieId}`),
+    onSuccess: (_, add) => {
+      message.success(
+        add ? t("movie.addedToFavorites") : t("movie.removedFromFavorites"),
+      );
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    },
+    onError: () => message.error(t("movie.favoriteError")),
+  });
+  const handleFavorite = () => {
+    if (!isAuth) {
+      message.info(t("movie.loginRequired"));
+      navigate("/login");
+      return;
+    }
+    favoriteMutation.mutate(!isFavorite);
+  };
+  useEffect(() => {
+    if (isAuth && movieId) {
+      axiosClient
+        .put(`/api/history/${movieId}`, { progressSeconds: 0 })
+        .catch(() => {});
+    }
+  }, [movieId, isAuth]);
 
   if (isLoading) {
     return (
@@ -82,13 +123,14 @@ export const MoviePage = () => {
   if (isError || !movie) {
     return (
       <Empty
-        description={<Text style={{ color: "#888" }}>{t("movie.notFound")}</Text>}
+        description={
+          <Text style={{ color: "#888" }}>{t("movie.notFound")}</Text>
+        }
         style={{ padding: "80px 0" }}
       />
     );
   }
 
-  
   const description = movie.description || "";
   const director = movie.director || "—";
   const year = movie.releaseYear || "—";
@@ -224,7 +266,23 @@ export const MoviePage = () => {
               </span>
             </div>
           )}
-
+          <Button
+            size="large"
+            icon={isFavorite ? <HeartFilled /> : <HeartOutlined />}
+            loading={favoriteMutation.isPending}
+            onClick={handleFavorite}
+            style={{
+              marginTop: 8,
+              fontWeight: 600,
+              backgroundColor: isFavorite ? "#E50914" : "transparent",
+              borderColor: "#E50914",
+              color: isFavorite ? "#fff" : "#E50914",
+            }}
+          >
+            {isFavorite
+              ? t("movie.removeFromFavorites")
+              : t("movie.addToFavorites")}
+          </Button>
           <Divider style={{ borderColor: "#2a2a2a", margin: "14px 0" }} />
 
           <Paragraph
@@ -253,7 +311,7 @@ export const MoviePage = () => {
             fontSize: 18,
           }}
         >
-         {t("movie.watchOnline")}
+          {t("movie.watchOnline")}
         </Title>
         <VideoPlayer
           movieLinks={movieLinks}
@@ -300,7 +358,7 @@ export const MoviePage = () => {
           level={5}
           style={{ color: "#fff", marginTop: 0, marginBottom: 16 }}
         >
-         {t("movie.reviewsTitle")}
+          {t("movie.reviewsTitle")}
         </Title>
 
         {/* Form */}
@@ -358,9 +416,7 @@ export const MoviePage = () => {
         {reviews.length === 0 ? (
           <Empty
             description={
-              <Text style={{ color: "#666" }}>
-                {t("movie.noReviews")}
-              </Text>
+              <Text style={{ color: "#666" }}>{t("movie.noReviews")}</Text>
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />

@@ -31,7 +31,13 @@
     "commentRequired": "Напишите комментарий",
     "loadError": "Не удалось загрузить фильмы",
     "networkError": "Ошибка сети",
-    "emptyCategory": "В этой категории пока нет фильмов"
+    "emptyCategory": "В этой категории пока нет фильмов",
+    "addToFavorites": "В избранное",
+    "removeFromFavorites": "Убрать из избранного",
+    "addedToFavorites": "Добавлено в избранное",
+    "removedFromFavorites": "Удалено из избранного",
+    "favoriteError": "Не удалось обновить избранное",
+    "loginRequired": "Войдите, чтобы добавлять фильмы в избранное"
   },
   "nav": {
     "home": "Главная",
