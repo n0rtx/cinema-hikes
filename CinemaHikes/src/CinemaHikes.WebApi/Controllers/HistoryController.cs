@@ -3,11 +3,15 @@ using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Dtos.User;
 using CinemaHikes.Application.Interfaces.Services;
 using CinemaHikes.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CinemaHikes.WebApi.Controllers
 {
+    [ApiController]
+    [Authorize]
+    [Route("api/[controller]")]
     public class HistoryController(IViewHistoryService historyService):ControllerBase
     {
         public IViewHistoryService HistoryService { get; } = historyService;
