@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatDate } from "../../shared/utils/dateUtils";
 import {
   Typography,
   Row,
@@ -19,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { axiosClient } from "../../shared/api/axiosClient";
 
 const { Title, Text } = Typography;
 
@@ -32,33 +34,36 @@ export const ProfilePage = () => {
     registeredAt?: string;
     amountOfHats?: number;
   } | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const username = localStorage.getItem("username");
-    const email = localStorage.getItem("email");
-
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    setUser({
-      username: username || t("profile.defaultUsername"),
-      email: email || "captain@pirat.tv",
-      registeredAt: "Сентябрь 2026",
-      amountOfHats: 5,
-    });
-    setLoading(false);
-  }, [navigate, t]);
-
-  const handleLogout = () => {
+    const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("rememberMe");
     navigate("/login");
   };
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    axiosClient
+      .get("/api/auth/me")
+      .then(({ data }) => {
+        setUser({
+          username: data.username,
+          email: data.email,
+          registeredAt: data.registeredAt,
+          amountOfHats: 5,
+        });
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) handleLogout();
+      })
+      .finally(() => setLoading(false));
+  }, [navigate]);
+
+
 
   if (loading) {
     return (
@@ -151,7 +156,7 @@ export const ProfilePage = () => {
                     {t("profile.memberSince")}
                   </Text>
                   <Text style={{ color: "#fff", fontSize: "15px" }}>
-                    {user?.registeredAt}
+                    {formatDate(user?.registeredAt)}
                   </Text>
                 </div>
               </div>
