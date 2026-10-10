@@ -134,7 +134,22 @@
     "confirmPlaceholder": "Повторите пароль"
   },
   "catalog": {
-    "title": "Каталог"
+    "title": "Каталог",
+    "found": "Найдено: {{count}}",
+    " searchPlaceholder": "Поиск по названию",
+    "year": "Год",
+    "minRating": "Рейтинг от",
+    "sortRating": "По рейтингу",
+    "sortYear": "По году",
+    "sortTitle": "По названию",
+    "allGenres": "Все жанры",
+    "reset": "Сбросить",
+    "watch": "Смотреть",
+    "emptyTitle": "Ничего не найдено",
+    "emptyText": "Попробуйте изменить фильтры или запрос.",
+    "loadFailed": "Не удалось загрузить каталог",
+    "retry": "Повторить"
+    
   },
   "profile": {
     "title": "Каюта капитана",

@@ -135,7 +135,21 @@
     "confirmPlaceholder": "Повторіть пароль"
   },
   "catalog": {
-    "title": "Каталог"
+    "title": "Каталог",
+    "found": "Знайдено: {{count}}",
+    " searchPlaceholder": "Пошук за назвою",
+    "year": "Рік",
+    "minRating": "Рейтинг від",
+    "sortRating": "За рейтингом",
+    "sortYear": "За роком",
+    "sortTitle": "За назвою",
+    "allGenres": "Усі жанри",
+    "reset": "Скинути",
+    "watch": "Дивитися",
+    "emptyTitle": "Нічого не знайдено",
+    "emptyText": "Спробуйте змінити фільтри або пошуковий запит.",
+    "loadFailed": "Не вдалося завантажити каталог",
+    "retry": "Повторити"
   },
   "profile": {
     "title": "Каюта капітана",
