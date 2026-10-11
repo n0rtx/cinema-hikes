@@ -19,7 +19,16 @@ public static class DatabaseExtensions
         try
         {
             var db = services.GetRequiredService<CinemaHikesDbContext>();
-            await db.Database.MigrateAsync(cancellationToken);
+
+            if (db.Database.IsRelational())
+            {
+                await db.Database.MigrateAsync(cancellationToken);
+            }
+            else
+            {
+                await db.Database.EnsureCreatedAsync(cancellationToken);
+            }
+
             await CatalogSeeder.SeedAsync(services, cancellationToken);
             logger.LogInformation("Database migrated and seeded successfully");
         }
