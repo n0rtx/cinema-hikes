@@ -1,7 +1,14 @@
-import { Typography, Row, Col, Alert } from "antd";
-import { MovieCard } from "../../shared/UI/MovieCard/MovieCard";
-import { useMoviesQuery } from "../../features/catalog/hooks/useMoviesQuery";
+import { Typography, Skeleton, Button } from "antd";
+import {
+  PlayCircleOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useMoviesQuery } from "../../features/catalog/hooks/useMoviesQuery";
+import { getMovieTitle } from "../../shared/utils/getMovieTitle";
+import i18n from "../../shared/i18n";
+import "../../features/catalog/components/CatalogPage.css";
 
 const { Title, Text } = Typography;
 
@@ -11,36 +18,25 @@ interface MovieCarouselProps {
   pageSize?: number;
 }
 
-const LoaderCircle = () => (
-  <div
-    style={{
-      width: 40,
-      height: 40,
-      borderRadius: "50%",
-      border: "3px solid #444",
-      borderTopColor: "#E50914",
-      animation: "spin 0.8s linear infinite",
-    }}
-  />
-);
-
 export const MovieCarousel = ({
   sectionTitle,
   minRating,
   pageSize = 10,
 }: MovieCarouselProps) => {
   const { t } = useTranslation();
-  const { data: movies = [], isLoading, isError, error } = useMoviesQuery({
+  const navigate = useNavigate();
+  const {
+    data: movies = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useMoviesQuery({
     minRating,
     pageSize,
   });
 
   return (
     <div style={{ marginBottom: "48px" }}>
-      <style>
-        {`@keyframes spin { to { transform: rotate(360deg); } }`}
-      </style>
-
       <Title
         level={3}
         style={{
@@ -54,25 +50,35 @@ export const MovieCarousel = ({
       </Title>
 
       {isLoading && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            padding: "32px 0",
-          }}
-        >
-          <LoaderCircle />
+        <div className="cat-grid">
+          {Array.from({ length: pageSize }).map((_, i) => (
+            <Skeleton.Node
+              key={i}
+              active
+              style={{
+                width: "100%",
+                aspectRatio: "2 / 3",
+                height: "auto",
+                borderRadius: 12,
+              }}
+            >
+              {" "}
+            </Skeleton.Node>
+          ))}
         </div>
       )}
 
       {isError && (
-        <Alert
-          type="error"
-          message={t("movie.loadError")}
-          description={error instanceof Error ? error.message : t("movie.networkError")}
-          showIcon
-          style={{ marginBottom: 16 }}
-        />
+        <div className="cat-empty">
+          <Text style={{ color: "#999" }}>{t("movie.loadError")}</Text>
+          <Button
+            type="primary"
+            onClick={() => refetch()}
+            style={{ backgroundColor: "#E50914", borderColor: "#E50914" }}
+          >
+            {t("catalog.retry")}
+          </Button>
+        </div>
       )}
 
       {!isLoading && !isError && movies.length === 0 && (
@@ -80,13 +86,57 @@ export const MovieCarousel = ({
       )}
 
       {!isLoading && !isError && movies.length > 0 && (
-        <Row gutter={[24, 32]}>
-          {movies.map((movie) => (
-            <Col xs={12} sm={8} md={6} lg={4} key={movie.id}>
-              <MovieCard movie={movie} />
-            </Col>
+        <div className="cat-grid">
+          {movies.map((m) => (
+            <div
+              key={m.id}
+              className="cat-card"
+              onClick={() => navigate(`/movies/${m.id}`)}
+            >
+              <div className="cat-poster">
+                {m.posterUrl ? (
+                  <img
+                    src={m.posterUrl}
+                    alt={getMovieTitle(m, i18n.language, t)}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div
+                    style={{
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 36,
+                      color: "#E50914",
+                    }}
+                  >
+                    <VideoCameraOutlined />
+                  </div>
+                )}
+                {m.kpRating > 0 && (
+                  <span className="cat-badge">★ {m.kpRating.toFixed(1)}</span>
+                )}
+                <div className="cat-overlay">
+                  <div className="cat-genres">
+                    {(m.genres ?? [])
+                      .slice(0, 3)
+                      .map((g) => g.name)
+                      .join(" • ")}
+                  </div>
+                  <span className="cat-play">
+                    <PlayCircleOutlined /> {t("catalog.watch")}
+                  </span>
+                </div>
+              </div>
+              <div className="cat-title">
+                {getMovieTitle(m, i18n.language, t)}
+              </div>
+              <div className="cat-year">{m.releaseYear || ""}</div>
+            </div>
           ))}
-        </Row>
+        </div>
       )}
     </div>
   );
