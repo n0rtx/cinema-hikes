@@ -4,7 +4,6 @@ using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace CinemaHikes.Application.UnitTests.Services.Admin;
 
@@ -52,5 +51,51 @@ public class AdminMovieServiceTests
         var act = () => _sut.DeleteAsync(100, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Movie 100 not found*");
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Existing_RemovesAndSaves()
+    {
+        var movie = new Movie
+        {
+            Id = 5,
+            RuTitle = "X",
+            UaTitle = "X",
+            RuInEngTitle = "X",
+            Description = "d",
+            Director = "d",
+            ReleaseYear = 2020,
+            PosterUrl = "p",
+            KpRating = 7,
+            CreatedAt = DateTime.UtcNow
+        };
+        _uow.Setup(x => x.Movies.GetByIdAsync(5, It.IsAny<CancellationToken>())).ReturnsAsync(movie);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        await _sut.DeleteAsync(5, CancellationToken.None);
+
+        _uow.Verify(x => x.Movies.Remove(movie), Times.Once);
+        _uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_MultipleGenres_AttachesAll()
+    {
+        var dto = new CreateMovieDto("Multi", "Ua", "Eng", "Desc", "Dir", 2021, "poster", 8, new[] { 1, 2 });
+        _uow.Setup(x => x.Genres.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Genre { Id = 1, Name = "A" });
+        _uow.Setup(x => x.Genres.GetByIdAsync(2, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Genre { Id = 2, Name = "B" });
+
+        Movie? captured = null;
+        _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
+            .Callback<Movie, CancellationToken>((m, _) => { m.Id = 10; captured = m; })
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        await _sut.CreateAsync(dto, CancellationToken.None);
+
+        captured.Should().NotBeNull();
+        captured!.MovieGenres.Should().HaveCount(2);
     }
 }

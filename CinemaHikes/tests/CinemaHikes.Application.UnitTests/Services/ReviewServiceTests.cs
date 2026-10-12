@@ -67,4 +67,67 @@ public class ReviewServiceTests
 
         result.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task GetByMovieIdAsync_MapsAllFields()
+    {
+        var created = new DateTime(2024, 1, 15, 12, 0, 0, DateTimeKind.Utc);
+        var reviews = new List<Review>
+        {
+            new()
+            {
+                Id = 3,
+                MovieId = 7,
+                UserId = 2,
+                Text = "Неплохо",
+                Rating = 6.5,
+                Status = ReviewStatus.Approved,
+                CreatedAt = created,
+                Movie = null!
+            }
+        };
+        _uow.Setup(x => x.Reviews.GetByMovieIdAsync(7, ReviewStatus.Approved, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reviews);
+
+        var result = await _sut.GetByMovieIdAsync(7, CancellationToken.None);
+
+        result.Should().ContainSingle();
+        result[0].Id.Should().Be(3);
+        result[0].MovieId.Should().Be(7);
+        result[0].UserId.Should().Be(2);
+        result[0].Rating.Should().Be(6.5);
+        result[0].CreatedAt.Should().Be(created);
+    }
+
+    [Fact]
+    public async Task CreateAsync_SetsCreatedAtUtc()
+    {
+        Review? captured = null;
+        _uow.Setup(x => x.Reviews.AddAsync(It.IsAny<Review>(), It.IsAny<CancellationToken>()))
+            .Callback<Review, CancellationToken>((r, _) => captured = r)
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        var before = DateTime.UtcNow.AddSeconds(-2);
+        await _sut.CreateAsync(1, 1, "ok", 7, CancellationToken.None);
+        var after = DateTime.UtcNow.AddSeconds(2);
+
+        captured.Should().NotBeNull();
+        captured!.CreatedAt.Should().BeOnOrAfter(before).And.BeOnOrBefore(after);
+        captured.Status.Should().Be(ReviewStatus.Pending);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ZeroRating_StillAdds()
+    {
+        _uow.Setup(x => x.Reviews.AddAsync(It.IsAny<Review>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        await _sut.CreateAsync(1, 1, "meh", 0, CancellationToken.None);
+
+        _uow.Verify(x => x.Reviews.AddAsync(
+            It.Is<Review>(r => r.Rating == 0 && r.Text == "meh"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
