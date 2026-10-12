@@ -18,8 +18,9 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, tokenClaims.UserId.ToString()),
             new Claim(ClaimTypes.Name, tokenClaims.UserName),
             new Claim(ClaimTypes.Email, tokenClaims.Email),
+            new Claim(ClaimTypes.Role,tokenClaims.Role)
         };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
             issuer: config["Jwt:Issuer"],
