@@ -5,10 +5,20 @@ using CinemaHikes.Domain.Interfaces;
 
 namespace CinemaHikes.Application.Services.Admin;
 
+/// <summary>
+/// Provides administrative services for movie lifecycle operations, including creation, update, and deletion.
+/// </summary>
 public sealed class AdminMovieService(IUnitOfWork uow) : IAdminMovieService
 {
     private IUnitOfWork Uow { get; } = uow;
 
+    /// <summary>
+    /// Creates a new movie entry and associates it with specified genres.
+    /// </summary>
+    /// <param name="dto">The movie creation payload containing titles, poster URL, release year, rating, and genre IDs.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>The newly created movie's identifier.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when any referenced genre ID does not exist.</exception>
     public async Task<int> CreateAsync(CreateMovieDto dto, CancellationToken ct)
     {
         var movie = new Movie
@@ -36,6 +46,13 @@ public sealed class AdminMovieService(IUnitOfWork uow) : IAdminMovieService
         return movie.Id;
     }
 
+    /// <summary>
+    /// Updates movie metadata and resets genre associations.
+    /// </summary>
+    /// <param name="id">The unique identifier of the movie to update.</param>
+    /// <param name="dto">The updated movie payload.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the movie or any referenced genre ID is not found.</exception>
     public async Task UpdateAsync(int id, UpdateMovieDto dto, CancellationToken ct)
     {
         var movie = await Uow.Movies.GetWithDetailsAsync(id, ct)
@@ -68,6 +85,12 @@ public sealed class AdminMovieService(IUnitOfWork uow) : IAdminMovieService
         await Uow.SaveChangesAsync(ct);
     }
 
+    /// <summary>
+    /// Deletes a movie by ID from the catalog.
+    /// </summary>
+    /// <param name="id">The unique identifier of the movie to remove.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the movie is not found.</exception>
     public async Task DeleteAsync(int id, CancellationToken ct)
     {
         var movie = await Uow.Movies.GetByIdAsync(id, ct)
