@@ -1,406 +1,199 @@
-# cinema-hikes
+# Cinema Hikes
 
-## Architecture
+> Бесплатный онлайн-кинотеатр без рекламы: каталог фильмов, онлайн-просмотр, личный кабинет и Telegram-бот для скачивания. Курсовой командный проект Hikers Team на ASP.NET Core с Clean Architecture.
 
+[🌐 Live Demo](https://pirat-tv.online)
 
-### ⚙️ Backend
+| | Ссылка |
+|---|---|
+| 🌐 Задеплоенный сайт | https://pirat-tv.online |
+| 📘 Спецификация требований (SRS) | [SRS.md](SRS.md) |
 
----
+## 📖 About
 
-```
-CinemaHikes.slnx
-│
-├── src/
-│   ├── CinemaHikes.Domain/
-│   │   ├── Entities/
-│   │   │   ├── Users/
-│   │   │   │   ├── FavoriteMovie.cs            # : IUserMovieRelation
-│   │   │   │   └── ViewHistoryEntry.cs         # : IUserMovieRelation
-│   │   │   │
-│   │   │   └── Catalog/                        # Каталог фильмов — без актёров/каста
-│   │   │       ├── Movie.cs
-│   │   │       ├── Genre.cs
-│   │   │       ├── MovieGenre.cs                # join-таблица
-│   │   │       ├── VideoSource.cs               # плеер/источник: PageUrl на сайт-источник (FR-04)
-│   │   │       ├── TranslationStudio.cs
-│   │   │       ├── MovieLink.cs                 # MovieId, Quality, Url — прямая ссылка (FR-06), обычная таблица без TTL
-│   │   │       └── Review.cs
-│   │   │
-│   │   │   └── Parsing/
-│   │   │       └── ParsingSourceConfig.cs        # конфиг сайта-источника, обслуживается IParsingSourceRepository
-│   │   │
-│   │   ├── Enums/
-│   │   │   ├── SourceStatus.cs                  # Active, Dead, Checking
-│   │   │   ├── VideoQuality.cs                  # Q360, Q480, Q720, Q1080
-│   │   │   └── ReviewStatus.cs                  # Pending, Approved, Rejected
-│   │   │
-│   │   ├── Interfaces/                          # Порты (реализуются в Infrastructure)
-│   │   │   ├── Repositories/
-│   │   │   │   ├── IMovieRepository.cs
-│   │   │   │   ├── IGenreRepository.cs
-│   │   │   │   ├── IVideoSourceRepository.cs
-│   │   │   │   ├── IMovieLinkRepository.cs           # обычный CRUD над movie_links
-│   │   │   │   ├── ITranslationStudioRepository.cs
-│   │   │   │   ├── IReviewRepository.cs
-│   │   │   │   ├── ITranslationStudioRepository.cs
-│   │   │   │   ├── IUserMovieRelationRepository.cs   # generic<T> — Favorite/History
-│   │   │   │   └── IParsingSourceRepository.cs
-│   │   │   ├── IUserMovieRelation.cs
-│   │   │   ├── IUnitOfWork.cs
-│   │   │   ├── IJwtTokenService.cs
-│   │   │   ├── ICurrentUserService.cs
-│   │   │   │
-│   │   │   └── Bot/                              # ↓ порты бота — реальные имена из вашего репозитория
-│   │   │       ├── IBrowserConfig.cs             # CreateLaunchOptions() / CreateContextOptions()
-│   │   │       ├── IBrowserFactory.cs            # CreatePageAsync(IBrowserConfig) / DisposeAsync()
-│   │   │       ├── IFilmParserFacade.cs          # GetFilmSrc(pageUrl, videoQuality)
-│   │   │       ├── IPageConfig.cs                # InitPageAsync(page, pageUrl)
-│   │   │       ├── Parsers/
-│   │   │       │   ├── IFilmUrlParser.cs         # GetFilmUrlAsync(page, videoQuality)
-│   │   │       │   └── IPageElementParser.cs     # ParseElementAsync(page)
-│   │   │       ├── ITelegramFileSender.cs        # SendVideoAsync / SendLinkAsync
-│   │   │       └── IVideoSizeChecker.cs          # лимит 2GB (A-03/R-02)
-│   │   │
-│   │   └── Specifications/
-│   │       ├── MovieFilterSpecification.cs      # жанр/год/рейтинг (FR-01)
-│   │       ├── MovieSearchSpecification.cs      # поиск по названию (FR-02)
-│   │       └── ActiveSourcesSpecification.cs    # NFR-05: >=2 живых источника
-│   │
-│   ├── CinemaHikes.Application/
-│   │   ├── Services/
-│   │   │   ├── MovieService.cs                  # FR-01, FR-02, FR-03, FR-04
-│   │   │   ├── MovieDownloadService.cs          # FR-06 — ключевой сервис бота (см. ниже)
-│   │   │   ├── TelegramSearchService.cs         # FR-05 — поиск для inline-кнопок бота
-│   │   │   ├── GenreService.cs
-│   │   │   ├── AuthService.cs                   # FR-08
-│   │   │   ├── FavoriteService.cs
-│   │   │   ├── ViewHistoryService.cs
-│   │   │   ├── ReviewService.cs
-│   │   │   ├── AdminMovieService.cs             # CRUD фильмов/жанров
-│   │   │   ├── AdminSourceService.cs           
-│   │   │   ├── AdminUserService.cs              # управление пользователями/ролями (AspNetUsers)
-│   │   │   └── AdminAnalyticsService.cs         # агрегаты по ViewHistoryEntry/Review
-│   │   │
-│   │   ├── DTOs/
-│   │   │   ├── Catalog/
-│   │   │   │   ├── MovieListItemDto.cs
-│   │   │   │   ├── MovieDetailsDto.cs
-│   │   │   │   ├── VideoSourceDto.cs
-│   │   │   │   ├── GenreDto.cs
-│   │   │   │   ├── TranslationStudioDto.cs
-│   │   │   │   ├── MovieLinkDto.cs
-│   │   │   │   └── ReviewDto.cs
-│   │   │   ├── Auth/
-│   │   │   │   ├── RegisterRequestDto.cs
-│   │   │   │   ├── LoginRequestDto.cs
-│   │   │   │   └── AuthResponseDto.cs
-│   │   │   ├── User/
-│   │   │   │   ├── FavoriteDto.cs
-│   │   │   │   └── ViewHistoryDto.cs
-│   │   │   └── Bot/
-│   │   │       ├── TelegramMovieResultDto.cs
-│   │   │       └── DownloadResultDto.cs          # File(url) | Link(url)
-│   │   │
-│   │   ├── Validators/
-│   │   │   ├── RegisterRequestValidator.cs      # пароль >= 6 символов (FR-08 AC)
-│   │   │   ├── MovieCreateValidator.cs
-│   │   │   ├── TranslationStudioValidator.cs
-│   │   │   └── ParsingSourceValidator.cs
-│   │   │
-│   │   └── Mappings/
-│   │       ├── MovieProfile.cs
-│   │       └── UserProfile.cs
-│   │
-│   ├── CinemaHikes.Infrastructure/
-│   │   │
-│   │   ├── DependencyInjection.cs               # AddInfrastructure(IServiceCollection)
-│   │   │
-│   │   ├── Persistence/
-│   │   │   ├── CinemaHikesDbContext.cs
-│   │   │   ├── EntityTypeConfigurations/
-│   │   │   │   ├── MovieEntityTypeConfiguration.cs
-│   │   │   │   ├── GenreEntityTypeConfiguration.cs
-│   │   │   │   ├── VideoSourceEntityTypeConfiguration.cs
-│   │   │   │   ├── MovieLinkEntityTypeConfiguration.cs     # unique index (MovieId, Quality)
-│   │   │   │   ├── ParsingSourceConfigEntityTypeConfiguration.cs
-│   │   │   │   ├── TranslationStudioTypeConfiguration.cs
-│   │   │   │   └── ...
-│   │   │   └── Migrations/
-│   │   │
-│   │   ├── Identity/
-│   │   │   ├── AppUser.cs : IdentityUser<int>
-│   │   │   └── IdentityConfig.cs
-│   │   │
-│   │   ├── Repositories/
-│   │   │   ├── Catalog/
-│   │   │   │   ├── MovieRepository.cs
-│   │   │   │   ├── GenreRepository.cs
-│   │   │   │   ├── VideoSourceRepository.cs
-│   │   │   │   ├── TranslationStudioRepository.cs
-│   │   │   │   ├── MovieLinkRepository.cs        # GetByMovieAndQuality, Upsert
-│   │   │   │   └── ReviewRepository.cs
-│   │   │   ├── Users/
-│   │   │   │   └── UserMovieRelationRepository.cs   # generic<T> where T : class, IUserMovieRelation
-│   │   │   ├── Parsing/
-│   │   │   │   └── ParsingSourceRepository.cs
-│   │   │   └── UnitOfWork.cs
-│   │   │
-│   │   ├── Bot/                                  # ↓ реализация — 1:1 с вашим репозиторием
-│   │   │   ├── Configs/
-│   │   │   │   ├── BrowserProfileConfig.cs        # record: UserAgent, Platform, Viewport, Locale, TimezoneId
-│   │   │   │   ├── RandomBrowserConfig.cs         # : IBrowserConfig — headless Chromium args
-│   │   │   │   └── RezkaPageConfig.cs             # : IPageConfig — GotoAsync + WaitForTimeout
-│   │   │   │
-│   │   │   ├── Facades/
-│   │   │   │   └── RezkaFilmParserFacade.cs       # : IFilmParserFacade — оркестрирует парсинг страницы
-│   │   │   │
-│   │   │   ├── Factories/
-│   │   │   │   └── PlaywrightBrowserFactory.cs    # : IBrowserFactory — Chromium.LaunchAsync + anti-detect script
-│   │   │   │
-│   │   │   ├── Parsers/
-│   │   │   │   └── Rezka/
-│   │   │   │       ├── RezkaFilmUrlParser.cs           # : IFilmUrlParser — клик по качеству, чтение <video src>
-│   │   │   │       ├── RezkaGearIconParser.cs          # : IPageElementParser — клик по шестерёнке плеера
-│   │   │   │       └── RezkaVideoQualityMenuParser.cs  # : IPageElementParser — открывает меню качества
-│   │   │   │
-│   │   │   ├── Providers/
-│   │   │   │   └── BrowserProfileProvider.cs      # статический пул реалистичных профилей браузера (anti-bot)
-│   │   │   │
-│   │   │   └── Telegram/
-│   │   │       ├── TelegramFileSender.cs          # : ITelegramFileSender (Telegram.Bot, SendVideo/SendMessage)
-│   │   │       └── VideoSizeChecker.cs            # : IVideoSizeChecker (HEAD-запрос на прямую ссылку)
-│   │   │
-│   │   ├── BackgroundJobs/
-│   │   │   └── RevalidateMovieLinksJob.cs        # перепроверка "протухших" ссылок в movie_links
-│   │   │
-│   │   └── Security/
-│   │       ├── JwtTokenService.cs
-│   │       └── CurrentUserService.cs
-│   │
-│   ├── CinemaHikes.WebApi/
-│   │   ├── Controllers/
-│   │   │   ├── AuthController.cs
-│   │   │   ├── MoviesController.cs
-│   │   │   ├── GenresController.cs
-│   │   │   ├── FavoritesController.cs
-│   │   │   ├── HistoryController.cs
-│   │   │   ├── ReviewsController.cs
-│   │   │   └── Admin/
-│   │   │       ├── AdminMoviesController.cs
-│   │   │       ├── AdminSourcesController.cs
-│   │   │       ├── AdminUsersController.cs
-│   │   │       └── AdminAnalyticsController.cs
-│   │   ├── Middleware/
-│   │   │   └── ExceptionHandlingMiddleware.cs
-│   │   └── Program.cs
-│   │
-│   └── CinemaHikes.TelegramBotDownloader/
-│       ├── .example.env
-│       ├── Handlers/
-│       │   ├── SearchTextHandler.cs              # текст → TelegramSearchService (FR-05)
-│       │   ├── MovieSelectedCallbackHandler.cs   # выбор фильма → карточка + кнопки качества
-│       │   └── DownloadCallbackHandler.cs        # выбор качества → MovieDownloadService (FR-06)
-│       ├── RateLimiting/
-│       │   └── TelegramRateLimiter.cs            # NFR-03, ConcurrentDictionary<long, DateTime>, in-memory
-│       └── Program.cs                             # DI, TelegramBotClient, OnMessage/OnUpdate
-│
-└── tests/
-    ├── CinemaHikes.Domain.UnitTests/
-    ├── CinemaHikes.Application.UnitTests/
-    ├── CinemaHikes.WebApi.IntegrationTests/
-    └── CinemaHikes.TelegramBot.IntegrationTests/
-```
+Cinema Hikes — современная веб-платформа и Telegram-бот для бесплатного просмотра и скачивания фильмов **полностью без рекламы**. Пользователь может искать фильмы, фильтровать каталог, смотреть онлайн с выбором качества и источника, добавлять в избранное и вести историю просмотров. Через Telegram-бота доступен поиск и бесплатное скачивание фильмов (файл или прямая ссылка).
 
-### 📃 Frontend
+Проблема, которую решает проект: существующие аналоги (Kinogo, HDRezka и др.) перегружены рекламой, всплывающими окнами и неудобным интерфейсом. Cinema Hikes предлагает чистый современный UI в стиле Netflix и несколько резервных источников плеера.
 
----
+## ✨ Features
+
+- Каталог фильмов с пагинацией, фильтрацией по жанру / году / рейтингу и поиском по названию
+- Страница фильма с описанием, рейтингом и встроенным видеоплеером без рекламы
+- Переключение между несколькими источниками плеера (резервные источники)
+- Регистрация и авторизация (JWT + ASP.NET Core Identity)
+- Личный кабинет: избранное и история просмотров
+- Telegram-бот: поиск фильмов и скачивание (файл до 2 ГБ или прямая ссылка)
+- Админ-панель: CRUD фильмов, источников, пользователей, модерация отзывов, аналитика
+- Фоновый парсинг прямых ссылок через Playwright (Rezka и др.)
+- Поддержка русского и украинского названий фильмов
+
+## 🎨 Design
+
+Тёмная тема в стиле Netflix (Ant Design ConfigProvider). Современный, лаконичный и быстрый интерфейс без рекламных баннеров и всплывающих окон. Адаптивная вёрстка для десктопа и мобильных устройств.
+
+## 🏗️ Architecture
 
 ```
-cinema-hikes-frontend/
-│
-├── public/                      # Статика, которая не обрабатывается Webpack/Vite
-│   ├── favicon.ico
-│   └── assets/                  # Локальные заглушки (например, аватарка по умолчанию)
-│
-├── src/
-│   │
-│   ├── app/                     # 1. Инициализация и глобальные настройки
-│   │   ├── providers/           
-│   │   │   ├── AntdThemeProvider.tsx  # Настройка темной темы (Netflix style) через ConfigProvider
-│   │   │   ├── AuthProvider.tsx       # Проверка токена при старте приложения
-│   │   │   └── QueryProvider.tsx      # Настройка @tanstack/react-query (кэш запросов)
-│   │   ├── router/              
-│   │   │   ├── index.tsx              # Конфигурация react-router-dom
-│   │   │   └── ProtectedRoute.tsx     # Защита роутов (редирект на логин, проверка UserRole)
-│   │   ├── store/               
-│   │   │   └── useAuthStore.ts        # Zustand: хранение JWT и данных текущего AppUser
-│   │   ├── styles/              
-│   │   │   └── global.css             # Глобальные сбросы и миксины (если не хватает antd)
-│   │   └── App.tsx              # Корневой компонент (собирает провайдеры и роутер)
-│   │
-│   ├── layouts/                 # 2. Каркасы страниц (оболочки)
-│   │   ├── MainLayout.tsx       # Клиентская часть: antd <Layout> + Navbar + Footer
-│   │   ├── AdminLayout.tsx      # Админка: antd <Layout> + <Sider> (боковое меню)
-│   │   └── AuthLayout.tsx       # Страницы входа: минималистичный фон для центрирования форм
-│   │
-│   ├── pages/                   # 3. Страницы (Только сборка фичей, минимум логики)
-│   │   ├── public/              
-│   │   │   ├── HomePage.tsx       # Слайдеры новинок, популярное
-│   │   │   ├── CatalogPage.tsx    # Грид фильмов с фильтрацией (FR-01)
-│   │   │   └── MoviePage.tsx      # Плеер, описание, отзывы (FR-03, FR-04)
-│   │   ├── auth/                
-│   │   │   ├── LoginPage.tsx      
-│   │   │   └── RegisterPage.tsx   
-│   │   ├── private/             
-│   │   │   └── ProfilePage.tsx    # Личный кабинет (вкладки: Избранное, История)
-│   │   └── admin/               
-│   │       ├── DashboardPage.tsx  # Сводка и статистика (AdminAnalyticsController)
-│   │       ├── MoviesMgmtPage.tsx # Таблица управления каталогом (CRUD)
-│   │       └── UsersMgmtPage.tsx  # Управление правами (AdminUsersController)
-│   │
-│   ├── features/                # 4. Изолированные бизнес-модули (соответствуют сервисам C#)
-│   │   ├── auth/                
-│   │   │   ├── api/               # loginRequest, registerRequest
-│   │   │   └── components/        # LoginForm, RegisterForm (на базе antd <Form>)
-│   │   │
-│   │   ├── catalog/             
-│   │   │   ├── api/               # fetchMovies, fetchGenres (связь с MoviesController)
-│   │   │   ├── hooks/             # useMoviesQuery, useGenresQuery
-│   │   │   └── components/        # MovieFilterBar, MovieSearchInput, MovieCarousel
-│   │   │
-│   │   ├── movie-details/       
-│   │   │   ├── api/               # fetchMovieDetails, fetchVideoSources
-│   │   │   └── components/        # VideoPlayer, ReviewList (antd <List>), ReviewForm
-│   │   │
-│   │   ├── user-profile/        
-│   │   │   ├── api/               # fetchFavorites, fetchHistory
-│   │   │   └── components/        # FavoritesGrid, HistoryTimeline (antd <Timeline>)
-│   │   │
-│   │   └── admin/               
-│   │       ├── api/               # admin CRUD методы
-│   │       └── components/        # MoviesTable (antd <Table>), MovieEditModal (antd <Modal>)
-│   │
-│   ├── shared/                  # 5. Переиспользуемые технические и UI-модули
-│   │   ├── api/                 
-│   │   │   └── axiosClient.ts     # Базовый Axios + Interceptors (прикрепление JWT, обработка 401/403)
-│   │   ├── types/                 # ⚠️ Точные копии ваших DTO из C# (interfaces)
-│   │   │   ├── common.ts          # PaginatedResponse<T>
-│   │   │   ├── enums.ts           # VideoQuality, SourceStatus, UserRole
-│   │   │   └── dtos.ts            # MovieDetailsDto, MovieListItemDto и т.д.
-│   │   ├── ui/                    # Глупые обертки над antd для соблюдения дизайн-кода проекта
-│   │   │   ├── MovieCard/         # Карточка фильма (обертка над antd <Card>)
-│   │   │   ├── GenreTag/          # Тег жанра (обертка над antd <Tag>)
-│   │   │   └── PageSpinner.tsx    # Крутилка загрузки (antd <Spin>)
-│   │   ├── hooks/               
-│   │   │   └── useDebounce.ts     # Для оптимизации поиска (чтобы не спамить API при вводе)
-│   │   └── utils/               
-│   │       ├── dateUtils.ts       # Форматирование дат (через dayjs, который встроен в antd)
-│   │       └── formatRuntime.ts   # Перевод минут в формат "1 ч 45 мин"
-│   │
-│   ├── main.tsx                 # Точка входа React
-│   └── vite-env.d.ts            # Типизация Vite
-│
-├── .env                         # VITE_API_URL=https://localhost:5001/api
-├── package.json
-├── tsconfig.json
-└── vite.config.ts               # Настройки сборщика, алиасы путей (@/features, @/shared)
+CinemaHikes.WebApi ──► Application ──► Domain ◄── Infrastructure
+                          ▲
+                          │
+              TelegramBotDownloader
 ```
 
----
+| Проект | Ответственность |
+|---|---|
+| `CinemaHikes.Domain` | Сущности, enum'ы, интерфейсы репозиториев, спецификации. Без зависимостей |
+| `CinemaHikes.Application` | Сервисы, DTO, валидаторы, маппинги (AutoMapper) |
+| `CinemaHikes.Infrastructure` | `CinemaHikesDbContext` (EF Core), репозитории, Identity, Playwright-парсеры, JWT |
+| `CinemaHikes.WebApi` | REST-контроллеры, middleware, DI |
+| `CinemaHikes.TelegramBotDownloader` | Обработчики сообщений/callback'ов Telegram-бота |
 
-### 🗄️ Database
+Паттерны: Clean Architecture, Repository, Unit of Work, Specification, Dependency Injection, Service Layer, DTO + Mapper, Middleware.
 
----
+## 🛠️ Tech Stack
 
+| Слой | Технологии |
+|---|---|
+| Backend | .NET 10, ASP.NET Core Web API, EF Core 10, Npgsql, ASP.NET Core Identity |
+| БД | PostgreSQL 16 (Docker) |
+| Frontend | React, Vite, Ant Design, React Router, TanStack Query, Zustand, Axios |
+| Парсинг | Playwright (headless Chromium + anti-detect) |
+| Telegram | Telegram.Bot |
+| Тесты | NUnit, интеграционные тесты WebApi и бота |
+| Документация | Swagger / OpenAPI, SRS |
+| Деплой | Docker Compose (PostgreSQL) |
+
+## 🔐 Authentication
+
+JWT Bearer + ASP.NET Core Identity.
+
+- Регистрация / вход по email + пароль (`POST /api/Auth/register`, `POST /api/Auth/login`)
+- Пароль минимум 6 символов, хранится в виде безопасного хеша Identity
+- Роли: обычный пользователь и администратор
+- Защищённые эндпоинты личного кабинета и админки
+
+## 🎬 Product Catalog
+
+Фильмы хранятся в таблице `Movies` (русские / украинские / транслит-названия, год, постер, рейтинг КП). Связи:
+- `MovieGenres` — жанры
+- `VideoSources` — страницы-источники плеера (PageUrl)
+- `MovieLinks` — прямые ссылки на видео по качеству и студии озвучки
+- `Reviews` — отзывы с модерацией
+
+Фоновая задача `RevalidateMovieLinksJob` перепроверяет «протухшие» прямые ссылки.
+
+## 🐳 Docker
+
+```bash
+# Запуск PostgreSQL
+cp .example.env .env          # при необходимости отредактируйте
+docker compose up -d
 ```
-CinemaHikes Database (PostgreSQL)
-│
-├── Identity/                          # ASP.NET Core Identity (AppUser : IdentityUser<int>)
-│   ├── AspNetUsers
-│   │   ├── Id               int           [PK]
-│   │   ├── Email             varchar256    UNIQUE
-│   │   ├── UserName           varchar256    UNIQUE
-│   │   ├── PasswordHash        text
-│   │   ├── RegisteredAt         timestamptz   # кастомное поле (FR-08)
-│   │   └── AmountOfHats          int           DEFAULT 0
-│   │
-│   ├── AspNetRoles
-│   │   ├── Id               int           [PK]
-│   │   └── Name              varchar50     UNIQUE
-│   │
-│   └── AspNetUserRoles                # join-таблица AspNetUsers ↔ AspNetRoles
-│       ├── Id               int           [PK]
-│       ├── UserId             int           → FK AspNetUsers
-│       └── RoleId              int           → FK AspNetRoles
-│
-├── Catalog/                            # Каталог фильмов — без актёров/каста
-│   ├── Movies
-│   │   ├── Id               int           [PK]
-│   │   ├── RuTitle           varchar255
-│   │   ├── UaTitle            varchar255
-│   │   ├── RuInEngTitle         varchar255
-│   │   ├── ReleaseYear            smallint
-│   │   ├── PosterUrl               varchar500
-│   │   ├── KpRating                 numeric(3,1)
-│   │   └── CreatedAt                  timestamptz
-│   │
-│   ├── Genres
-│   │   ├── Id               int           [PK]
-│   │   └── Name              varchar50     UNIQUE
-│   │
-│   ├── MovieGenres                     # join-таблица Movies ↔ Genres
-│   │   ├── Id               int           [PK]
-│   │   ├── MovieId            int           → FK Movies
-│   │   └── GenreId             int           → FK Genres
-│   │
-│   ├── VideoSources                    # плеер/источник: PageUrl на сайт-источник (FR-04)
-│   │   ├── Id               int           [PK]
-│   │   ├── MovieId            int           → FK Movies
-│   │   ├── ProviderName         varchar50
-│   │   ├── PageUrl                varchar500
-│   │   ├── Priority                smallint
-│   │   └── Status                   enum (SourceStatus)
-│   │
-│   ├── TranslationStudios
-│   │   ├── Id              int             [PK]
-│   │   └── Name            varchar50
-│   │
-│   ├── MovieLinks                      # прямая ссылка (FR-06), обычная таблица без TTL
-│   │   ├── Id               int           [PK]
-│   │   ├── MovieId            int           → FK Movies
-│   │   ├── TranslationStudioId            int           → FK TranslationStudios
-│   │   ├── Quality             enum (VideoQuality)   UNIQUE*
-│   │   ├── Url                  varchar1000
-│   │   └── UpdatedAt              timestamptz          # * UNIQUE(MovieId, Quality, TranslationStudioId)
-│   │
-│   └── Reviews
-│       ├── Id               int           [PK]
-│       ├── MovieId            int           → FK Movies
-│       ├── UserId              int           → FK AspNetUsers
-│       ├── Text                 nvarchar(200)
-│       ├── Rating                smallint
-│       ├── Status                 enum (ReviewStatus)
-│       └── CreatedAt                timestamptz
-│
-├── Users/                              # Личный кабинет (IUserMovieRelation)
-│   ├── FavoriteMovies
-│   │   ├── Id               int           [PK]
-│   │   ├── UserId             int           → FK AspNetUsers
-│   │   ├── MovieId             int           → FK Movies
-│   │   └── CreatedAt             timestamptz
-│   │
-│   └── ViewHistory
-│       ├── Id               int           [PK]
-│       ├── UserId             int           → FK AspNetUsers
-│       ├── MovieId             int           → FK Movies
-│       ├── ProgressSeconds      int
-│       └── CreatedAt              timestamptz
-│
-└── Parsing/                            # обслуживается IParsingSourceRepository
-    └── ParsingSourceConfigs
-        ├── Id               int           [PK]
-        ├── Name              varchar50     UNIQUE
-        ├── BaseUrl             varchar255
-        ├── ParserType           varchar50
-        └── IsEnabled              boolean
+
+Сервис `postgres:16-alpine` с volume и healthcheck. Переменные окружения:
+- `POSTGRES_DB` (по умолчанию `cinemahikes`)
+- `POSTGRES_USER` / `POSTGRES_PASSWORD`
+- `POSTGRES_PORT` (по умолчанию `5432`)
+
+## ⚙️ Configuration
+
+| Переменная / ключ | Назначение |
+|---|---|
+| `ConnectionStrings` / переменные Postgres | Подключение к БД |
+| `JWT` настройки | Секрет, issuer, audience, время жизни токена |
+| Telegram Bot Token | Токен бота (не хранится в репозитории) |
+| Настройки Playwright | User-Agent, viewport, anti-detect профили |
+
+Секреты передаются только через переменные окружения / `.env`.
+
+## 🚀 Getting Started
+
+Нужны .NET 10 SDK, Node.js, Docker.
+
+```bash
+git clone https://github.com/n0rtx/cinema-hikes.git
+cd cinema-hikes
+
+# 1. База данных
+cp .example.env .env
+docker compose up -d
+
+# 2. Backend
+cd CinemaHikes
+dotnet restore
+dotnet run --project src/CinemaHikes.WebApi
+
+# 3. Frontend (в отдельном терминале)
+cd CinemaHikes/frontend
+npm install
+npm run dev
+```
+
+Миграции применяются при старте API. Swagger доступен по адресу `/swagger`.
+
+Telegram-бот запускается отдельно из проекта `CinemaHikes.TelegramBotDownloader`.
+
+## 📦 Build
+
+```bash
+dotnet build CinemaHikes/CinemaHikes.slnx
+dotnet test  CinemaHikes/CinemaHikes.slnx
+```
+
+## 🧪 Testing
+
+- `CinemaHikes.Domain.UnitTests`
+- `CinemaHikes.Application.UnitTests`
+- `CinemaHikes.WebApi.IntegrationTests`
+- `CinemaHikes.TelegramBot.IntegrationTests`
+
+```bash
+dotnet test
+```
+
+## 🔒 Security
+
+- Пароли — только хеши ASP.NET Core Identity
+- JWT с проверкой ролей
+- SQL-инъекции исключены за счёт EF Core
+- XSS — React экранирует вывод
+- Секреты только в переменных окружения
+- Rate-limiting для Telegram-бота (NFR-03)
+
+## 📚 API
+
+Основные группы эндпоинтов:
+
+| Группа | Эндпоинты |
+|---|---|
+| Auth | `POST /api/Auth/register`, `login` |
+| Movies | `GET /api/Movies`, `GET /api/Movies/{id}` |
+| Genres | `GET /api/Genres` |
+| Favorites | `GET/POST/DELETE /api/Favorites` |
+| History | `GET/POST /api/History` |
+| Reviews | `GET/POST /api/Reviews` |
+| Admin | `AdminMovies`, `AdminSources`, `AdminUsers`, `AdminAnalytics` |
+
+Полная документация — Swagger UI при запуске API.
+
+## 🗺️ Roadmap
+
+- [ ] Расширение числа источников парсинга
+- [ ] Улучшение anti-detect и стабильности Playwright
+- [ ] CI/CD (GitHub Actions)
+- [ ] Кэширование популярных фильмов
+- [ ] Более детальная аналитика в админке
+
+## 👨‍💻 Authors
+
+| Участник | Роль |
+|---|---|
+| Волобуев Андрей (andrvol) | Team Lead, Full Stack |
+| Тагиров Егор (b1mq) | Full Stack |
+
+Команда **Hikers Team**. Руководитель проекта: Александр Загоруйко.
+
+## 📄 License
+
+Учебный курсовой проект. Все права остаются за авторами; лицензия на повторное использование не предоставляется.
 ```
