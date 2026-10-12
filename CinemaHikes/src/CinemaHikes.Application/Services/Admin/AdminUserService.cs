@@ -21,7 +21,7 @@ public sealed class AdminUserService(
                 user.Id,
                 user.UserName!,
                 user.Email!,
-                roles.ToList()));
+                roles));
         }
 
         return result;

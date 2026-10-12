@@ -39,12 +39,12 @@ public sealed class AuthService(
     {
         var user = await userManager.FindByEmailAsync(request.Email)
                    ?? throw new UnauthorizedAccessException("Invalid email or password.");
-        string role = await GetUserRole(user);
+        var roles = await GetUserRole(user);
         if (!await userManager.CheckPasswordAsync(user, request.Password))
             throw new UnauthorizedAccessException("Invalid email or password.");
 
         var token = jwtTokenService.GenerateToken(
-            new TokenClaimsData(user.Id, user.UserName!, user.Email!,role));
+            new TokenClaimsData(user.Id, user.UserName!, user.Email!, roles));
 
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
@@ -54,6 +54,7 @@ public sealed class AuthService(
         var user = await userManager.FindByIdAsync(userId.ToString())
                    ?? throw new InvalidOperationException($"User {userId} not found.");
 
+       
         return new UserProfileDto(
             user.Id,
             user.UserName!,
@@ -113,7 +114,7 @@ public sealed class AuthService(
             }
             
         }
-        string role = await GetUserRole(user);
+        var role = await GetUserRole(user);
         var token = jwtTokenService.GenerateToken(new TokenClaimsData(user.Id, user.UserName!, user.Email!,role));
         return new AuthResponseDto(token, user.UserName!, user.Email!);
 
@@ -130,10 +131,9 @@ public sealed class AuthService(
             name = $"{baseName}{i++}";
         return name;
     }
-    private async Task<string> GetUserRole(AppUser user)
+    private async Task<IList<string>> GetUserRole(AppUser user)
     {
         var roles = await userManager.GetRolesAsync(user);
-        var userRole = roles.FirstOrDefault() ?? "User";
-        return userRole;
+        return roles;
     }
 }
