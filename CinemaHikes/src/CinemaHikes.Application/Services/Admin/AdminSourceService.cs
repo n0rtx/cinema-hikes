@@ -1,3 +1,4 @@
+using CinemaHikes.Application.Dtos.Admin;
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services.Admin;
 using CinemaHikes.Domain.Entities.Catalog;
@@ -35,14 +36,14 @@ public sealed class AdminSourceService(IUnitOfWork uow) : IAdminSourceService
     /// <param name="priority">The resolution priority (lower values tried first).</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     public async Task AddSourceAsync(
-        int movieId, string providerName, string pageUrl, short priority, CancellationToken ct)
+        AdminSourceDto dto, CancellationToken ct)
     {
         await Uow.VideoSources.AddAsync(new VideoSource
         {
-            MovieId = movieId,
-            ProviderName = providerName,
-            PageUrl = pageUrl,
-            Priority = priority,
+            MovieId = dto.MovieId,
+            ProviderName = dto.ProviderName,
+            PageUrl = dto.PageUrl,
+            Priority = dto.Priority,
             Status = SourceStatus.Active,
             Movie = null!
         }, ct);
