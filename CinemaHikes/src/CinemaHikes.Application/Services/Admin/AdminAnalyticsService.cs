@@ -7,10 +7,18 @@ using CinemaHikes.Domain.Specifications;
 
 namespace CinemaHikes.Application.Services.Admin;
 
+/// <summary>
+/// Provides administrative reporting and analytics services.
+/// </summary>
 public sealed class AdminAnalyticsService(IUnitOfWork uow) : IAdminAnalyticsService
 {
     private IUnitOfWork Uow { get; } = uow;
 
+    /// <summary>
+    /// Computes platform metrics including total movies, total reviews, and top 10 movies.
+    /// </summary>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>An <see cref="AnalyticsSummaryDto"/> containing platform summary statistics.</returns>
     public async Task<AnalyticsSummaryDto> GetSummaryAsync(CancellationToken ct)
     {
         var top = await Uow.Movies.ListAsync(

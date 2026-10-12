@@ -499,3 +499,7 @@ dist-ssr
 
 # BuildHost generated files
 **/BuildHost-*/
+
+# docs
+CinemaHikes/docs/_site/
+CinemaHikes/docs/api/

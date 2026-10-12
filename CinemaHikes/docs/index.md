@@ -1,0 +1,3 @@
+# CinemaHikes
+
+Документация проекта CinemaHikes.

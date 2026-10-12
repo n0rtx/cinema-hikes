@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -9,8 +9,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CinemaHikes.Infrastructure.Security;
 
+/// <summary>
+/// Implements JWT token generation with HMAC-SHA256 signing using application configuration settings.
+/// </summary>
 public class JwtTokenService(IConfiguration config) : IJwtTokenService
 {
+    /// <summary>
+    /// Issues a JWT token signed with HMAC-SHA256 and valid for 7 days.
+    /// </summary>
+    /// <param name="tokenClaims">The claims payload with user identifier, username, and email.</param>
+    /// <returns>The serialized JWT string.</returns>
     public string GenerateToken(TokenClaimsData tokenClaims)
     {
         var claims = new[]

@@ -1,0 +1,27 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../src",
+          "files": [ "**/*.csproj" ],
+          "exclude": [ "**/bin/**", "**/obj/**", "**/*Tests*/**" ]
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      { "files": [ "api/**.yml", "api/index.md" ] },
+      { "files": [ "*.md", "toc.yml" ] }
+    ],
+    "output": "_site",
+    "template": [ "default", "modern" ],
+    "globalMetadata": {
+      "_appName": "CinemaHikes",
+      "_appTitle": "CinemaHikes",
+      "_enableSearch": true
+    }
+  }
+}

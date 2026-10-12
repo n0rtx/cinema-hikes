@@ -9,10 +9,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CinemaHikes.Application.Services.Auth;
 
+/// <summary>
+/// Provides user authentication, registration, password management, and OAuth integration using ASP.NET Identity and JWT.
+/// </summary>
 public sealed class AuthService(
     UserManager<AppUser> userManager,
     IJwtTokenService jwtTokenService, IGitHubOAuthClient gitHubClient) : IAuthService
 {
+    /// <summary>
+    /// Registers a new user account with specified credentials and issues a JWT token.
+    /// </summary>
+    /// <param name="request">The registration request containing username, email, and password.</param>
+    /// <returns>An <see cref="AuthResponseDto"/> containing the token and user details.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when user creation fails.</exception>
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         var user = new AppUser
@@ -35,6 +44,12 @@ public sealed class AuthService(
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
 
+    /// <summary>
+    /// Authenticates a user with email and password and returns a JWT token.
+    /// </summary>
+    /// <param name="request">The login request containing email and password.</param>
+    /// <returns>An <see cref="AuthResponseDto"/> containing the token and user details.</returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when user is not found or password does not match.</exception>
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
         var user = await userManager.FindByEmailAsync(request.Email)
@@ -49,6 +64,12 @@ public sealed class AuthService(
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
 
+    /// <summary>
+    /// Retrieves user profile details by user ID.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns>A <see cref="UserProfileDto"/> containing user ID, username, email, and registration timestamp.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when user is not found.</exception>
     public async Task<UserProfileDto> GetCurrentUserAsync(int userId)
     {
         var user = await userManager.FindByIdAsync(userId.ToString())
@@ -62,6 +83,12 @@ public sealed class AuthService(
             user.RegisteredAt);
     }
 
+    /// <summary>
+    /// Changes the password of an existing user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="request">The change password request containing old and new passwords.</param>
+    /// <exception cref="InvalidOperationException">Thrown when user is not found or password update fails.</exception>
     public async Task ChangePasswordAsync(int userId, ChangePasswordRequestDto request)
     {
         var user = await userManager.FindByIdAsync(userId.ToString())
@@ -74,6 +101,14 @@ public sealed class AuthService(
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
     }
+
+    /// <summary>
+    /// Authenticates or signs up a user using a GitHub OAuth authorization code.
+    /// </summary>
+    /// <param name="code">The OAuth authorization code from GitHub.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>An <see cref="AuthResponseDto"/> containing the generated JWT token.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when GitHub profile fetch or user registration fails.</exception>
     public async Task<AuthResponseDto> LoginWithGitHubAsync(string code,CancellationToken ct = default)
     {
         var providerMasafaka = "GitHub";
