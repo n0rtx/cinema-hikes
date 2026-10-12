@@ -7,6 +7,9 @@ using CinemaHikes.Domain.Interfaces.Bot;
 
 namespace CinemaHikes.Application.Services;
 
+/// <summary>
+/// Handles extraction, caching, and size verification of direct video stream links for movie downloads.
+/// </summary>
 public sealed class MovieDownloadService(
     IUnitOfWork uow,
     IMovieParserFacade parser,
@@ -18,6 +21,14 @@ public sealed class MovieDownloadService(
     private IMovieParserFacade Parser { get; } = parser;
     private IVideoSizeChecker SizeChecker { get; } = sizeChecker;
 
+    /// <summary>
+    /// Obtains a direct video download URL or binary file metadata for a movie, leveraging cached links within TTL.
+    /// </summary>
+    /// <param name="movieId">The unique identifier of the movie.</param>
+    /// <param name="quality">The desired video resolution/quality.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="DownloadResultDto"/> containing the resolved URL, file size, and upload strategy.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no active video source is found or stream resolution fails.</exception>
     public async Task<DownloadResultDto> GetDownloadAsync(
         int movieId,
         VideoQuality quality,

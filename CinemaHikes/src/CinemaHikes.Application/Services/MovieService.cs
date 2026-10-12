@@ -7,6 +7,9 @@ using CinemaHikes.Domain.Specifications;
 
 namespace CinemaHikes.Application.Services;
 
+/// <summary>
+/// Provides catalog query and search business logic for movies, with automatic caching of external metadata.
+/// </summary>
 public sealed class MovieService(
     IUnitOfWork uow,
     IMovieMetadataClient metadata) : IMovieService
@@ -14,6 +17,16 @@ public sealed class MovieService(
     private IUnitOfWork Uow { get; } = uow;
     private IMovieMetadataClient Metadata { get; } = metadata;
 
+    /// <summary>
+    /// Retrieves a paginated list of movies based on genre, release year, and minimum rating.
+    /// </summary>
+    /// <param name="genreId">Optional identifier of the genre to filter movies by.</param>
+    /// <param name="year">Optional release year to filter movies by.</param>
+    /// <param name="minRating">Optional minimum rating threshold for filtering.</param>
+    /// <param name="page">The 1-based page index.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A list of mapped <see cref="MovieListItemDto"/> matching the specification.</returns>
     public async Task<List<MovieListItemDto>> GetPagedAsync(
         int? genreId, int? year, double? minRating, int page, int pageSize, CancellationToken ct)
     {
@@ -22,6 +35,14 @@ public sealed class MovieService(
         return movies.Select(MapListItem).ToList();
     }
 
+    /// <summary>
+    /// Searches for movies matching the query text locally, and falls back to external metadata search when no local matches exist.
+    /// </summary>
+    /// <param name="query">The text search query for movie title.</param>
+    /// <param name="page">The 1-based page index.</param>
+    /// <param name="pageSize">The number of results to fetch per page.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A list of <see cref="MovieListItemDto"/> matching the query.</returns>
     public async Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, CancellationToken ct)
     {
         var local = await Uow.Movies.ListAsync(new MovieSearchSpecification(query, page, pageSize), ct);
@@ -40,6 +61,12 @@ public sealed class MovieService(
         return saved.Select(MapListItem).ToList();
     }
 
+    /// <summary>
+    /// Retrieves full movie details including genres, video sources, and reviews.
+    /// </summary>
+    /// <param name="id">The unique identifier of the movie.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="MovieDetailsDto"/> if found, or <c>null</c> if not found.</returns>
     public async Task<MovieDetailsDto?> GetDetailsAsync(int id, CancellationToken ct)
     {
         var movie = await Uow.Movies.GetWithDetailsAsync(id, ct);
