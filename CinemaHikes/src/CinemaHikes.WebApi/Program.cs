@@ -9,11 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddWebApi(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 await app.Services.InitializeDatabaseAsync(app.Lifetime.ApplicationStopping);
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseWebApi();
 
