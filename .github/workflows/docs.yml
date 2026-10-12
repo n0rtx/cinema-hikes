@@ -31,7 +31,6 @@ jobs:
         working-directory: CinemaHikes
         run: |
           dotnet tool restore
-          dotnet restore src
 
       - name: Build docs
         working-directory: CinemaHikes
