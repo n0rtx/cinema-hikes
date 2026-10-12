@@ -31,7 +31,13 @@
     "commentRequired": "Напишите комментарий",
     "loadError": "Не удалось загрузить фильмы",
     "networkError": "Ошибка сети",
-    "emptyCategory": "В этой категории пока нет фильмов"
+    "emptyCategory": "В этой категории пока нет фильмов",
+    "addToFavorites": "В избранное",
+    "removeFromFavorites": "Убрать из избранного",
+    "addedToFavorites": "Добавлено в избранное",
+    "removedFromFavorites": "Удалено из избранного",
+    "favoriteError": "Не удалось обновить избранное",
+    "loginRequired": "Войдите, чтобы добавлять фильмы в избранное"
   },
   "nav": {
     "home": "Главная",
@@ -128,7 +134,22 @@
     "confirmPlaceholder": "Повторите пароль"
   },
   "catalog": {
-    "title": "Каталог"
+    "title": "Каталог",
+    "found": "Найдено: {{count}}",
+    "searchPlaceholder": "Поиск по названию",
+    "year": "Год",
+    "minRating": "Рейтинг от",
+    "sortRating": "По рейтингу",
+    "sortYear": "По году",
+    "sortTitle": "По названию",
+    "allGenres": "Все жанры",
+    "reset": "Сбросить",
+    "watch": "Смотреть",
+    "emptyTitle": "Ничего не найдено",
+    "emptyText": "Попробуйте изменить фильтры или запрос.",
+    "loadFailed": "Не удалось загрузить каталог",
+    "retry": "Повторить"
+    
   },
   "profile": {
     "title": "Каюта капитана",
@@ -139,6 +160,14 @@
     "accountStatus": "Статус аккаунта",
     "statusActive": "Активен",
     "logout": "Выйти",
-    "defaultUsername": "Капитан"
+    "defaultUsername": "Капитан",
+    "recentlyViewed": "Недавно просмотренные",
+    "recentlyViewedEmpty": "Вы ещё ничего не смотрели. Паруса ждут!",
+    "favorites": "Любимые фильмы",
+    "favoritesEmpty": "В сундуке пока пусто. Добавляйте фильмы в избранное.",
+    "viewedOn": "Просмотрено {{date}}",
+    "watchNow": "Смотреть",
+    "goToCatalog": "Перейти в каталог",
+    "loadFailed": "Не удалось загрузить профиль"
   }
 }

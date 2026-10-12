@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { formatDate } from "../../shared/utils/dateUtils";
+import { useMemo } from "react";
 import {
   Typography,
   Row,
@@ -19,38 +21,30 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { axiosClient } from "../../shared/api/axiosClient";
+import { message } from "antd";
+import type { FavoriteDto } from "../../shared/types/DTO/UserDtos/FavoriteDto";
+import type { ViewHistoryDto } from "../../shared/types/DTO/UserDtos/ViewHistoryDto";
+import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
+import type { ShelfItem } from "../../features/user-profile/components/MovieShelf";
+import { HeartOutlined, HistoryOutlined } from "@ant-design/icons";
+import { MovieShelf } from "../../features/user-profile/components/MovieShelf";
 
 const { Title, Text } = Typography;
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{
     username: string;
     email: string;
-    registeredAt?: string;
+    createdAt?: string;
     amountOfHats?: number;
   } | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const username = localStorage.getItem("username");
-    const email = localStorage.getItem("email");
-
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    setUser({
-      username: username || t("profile.defaultUsername"),
-      email: email || "captain@pirat.tv",
-      registeredAt: "Сентябрь 2026",
-      amountOfHats: 5,
-    });
-    setLoading(false);
-  }, [navigate, t]);
+  const [historyRaw, setHistoryRaw] = useState<ViewHistoryDto[]>([]);
+  const [favoritesRaw, setFavoritesRaw] = useState<FavoriteDto[]>([]);
+  const [shelvesLoading, setShelvesLoading] = useState(true);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -59,6 +53,64 @@ export const ProfilePage = () => {
     localStorage.removeItem("rememberMe");
     navigate("/login");
   };
+
+  const pickTitle = (m: MovieListItem, lang: string) =>
+    (lang.startsWith("uk") && m.uaTitle) ||
+    (lang.startsWith("en") && m.ruInEngTitle) ||
+    m.ruTitle;
+
+  const toShelf = (
+    x: ViewHistoryDto | FavoriteDto,
+    lang: string,
+  ): ShelfItem => ({
+    id: x.movieId,
+    title: pickTitle(x.movie, lang),
+    posterUrl: x.movie.posterUrl || undefined,
+    year: x.movie.releaseYear || undefined,
+    rating: x.movie.kpRating || undefined,
+    date: x.createdAt,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    axiosClient
+      .get("/api/auth/me")
+      .then(({ data }) => setUser(data))
+      .catch((err) => {
+        if (err.response?.status === 401) handleLogout();
+        else message.error(t("profile.loadFailed"));
+      })
+      .finally(() => setLoading(false));
+
+    Promise.allSettled([
+      axiosClient.get<ViewHistoryDto[]>("/api/history"),
+      axiosClient.get<FavoriteDto[]>("/api/favorites"),
+    ])
+      .then(([h, f]) => {
+        if (h.status === "fulfilled") setHistoryRaw(h.value.data);
+        if (f.status === "fulfilled") setFavoritesRaw(f.value.data);
+      })
+      .finally(() => setShelvesLoading(false));
+  }, [navigate]);
+
+  const history = useMemo(() => {
+    const seen = new Set<number>();
+    return [...historyRaw]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .filter((x) => !seen.has(x.movieId) && seen.add(x.movieId))
+      .slice(0, 20)
+      .map((x) => toShelf(x, i18n.language));
+  }, [historyRaw, i18n.language]);
+
+  const favorites = useMemo(
+    () => favoritesRaw.map((x) => toShelf(x, i18n.language)),
+    [favoritesRaw, i18n.language],
+  );
 
   if (loading) {
     return (
@@ -151,7 +203,7 @@ export const ProfilePage = () => {
                     {t("profile.memberSince")}
                   </Text>
                   <Text style={{ color: "#fff", fontSize: "15px" }}>
-                    {user?.registeredAt}
+                    {formatDate(user?.createdAt)}
                   </Text>
                 </div>
               </div>
@@ -209,7 +261,25 @@ export const ProfilePage = () => {
           </Col>
         </Row>
 
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <MovieShelf
+          title={t("profile.recentlyViewed")}
+          icon={<HistoryOutlined />}
+          items={history}
+          loading={shelvesLoading}
+          emptyText={t("profile.recentlyViewedEmpty")}
+          dateLabelKey="profile.viewedOn"
+        />
+
+        <MovieShelf
+          title={t("profile.favorites")}
+          icon={<HeartOutlined />}
+          items={favorites}
+          loading={shelvesLoading}
+          emptyText={t("profile.favoritesEmpty")}
+          showHeart
+        />
+
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "24px" }}>
           <Button
             type="primary"
             danger

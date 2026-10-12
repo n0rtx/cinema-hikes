@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
+import { Form, Input, Button, Typography, message, Spin, Alert } from "antd";
+import { GithubOutlined } from "@ant-design/icons";
 import {
-  Form,
-  Input,
-  Button,
-  Typography,
-  message,
-  Spin,
-  Alert,
-} from "antd";
-import { MailOutlined, LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
+  MailOutlined,
+  LockOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import { startGitHubLogin } from "../../features/auth/githubOAuth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { axiosClient } from "../../shared/api/axiosClient";
@@ -43,7 +41,26 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isWide = useMediaQuery("(min-width: 1200px)");
-
+  const socialBtnStyle = {
+    backgroundColor: "transparent",
+    borderColor: "#E50914",
+    color: "#E50914",
+    height: "40px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "4px",
+    cursor: "pointer",
+    transition: "all 0.3s",
+    border: "1px solid #E50914",
+  };
+  const handleSocialLogin = (provider: string) => {
+    if (provider === "GitHub") {
+      startGitHubLogin();
+      return;
+    }
+    message.info(t("auth.socialDev", { provider }));
+  };
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     setError(null);
@@ -64,8 +81,7 @@ export const LoginPage = () => {
         navigate("/");
       }, 1500);
     } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || t("auth.loginFailed");
+      const errorMessage = err.response?.data?.message || t("auth.loginFailed");
       setError(errorMessage);
       message.error(errorMessage);
       console.error("Login error:", err);
@@ -104,13 +120,21 @@ export const LoginPage = () => {
               {t("auth.loginHeroTitle")}
             </Title>
 
-            <Text style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}>
+            <Text
+              style={{ color: "#aaa", fontSize: "16px", lineHeight: "1.6" }}
+            >
               {t("auth.loginHeroText")}
             </Text>
 
             <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: "bold",
+                  }}
+                >
                   10K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
@@ -118,7 +142,13 @@ export const LoginPage = () => {
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: "bold",
+                  }}
+                >
                   50K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
@@ -126,7 +156,13 @@ export const LoginPage = () => {
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: "bold",
+                  }}
+                >
                   24/7
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
@@ -227,7 +263,9 @@ export const LoginPage = () => {
 
               <Form.Item
                 name="password"
-                label={<span style={{ color: "#fff" }}>{t("auth.password")}</span>}
+                label={
+                  <span style={{ color: "#fff" }}>{t("auth.password")}</span>
+                }
                 rules={[
                   {
                     required: true,
@@ -288,6 +326,29 @@ export const LoginPage = () => {
               </Form.Item>
             </Form>
           </Spin>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: "12px",
+              marginBottom: "24px",
+            }}
+          >
+            <button
+              style={socialBtnStyle as any}
+              onClick={() => handleSocialLogin("GitHub")}
+              onMouseOver={(e) => {
+                const target = e.currentTarget as HTMLElement;
+                target.style.backgroundColor = "rgba(229, 9, 20, 0.1)";
+              }}
+              onMouseOut={(e) => {
+                const target = e.currentTarget as HTMLElement;
+                target.style.backgroundColor = "transparent";
+              }}
+            >
+              <GithubOutlined style={{ fontSize: "18px" }} />
+            </button>
+          </div>
 
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Text style={{ color: "#999" }}>
