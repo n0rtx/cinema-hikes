@@ -1,3 +1,3 @@
 namespace CinemaHikes.Domain.Interfaces.Security;
 
-public record TokenClaimsData(int UserId, string UserName, string Email);
+public record TokenClaimsData(int UserId, string UserName, string Email,IList<string> Role);

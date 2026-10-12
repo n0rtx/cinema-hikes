@@ -1,3 +1,4 @@
+using System.Data;
 using CinemaHikes.Application.Dtos.Auth;
 using CinemaHikes.Application.Interfaces.Auth;
 using CinemaHikes.Domain.Entities.Users;
@@ -26,17 +27,19 @@ public sealed class AuthService(
         var user = new AppUser
         {
             UserName = request.Username,
+            
             Email = request.Email,
             RegisteredAt = DateTime.UtcNow
+            
         };
-
+        
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
-
+        
         var token = jwtTokenService.GenerateToken(
-            new TokenClaimsData(user.Id, user.UserName!, user.Email!));
+            new TokenClaimsData(user.Id, user.UserName!, user.Email!, new[] {"User"}));
 
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
@@ -51,12 +54,12 @@ public sealed class AuthService(
     {
         var user = await userManager.FindByEmailAsync(request.Email)
                    ?? throw new UnauthorizedAccessException("Invalid email or password.");
-
+        var roles = await GetUserRole(user);
         if (!await userManager.CheckPasswordAsync(user, request.Password))
             throw new UnauthorizedAccessException("Invalid email or password.");
 
         var token = jwtTokenService.GenerateToken(
-            new TokenClaimsData(user.Id, user.UserName!, user.Email!));
+            new TokenClaimsData(user.Id, user.UserName!, user.Email!, roles));
 
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
@@ -72,6 +75,7 @@ public sealed class AuthService(
         var user = await userManager.FindByIdAsync(userId.ToString())
                    ?? throw new InvalidOperationException($"User {userId} not found.");
 
+       
         return new UserProfileDto(
             user.Id,
             user.UserName!,
@@ -128,6 +132,7 @@ public sealed class AuthService(
                     EmailConfirmed = true,
                     RegisteredAt = DateTime.UtcNow,
                     
+                    
                 };
                 var create = await userManager.CreateAsync(user);
                 if (!create.Succeeded)
@@ -144,7 +149,8 @@ public sealed class AuthService(
             }
             
         }
-        var token = jwtTokenService.GenerateToken(new TokenClaimsData(user.Id, user.UserName!, user.Email!));
+        var role = await GetUserRole(user);
+        var token = jwtTokenService.GenerateToken(new TokenClaimsData(user.Id, user.UserName!, user.Email!,role));
         return new AuthResponseDto(token, user.UserName!, user.Email!);
 
     }
@@ -159,5 +165,10 @@ public sealed class AuthService(
         while (await userManager.FindByNameAsync(name) is not null)
             name = $"{baseName}{i++}";
         return name;
+    }
+    private async Task<IList<string>> GetUserRole(AppUser user)
+    {
+        var roles = await userManager.GetRolesAsync(user);
+        return roles;
     }
 }
