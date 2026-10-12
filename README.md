@@ -35,14 +35,15 @@ Cinema Hikes — современная веб-платформа и Telegram-б
 
 ```
 CinemaHikes.WebApi ──► Application ──► Domain ◄── Infrastructure
-                          ▲
-                          │
-              TelegramBotDownloader
+        ┆                 ▲                             ▲
+        ┆                 │                             ┆
+        ┆     TelegramBotDownloader                     ┆
+        └┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘
 ```
 
 | Проект | Ответственность |
 |---|---|
-| `CinemaHikes.Domain` | Сущности, enum'ы, интерфейсы репозиториев, спецификации. Без зависимостей |
+| `CinemaHikes.Domain` | Сущности, enum'ы, интерфейсы репозиториев, спецификации. |
 | `CinemaHikes.Application` | Сервисы, DTO, валидаторы, маппинги (AutoMapper) |
 | `CinemaHikes.Infrastructure` | `CinemaHikesDbContext` (EF Core), репозитории, Identity, Playwright-парсеры, JWT |
 | `CinemaHikes.WebApi` | REST-контроллеры, middleware, DI |
