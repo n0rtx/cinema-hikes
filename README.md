@@ -7,6 +7,7 @@
 | | Ссылка |
 |---|---|
 | 🌐 Задеплоенный сайт | https://pirat-tv.online |
+| 📘 Документация кода (DocFX) | https://n0rtx.github.io/cinema-hikes/ |
 | 📘 Спецификация требований (SRS) | [SRS.md](SRS.md) |
 
 ## 📖 About
