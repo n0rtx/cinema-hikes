@@ -1,6 +1,6 @@
 export interface CreateVideoSourceDto {
-    MovieId:number;
-    ProviderName:string;
-    PageUrl:string;
-    Priority:number;
+    movieId:number;
+    providerName:string;
+    pageUrl:string;
+    priority:number;
 }
