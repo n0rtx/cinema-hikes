@@ -16,11 +16,19 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
         [HttpGet]
         [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<List<UserDto>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult<List<UserDto>>> GetAllAsync(CancellationToken ct)
         {
 
             var users = await AdminUserService.GetAllAsync(ct);
             return Ok(users);
+        }
+        [HttpPost("{userId:int}/{rolename}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddRoleToUserAsync(int userId,string rolename,CancellationToken ct)
+        {
+            await AdminUserService.AssignRoleAsync(userId, rolename, ct);
+            return Ok();
         }
     }
 }

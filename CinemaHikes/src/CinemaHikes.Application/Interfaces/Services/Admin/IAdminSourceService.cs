@@ -1,3 +1,4 @@
+using CinemaHikes.Application.Dtos.Admin;
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Domain.Enums;
 
@@ -25,7 +26,7 @@ public interface IAdminSourceService
     /// <param name="priority">The resolution priority order for this source.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    Task AddSourceAsync(int movieId, string providerName, string pageUrl, short priority, CancellationToken ct);
+    Task AddSourceAsync(AdminSourceDto dto, CancellationToken ct);
 
     /// <summary>
     /// Updates the health/operational status of a video source (e.g., Active, Dead, Checking).

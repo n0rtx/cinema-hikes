@@ -29,7 +29,7 @@ public sealed class AdminUserService(
                 user.Id,
                 user.UserName!,
                 user.Email!,
-                roles));
+                roles.ToList()));
         }
 
         return result;

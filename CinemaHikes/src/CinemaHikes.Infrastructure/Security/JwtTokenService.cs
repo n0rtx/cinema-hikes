@@ -6,6 +6,7 @@ using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Formats.Cbor;
 
 namespace CinemaHikes.Infrastructure.Security;
 
@@ -21,13 +22,13 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
     /// <returns>The serialized JWT string.</returns>
     public string GenerateToken(TokenClaimsData tokenClaims)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, tokenClaims.UserId.ToString()),
-            new Claim(ClaimTypes.Name, tokenClaims.UserName),
-            new Claim(ClaimTypes.Email, tokenClaims.Email),
-            new Claim(ClaimTypes.Role,tokenClaims.Role)
+            new(ClaimTypes.NameIdentifier, tokenClaims.UserId.ToString()),
+            new(ClaimTypes.Name, tokenClaims.UserName),
+            new(ClaimTypes.Email, tokenClaims.Email)
         };
+        claims.AddRange(tokenClaims.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
@@ -39,4 +40,5 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
         
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+   
 }
