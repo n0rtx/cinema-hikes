@@ -88,11 +88,11 @@ export const RegisterPage = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-      if (provider === "GitHub") {
-        startGitHubLogin();
-        return;
-      }
-      message.info(t("auth.socialDev", { provider }));
+    if (provider === "GitHub") {
+      startGitHubLogin();
+      return;
+    }
+    message.info(t("auth.socialDev", { provider }));
   };
 
   const socialBtnStyle = {
@@ -358,15 +358,13 @@ export const RegisterPage = () => {
 
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "12px",
+              display: "flex",
+              justifyContent: "center",
               marginBottom: "24px",
             }}
           >
-            
             <button
-              style={socialBtnStyle as any}
+              style={{ ...socialBtnStyle, width: "calc((100% - 24px) / 3)" }}
               onClick={() => handleSocialLogin("GitHub")}
               onMouseOver={(e) => {
                 const target = e.currentTarget as HTMLElement;
@@ -379,7 +377,6 @@ export const RegisterPage = () => {
             >
               <GithubOutlined style={{ fontSize: "18px" }} />
             </button>
-            
           </div>
 
           <div style={{ textAlign: "center" }}>

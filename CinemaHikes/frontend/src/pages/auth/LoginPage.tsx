@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, Input, Button, Typography, message, Spin, Alert } from "antd";
+import { Form, Input, Button, Typography, message, Spin, Alert, Divider } from "antd";
 import { GithubOutlined } from "@ant-design/icons";
 import {
   MailOutlined,
@@ -326,16 +326,20 @@ export const LoginPage = () => {
               </Form.Item>
             </Form>
           </Spin>
+
+          <Divider style={{ backgroundColor: "#141414", margin: "24px 0" }}>
+            <span style={{ color: "#999" }}>{t("auth.orContinueWith")}</span>
+          </Divider>
+
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "12px",
+              display: "flex",
+              justifyContent: "center",
               marginBottom: "24px",
             }}
           >
             <button
-              style={socialBtnStyle as any}
+              style={{ ...socialBtnStyle, width: "calc((100% - 24px) / 3)" }}
               onClick={() => handleSocialLogin("GitHub")}
               onMouseOver={(e) => {
                 const target = e.currentTarget as HTMLElement;
@@ -349,7 +353,7 @@ export const LoginPage = () => {
               <GithubOutlined style={{ fontSize: "18px" }} />
             </button>
           </div>
-
+          
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Text style={{ color: "#999" }}>
               {t("auth.noAccount")}{" "}
