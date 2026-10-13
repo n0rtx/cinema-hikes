@@ -1,3 +1,4 @@
+using CinemaHikes.Application.Dtos.Admin;
 using CinemaHikes.Application.Services.Admin;
 using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Enums;
@@ -92,12 +93,12 @@ public class AdminSourceServiceTests
         _uow.Setup(x => x.VideoSources.AddAsync(It.IsAny<VideoSource>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-
-        await _sut.AddSourceAsync(5, "Rezka", "https://rezka.ag/film", 2, CancellationToken.None);
+        
+        await _sut.AddSourceAsync(new AdminSourceDto(1, "Rezka", "https://rezka.ag/film", 2), CancellationToken.None);
 
         _uow.Verify(x => x.VideoSources.AddAsync(
             It.Is<VideoSource>(s =>
-                s.MovieId == 5 &&
+                s.MovieId == 1 &&
                 s.ProviderName == "Rezka" &&
                 s.PageUrl == "https://rezka.ag/film" &&
                 s.Priority == 2 &&
