@@ -11,7 +11,7 @@ export const AdminLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const items = [
-    { key: "/admin", icon: <DashboardOutlined />, label: "Дашборд" },
+    { key: "/admin/analytic", icon: <DashboardOutlined />, label: "Дашборд" },
     { key: "/admin/movies", icon: <VideoCameraOutlined />, label: "Фильмы" },
     { key: "/admin/users", icon: <TeamOutlined />, label: "Пользователи" },
   ];
