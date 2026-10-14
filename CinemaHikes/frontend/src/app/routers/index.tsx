@@ -13,7 +13,7 @@ import { RegisterPage } from "../../pages/auth/RegisterPage";
 import { ProfilePage } from "../../pages/private/ProfilePage";
 import { UnderConstructionPage } from "../../pages/public/UnderConstructionPage";
 import { GitHubCallbackPage } from "../../pages/auth/GithubCallbackPage";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { AdminProtectedRoute } from "./ProtectedRoute";
 import { AdminLayout } from "../../layouts/AdminLayout";
 import { MoviesMgmtPage } from "../../pages/admin/MoviesMgmtPage";
 export const router = createBrowserRouter([
@@ -22,10 +22,10 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute requireAdmin>
+      <AdminProtectedRoute requireAdmin>
         {" "}
         <AdminLayout />
-      </ProtectedRoute>
+      </AdminProtectedRoute>
     ),
     children: [
       // { index: true, element: <DashboardPage /> },
