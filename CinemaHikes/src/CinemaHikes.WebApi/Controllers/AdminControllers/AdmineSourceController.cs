@@ -15,7 +15,7 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
     {
         public IAdminSourceService SourceService { get; } = sourceService;
 
-        [HttpGet("movie/{movieId:int}")]
+        [HttpGet("movie/{id:int}")]
         [ProducesResponseType(typeof(List<VideoSourceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<VideoSourceDto>>> GetByIdAsync(int id,CancellationToken ct)

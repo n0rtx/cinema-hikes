@@ -29,7 +29,7 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
             await MovieService.UpdateAsync(movieId, dto, ct);
             return Ok();
         }
-        [HttpDelete]
+        [HttpDelete("()")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync(int movieId,CancellationToken ct)
         {
