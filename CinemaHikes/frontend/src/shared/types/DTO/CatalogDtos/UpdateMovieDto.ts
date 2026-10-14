@@ -7,5 +7,5 @@ export interface UpdateMovieDto {
   releaseYear: number;
   posterUrl: string;
   kpRating: number;
-  genreIds: number;
+  genreIds: number[];
 };
