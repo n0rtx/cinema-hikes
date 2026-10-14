@@ -33,6 +33,6 @@ public sealed class AdminAnalyticsService(IUnitOfWork uow) : IAdminAnalyticsServ
             0,
             top.Select(m => new MovieListItemDto(
                 m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-                m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList())).ToList());
+                m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),m.Director,m.Description)).ToList());
     }
 }

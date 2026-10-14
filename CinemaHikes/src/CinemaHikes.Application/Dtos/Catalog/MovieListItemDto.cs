@@ -8,4 +8,5 @@ public sealed record MovieListItemDto(
     string PosterUrl,
     short ReleaseYear,
     double KpRating,
-    IReadOnlyList<GenreDto> Genres);
+    IReadOnlyList<GenreDto> Genres, string? Director,
+    string? Description);
