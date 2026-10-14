@@ -15,6 +15,7 @@ import { UnderConstructionPage } from "../../pages/public/UnderConstructionPage"
 import { GitHubCallbackPage } from "../../pages/auth/GithubCallbackPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AdminLayout } from "../../layouts/AdminLayout";
+import { MoviesMgmtPage } from "../../pages/admin/MoviesMgmtPage";
 export const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -27,9 +28,9 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
+      // { index: true, element: <DashboardPage /> },
       { path: "movies", element: <MoviesMgmtPage /> },
-      { path: "users", element: <UsersMgmtPage /> },
+      // { path: "users", element: <UsersMgmtPage /> },
     ],
   },
   { path: "/auth/github/callback", element: <GitHubCallbackPage /> },
@@ -43,7 +44,7 @@ export const router = createBrowserRouter([
       { path: "movies/:id", element: <MoviePage /> },
       { path: "about", element: <AboutPage /> },
       { path: "developer/:username", element: <DeveloperPage /> },
-
+      {path:"admin/test",element:<MoviesMgmtPage/>},
       { path: "support", element: <SupportPage /> },
       { path: "*", element: <NotFoundPage /> },
       { path: "developing", element: <UnderConstructionPage /> },
