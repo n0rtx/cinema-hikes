@@ -1,19 +1,28 @@
+import type { ReactNode } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { hasRole } from "../../shared/utils/hasRole";
 
-import { Navigate } from "react-router-dom";
-
-interface Props{
-    children:React.ReactNode,
-    requireAdmin?:boolean
+interface ProtectedRouteProps {
+  requireAdmin?: boolean;
+  children?: ReactNode;
 }
 
-export const ProtectedRoute = ({children,requireAdmin}:Props) => {
-    const token = localStorage.getItem("authToken");
-    const role = localStorage.getItem("role")
-    if(!token) {
-        return <Navigate to="/login" replace/>
-    }
-    if(requireAdmin && role !== "Admin") {
-         return <Navigate to="/" replace/> 
-    }
-    return <>{children}</>;
-}
+export const AdminProtectedRoute = ({
+  requireAdmin = false,
+  children,
+}: ProtectedRouteProps) => {
+  const token = localStorage.getItem("authToken");
+
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+
+  if (requireAdmin && !hasRole(token, "Admin")) {
+    return <Navigate to="/" replace />;
+  }
+
+
+  return children ? <>{children}</> : <Outlet />;
+};
