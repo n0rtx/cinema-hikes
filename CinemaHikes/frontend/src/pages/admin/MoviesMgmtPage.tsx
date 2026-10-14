@@ -29,6 +29,8 @@ import type { ColumnsType } from "antd/es/table";
 import type { CreateMovieDto } from "../../shared/types/DTO/CatalogDtos/CreateMovieDto";
 import type { UpdateMovieDto } from "../../shared/types/DTO/CatalogDtos/UpdateMovieDto";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
+import type { GenreDto } from "../../shared/types/DTO/CatalogDtos/GenreDto";
+import { fetchGenres } from "../../features/catalog/api/fetchGenrest";
 
 const { Title } = Typography;
 
@@ -41,7 +43,10 @@ export const MoviesMgmtPage = () => {
   const [search, setSearch] = useState("");
   const [editingMovie, setEditingMovie] = useState<MovieListItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { data: genres = [] } = useQuery({
+    queryKey: ["genres"],
+    queryFn: fetchGenres,
+  });
   const { data, isLoading } = useQuery({
     queryKey: ["admin-movies", page, pageSize, search],
     queryFn: () => fetchMovies({ page, pageSize, search }),
@@ -83,7 +88,10 @@ export const MoviesMgmtPage = () => {
   const handleOpenModal = (movie?: MovieListItem) => {
     if (movie) {
       setEditingMovie(movie);
-      form.setFieldsValue(movie);
+      form.setFieldsValue({
+        ...movie,
+        genreIds: movie.genres.map((genre) => genre.id),
+      });
     } else {
       setEditingMovie(null);
       form.resetFields();
@@ -114,11 +122,18 @@ export const MoviesMgmtPage = () => {
       ),
     },
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      render: (text: number) => <strong>{text}</strong>,
+    },
+    {
       title: "Название рус",
       dataIndex: "ruTitle",
       key: "ruTitle",
       render: (text: string) => <strong>{text}</strong>,
     },
+
     {
       title: "Название укр",
       dataIndex: "uaTitle",
@@ -126,10 +141,33 @@ export const MoviesMgmtPage = () => {
       render: (text: string) => <strong>{text ?? "—"}</strong>,
     },
     {
+      title: "Название англ",
+      dataIndex: "ruInEngTitle",
+      key: "engTitle",
+      render: (text: string) => <strong>{text ?? "—"}</strong>,
+    },
+    {
       title: "Год",
       dataIndex: "releaseYear",
       key: "releaseYear",
       width: 100,
+    },
+    {
+      title: "Жанры",
+      dataIndex: "genres",
+      key: "genres",
+      render: (genres: GenreDto[]) =>
+        genres?.length ? (
+          <Space size={[4, 4]} wrap>
+            {genres.map((genre) => (
+              <Tag key={genre.id} color="blue">
+                {genre.name}
+              </Tag>
+            ))}
+          </Space>
+        ) : (
+          "—"
+        ),
     },
     {
       title: "Рейтинг",
@@ -246,20 +284,13 @@ export const MoviesMgmtPage = () => {
           </Form.Item>
 
           <Form.Item name="description" label="Описание фильма ">
-            <Input />
+            <Input.TextArea rows={4} maxLength={2000} showCount />
           </Form.Item>
 
           <Form.Item name="director" label="Режиссер фильма ">
             <Input />
           </Form.Item>
 
-          <Form.Item
-            name="posterUrl"
-            label="Ссылка на постер"
-            rules={[{ required: true, message: " URL постера" }]}
-          >
-            <Input />
-          </Form.Item>
           <Form.Item
             name="kpRating"
             label="Рейтинг фильма"
@@ -289,18 +320,10 @@ export const MoviesMgmtPage = () => {
             <Select
               mode="multiple"
               placeholder="Выберите жанры"
-              options={[
-                { label: "Боевик", value: 1 },
-                { label: "Комедия", value: 2 },
-                { label: "Драма", value: 3 },
-                { label: "Фантастика", value: 4 },
-                { label: "Триллер", value: 5 },
-                { label: "Ужасы", value: 6 },
-                { label: "Приключения", value: 7 },
-                { label: "Мелодрама", value: 8 },
-                { label: "Детектив", value: 9 },
-                { label: "Анимация", value: 10 },
-              ]}
+              options={genres.map((genre) => ({
+                label: genre.name,
+                value: genre.id,
+              }))}
             />
           </Form.Item>
           <Form.Item
