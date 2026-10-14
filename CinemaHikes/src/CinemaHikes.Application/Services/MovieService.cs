@@ -112,7 +112,7 @@ public sealed class MovieService(
 
     private static MovieListItemDto MapListItem(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList());
+        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),m.Director,m.Description);
 
     private static MovieDetailsDto MapDetails(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.Description, m.Director,

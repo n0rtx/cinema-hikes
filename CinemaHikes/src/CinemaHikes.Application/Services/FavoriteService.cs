@@ -66,5 +66,5 @@ public sealed class FavoriteService(IUnitOfWork uow) : IFavoriteService
 
     private static MovieListItemDto MapMovie(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList());
+        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),m.Director,m.Description);
 }
