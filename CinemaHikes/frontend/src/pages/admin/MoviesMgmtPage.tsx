@@ -13,6 +13,7 @@ import {
   Tag,
   Popconfirm,
   message,
+  Select,
   Space,
   Modal,
   Form,
@@ -34,7 +35,7 @@ const { Title } = Typography;
 export const MoviesMgmtPage = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -45,7 +46,6 @@ export const MoviesMgmtPage = () => {
     queryKey: ["admin-movies", page, pageSize, search],
     queryFn: () => fetchMovies({ page, pageSize, search }),
   });
-
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => DeleteMovie(id),
@@ -58,7 +58,6 @@ export const MoviesMgmtPage = () => {
     },
   });
 
-
   const saveMutation = useMutation({
     mutationFn: async (values: CreateMovieDto & UpdateMovieDto) => {
       if (editingMovie) {
@@ -69,14 +68,14 @@ export const MoviesMgmtPage = () => {
     },
     onSuccess: () => {
       message.success(
-        editingMovie ? "Фильм успешно обновлен" : "Фильм успешно создан"
+        editingMovie ? "Фильм успешно обновлен" : "Фильм успешно создан",
       );
       queryClient.invalidateQueries({ queryKey: ["admin-movies"] });
       handleCloseModal();
     },
     onError: () => {
       message.error(
-        editingMovie ? "Не удалось обновить фильм" : "Не удалось создать фильм"
+        editingMovie ? "Не удалось обновить фильм" : "Не удалось создать фильм",
       );
     },
   });
@@ -246,14 +245,13 @@ export const MoviesMgmtPage = () => {
             <Input />
           </Form.Item>
 
-           <Form.Item name="description" label="Описание фильма ">
+          <Form.Item name="description" label="Описание фильма ">
             <Input />
           </Form.Item>
 
           <Form.Item name="director" label="Режиссер фильма ">
             <Input />
           </Form.Item>
-
 
           <Form.Item
             name="posterUrl"
@@ -267,10 +265,42 @@ export const MoviesMgmtPage = () => {
             label="Рейтинг фильма"
             rules={[{ required: true, message: "Укажи рейтинг" }]}
           >
-            <InputNumber
-              style={{ width: "100%" }}
-              min={1.0}
-              max={10.0}
+            <InputNumber style={{ width: "100%" }} min={1.0} max={10.0} />
+          </Form.Item>
+          <Form.Item
+            name="posterUrl"
+            label="Ссылка на постер"
+            rules={[{ required: true, message: " URL постера" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="genreIds"
+            label="Жанры"
+            rules={[
+              {
+                required: true,
+                type: "array",
+                min: 1,
+                message: "Выберите хотя бы один жанр",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Выберите жанры"
+              options={[
+                { label: "Боевик", value: 1 },
+                { label: "Комедия", value: 2 },
+                { label: "Драма", value: 3 },
+                { label: "Фантастика", value: 4 },
+                { label: "Триллер", value: 5 },
+                { label: "Ужасы", value: 6 },
+                { label: "Приключения", value: 7 },
+                { label: "Мелодрама", value: 8 },
+                { label: "Детектив", value: 9 },
+                { label: "Анимация", value: 10 },
+              ]}
             />
           </Form.Item>
           <Form.Item
