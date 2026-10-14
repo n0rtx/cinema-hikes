@@ -242,6 +242,19 @@ export const MoviesMgmtPage = () => {
             <Input />
           </Form.Item>
 
+          <Form.Item name="ruInEngTitle" label="Название  англ">
+            <Input />
+          </Form.Item>
+
+           <Form.Item name="description" label="Описание фильма ">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="director" label="Режиссер фильма ">
+            <Input />
+          </Form.Item>
+
+
           <Form.Item
             name="posterUrl"
             label="Ссылка на постер"
@@ -249,7 +262,17 @@ export const MoviesMgmtPage = () => {
           >
             <Input />
           </Form.Item>
-
+          <Form.Item
+            name="kpRating"
+            label="Рейтинг фильма"
+            rules={[{ required: true, message: "Укажи рейтинг" }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={1.0}
+              max={10.0}
+            />
+          </Form.Item>
           <Form.Item
             name="releaseYear"
             label="Год выпуска"
