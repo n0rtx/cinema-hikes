@@ -13,6 +13,7 @@ import {
   Tag,
   Popconfirm,
   message,
+  Select,
   Space,
   Modal,
   Form,
@@ -28,24 +29,28 @@ import type { ColumnsType } from "antd/es/table";
 import type { CreateMovieDto } from "../../shared/types/DTO/CatalogDtos/CreateMovieDto";
 import type { UpdateMovieDto } from "../../shared/types/DTO/CatalogDtos/UpdateMovieDto";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
+import type { GenreDto } from "../../shared/types/DTO/CatalogDtos/GenreDto";
+import { fetchGenres } from "../../features/catalog/api/fetchGenrest";
 
 const { Title } = Typography;
 
 export const MoviesMgmtPage = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
   const [editingMovie, setEditingMovie] = useState<MovieListItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { data: genres = [] } = useQuery({
+    queryKey: ["genres"],
+    queryFn: fetchGenres,
+  });
   const { data, isLoading } = useQuery({
     queryKey: ["admin-movies", page, pageSize, search],
     queryFn: () => fetchMovies({ page, pageSize, search }),
   });
-
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => DeleteMovie(id),
@@ -58,7 +63,6 @@ export const MoviesMgmtPage = () => {
     },
   });
 
-
   const saveMutation = useMutation({
     mutationFn: async (values: CreateMovieDto & UpdateMovieDto) => {
       if (editingMovie) {
@@ -69,14 +73,14 @@ export const MoviesMgmtPage = () => {
     },
     onSuccess: () => {
       message.success(
-        editingMovie ? "Фильм успешно обновлен" : "Фильм успешно создан"
+        editingMovie ? "Фильм успешно обновлен" : "Фильм успешно создан",
       );
       queryClient.invalidateQueries({ queryKey: ["admin-movies"] });
       handleCloseModal();
     },
     onError: () => {
       message.error(
-        editingMovie ? "Не удалось обновить фильм" : "Не удалось создать фильм"
+        editingMovie ? "Не удалось обновить фильм" : "Не удалось создать фильм",
       );
     },
   });
@@ -84,7 +88,10 @@ export const MoviesMgmtPage = () => {
   const handleOpenModal = (movie?: MovieListItem) => {
     if (movie) {
       setEditingMovie(movie);
-      form.setFieldsValue(movie);
+      form.setFieldsValue({
+        ...movie,
+        genreIds: movie.genres.map((genre) => genre.id),
+      });
     } else {
       setEditingMovie(null);
       form.resetFields();
@@ -115,11 +122,18 @@ export const MoviesMgmtPage = () => {
       ),
     },
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      render: (text: number) => <strong>{text}</strong>,
+    },
+    {
       title: "Название рус",
       dataIndex: "ruTitle",
       key: "ruTitle",
       render: (text: string) => <strong>{text}</strong>,
     },
+
     {
       title: "Название укр",
       dataIndex: "uaTitle",
@@ -127,10 +141,33 @@ export const MoviesMgmtPage = () => {
       render: (text: string) => <strong>{text ?? "—"}</strong>,
     },
     {
+      title: "Название англ",
+      dataIndex: "ruInEngTitle",
+      key: "engTitle",
+      render: (text: string) => <strong>{text ?? "—"}</strong>,
+    },
+    {
       title: "Год",
       dataIndex: "releaseYear",
       key: "releaseYear",
       width: 100,
+    },
+    {
+      title: "Жанры",
+      dataIndex: "genres",
+      key: "genres",
+      render: (genres: GenreDto[]) =>
+        genres?.length ? (
+          <Space size={[4, 4]} wrap>
+            {genres.map((genre) => (
+              <Tag key={genre.id} color="blue">
+                {genre.name}
+              </Tag>
+            ))}
+          </Space>
+        ) : (
+          "—"
+        ),
     },
     {
       title: "Рейтинг",
@@ -242,6 +279,25 @@ export const MoviesMgmtPage = () => {
             <Input />
           </Form.Item>
 
+          <Form.Item name="ruInEngTitle" label="Название  англ">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="description" label="Описание фильма ">
+            <Input.TextArea rows={4} maxLength={2000} showCount />
+          </Form.Item>
+
+          <Form.Item name="director" label="Режиссер фильма ">
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="kpRating"
+            label="Рейтинг фильма"
+            rules={[{ required: true, message: "Укажи рейтинг" }]}
+          >
+            <InputNumber style={{ width: "100%" }} min={1.0} max={10.0} />
+          </Form.Item>
           <Form.Item
             name="posterUrl"
             label="Ссылка на постер"
@@ -249,7 +305,27 @@ export const MoviesMgmtPage = () => {
           >
             <Input />
           </Form.Item>
-
+          <Form.Item
+            name="genreIds"
+            label="Жанры"
+            rules={[
+              {
+                required: true,
+                type: "array",
+                min: 1,
+                message: "Выберите хотя бы один жанр",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Выберите жанры"
+              options={genres.map((genre) => ({
+                label: genre.name,
+                value: genre.id,
+              }))}
+            />
+          </Form.Item>
           <Form.Item
             name="releaseYear"
             label="Год выпуска"

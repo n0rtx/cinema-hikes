@@ -6,6 +6,6 @@ export interface CreateMovieDto {
     director:string;
     releaseYear:number;
     posterUrl:string;
-    kpRating:string;
+    kpRating:number;
     genreIds:number[];
 }
