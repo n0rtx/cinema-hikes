@@ -14,8 +14,8 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
         public IAdminMovieService MovieService { get; } = movieService;
 
         [HttpPost]
-        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         public async Task<ActionResult<int>> CreateAsync([FromBody] CreateMovieDto dto,CancellationToken ct)
         {
@@ -24,14 +24,14 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
         }
         [HttpPost("{movieId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateAsync(int movieId, [FromBody] UpdateMovieDto dto,CancellationToken ct)
+        public async Task<IActionResult> UpdateAsync([FromRoute]int movieId, [FromBody] UpdateMovieDto dto,CancellationToken ct)
         {
             await MovieService.UpdateAsync(movieId, dto, ct);
             return Ok();
         }
-        [HttpDelete("()")]
+        [HttpDelete("{movieId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteAsync(int movieId,CancellationToken ct)
+        public async Task<IActionResult> DeleteAsync([FromRoute]int movieId,CancellationToken ct)
         {
             await MovieService.DeleteAsync(movieId, ct);
             return Ok();
