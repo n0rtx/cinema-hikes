@@ -39,7 +39,7 @@ public sealed class AuthService(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
         
         var token = jwtTokenService.GenerateToken(
-            new TokenClaimsData(user.Id, user.UserName!, user.Email!, new[] {"Admin"}));
+            new TokenClaimsData(user.Id, user.UserName!, user.Email!, new[] {"User"}));
 
         return new AuthResponseDto(token, user.UserName!, user.Email!);
     }
