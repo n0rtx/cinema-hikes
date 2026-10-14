@@ -64,11 +64,24 @@ export const MoviesMgmtPage = () => {
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (values: CreateMovieDto & UpdateMovieDto) => {
+    mutationFn: async (values: any) => {
+      
+      const dto: UpdateMovieDto = {
+        ruTitle: values.ruTitle,
+        uaTitle: values.uaTitle ?? "",
+        ruInEngTitle: values.ruInEngTitle ?? "",
+        description: values.description ?? "",
+        director: values.director ?? "",
+        releaseYear: Number(values.releaseYear),
+        posterUrl: values.posterUrl,
+        kpRating: Number(values.kpRating),
+        genreIds: values.genreIds, 
+      };
+
       if (editingMovie) {
-        await UpdateMovie(editingMovie.id, values);
+        await UpdateMovie(editingMovie.id, dto);
       } else {
-        await CreateMovie(values);
+        await CreateMovie(dto as CreateMovieDto);
       }
     },
     onSuccess: () => {
@@ -275,19 +288,19 @@ export const MoviesMgmtPage = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item name="uaTitle" label="Название укр">
+          <Form.Item name="uaTitle" label="Название укр"rules={[{ required: true, message: "Введите укр название" }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="ruInEngTitle" label="Название  англ">
+          <Form.Item name="ruInEngTitle" label="Название  англ" rules={[{ required: true, message: "Введите англ название" }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="description" label="Описание фильма ">
+          <Form.Item name="description" label="Описание фильма " rules={[{ required: true, message: "Введите описание " }]}>
             <Input.TextArea rows={4} maxLength={2000} showCount />
           </Form.Item>
 
-          <Form.Item name="director" label="Режиссер фильма ">
+          <Form.Item name="director" label="Режиссер фильма " rules={[{ required: true, message: "Введите режиссера" }]}>
             <Input />
           </Form.Item>
 
