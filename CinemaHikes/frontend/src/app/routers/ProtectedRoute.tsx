@@ -1,15 +1,28 @@
+import type { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { hasRole } from "../../shared/utils/hasRole";
 
-export const AdminProtectedRoute = () => {
+interface ProtectedRouteProps {
+  requireAdmin?: boolean;
+  children?: ReactNode;
+}
+
+export const AdminProtectedRoute = ({
+  requireAdmin = false,
+  children,
+}: ProtectedRouteProps) => {
   const token = localStorage.getItem("token");
 
-  
-  const isAdmin = hasRole(token, "Admin");
 
-  if (!isAdmin) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+
+  if (requireAdmin && !hasRole(token, "Admin")) {
+    return <Navigate to="/" replace />;
+  }
+
+
+  return children ? <>{children}</> : <Outlet />;
 };

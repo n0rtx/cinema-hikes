@@ -23,13 +23,12 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: (
       <AdminProtectedRoute requireAdmin>
-        {" "}
         <AdminLayout />
       </AdminProtectedRoute>
     ),
     children: [
-      // { index: true, element: <DashboardPage /> },
       { path: "movies", element: <MoviesMgmtPage /> },
+      // { index: true, element: <DashboardPage /> },
       // { path: "users", element: <UsersMgmtPage /> },
     ],
   },
@@ -44,7 +43,7 @@ export const router = createBrowserRouter([
       { path: "movies/:id", element: <MoviePage /> },
       { path: "about", element: <AboutPage /> },
       { path: "developer/:username", element: <DeveloperPage /> },
-      {path:"admin/test",element:<MoviesMgmtPage/>},
+      { path: "admin/test", element: <MoviesMgmtPage /> },
       { path: "support", element: <SupportPage /> },
       { path: "*", element: <NotFoundPage /> },
       { path: "developing", element: <UnderConstructionPage /> },
