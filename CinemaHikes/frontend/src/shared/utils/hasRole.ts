@@ -6,13 +6,13 @@ interface CustomJwt {
     "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string | string[];
     role?:string|string[];
 }
-export const getUserRoles = (token:string | null):string[] => {
-    if(!token) return [];
+export const getUserRoles = (authToken:string | null):string[] => {
+    if(!authToken) return [];
     try {
 
-        const decode = jwtDecode<CustomJwt>(token);
+        const decode = jwtDecode<CustomJwt>(authToken);
         if(decode.exp && decode.exp * 1000 < Date.now()) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("authToken");
             return [];
         }
         const roles = decode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || decode.role;
@@ -23,7 +23,7 @@ export const getUserRoles = (token:string | null):string[] => {
         return[];
     }
 }
-export const hasRole = (token:string | null,roleName:string):boolean => {
-    const roles = getUserRoles(token);
+export const hasRole = (authToken:string | null,roleName:string):boolean => {
+    const roles = getUserRoles(authToken);
     return roles.includes(roleName);
 }

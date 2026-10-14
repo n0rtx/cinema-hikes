@@ -11,7 +11,7 @@ export const AdminProtectedRoute = ({
   requireAdmin = false,
   children,
 }: ProtectedRouteProps) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
 
 
   if (!token) {
