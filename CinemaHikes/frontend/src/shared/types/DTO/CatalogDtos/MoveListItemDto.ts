@@ -5,6 +5,8 @@ export interface MovieListItem {
   ruTitle: string;
   uaTitle?: string;
   ruInEngTitle: string;
+  director?:string;
+  description?:string
   releaseYear: number;
   posterUrl: string;
   kpRating: number;
