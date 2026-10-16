@@ -8,9 +8,9 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
-    public class AdminReviewController(IAdminReviewStatusService reviewStatusService):ControllerBase
+    public class AdminReviewController(IAdminReviewService reviewStatusService):ControllerBase
     {
-        public IAdminReviewStatusService ReviewStatusService { get; } = reviewStatusService;
+        public IAdminReviewService ReviewStatusService { get; } = reviewStatusService;
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(bool),StatusCodes.Status200OK)]
