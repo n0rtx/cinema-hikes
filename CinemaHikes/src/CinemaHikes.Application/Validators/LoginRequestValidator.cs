@@ -8,13 +8,13 @@ namespace CinemaHikes.Application.Validators
         {
             RuleFor(x => x.Email)
                 .NotEmpty()
-                .WithMessage("Email or username can not be empty you idiot.")
+                .WithMessage("Email не может быть пустым.")
                 .MaximumLength(255)
-                .WithMessage("Your email is too long for us....");
+                .WithMessage("Email слишком длинный");
 
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .WithMessage("Password can not be empty??");
+                .WithMessage("Пароль не может быть пустым");
         }
     }
 }
