@@ -7,6 +7,6 @@ namespace CinemaHikes.Application.Interfaces.Services.Admin
 {
     public interface IAdminReviewStatusService
     {
-        Task<bool> ChangeReviewStatus(ChangeReviewStatusDto changeReviewStatus,CancellationToken ct);
+        Task<bool> ChangeReviewStatusAsync(ChangeReviewStatusDto changeReviewStatus,CancellationToken ct);
     }
 }

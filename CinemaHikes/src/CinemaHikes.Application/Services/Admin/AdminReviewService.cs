@@ -10,7 +10,7 @@ namespace CinemaHikes.Application.Services.Admin
     public class AdminReviewService(IUnitOfWork uow) :IAdminReviewStatusService
     {
         public IUnitOfWork uow { get; } = uow;
-        public async Task<bool> ChangeReviewStatus(ChangeReviewStatusDto dto,CancellationToken ct)
+        public async Task<bool> ChangeReviewStatusAsync(ChangeReviewStatusDto dto,CancellationToken ct)
         {
             var reviewToChange = 
                 await uow.Reviews.GetByIdAsync(dto.ReviewId, ct)
