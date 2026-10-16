@@ -29,7 +29,7 @@ public static class DatabaseExtensions
                 await db.Database.EnsureCreatedAsync(cancellationToken);
             }
 
-            await CatalogSeeder.SeedAsync(services, cancellationToken);
+            // await CatalogSeeder.SeedAsync(services, cancellationToken);
             logger.LogInformation("Database migrated and seeded successfully");
         }
         catch (Exception ex)
