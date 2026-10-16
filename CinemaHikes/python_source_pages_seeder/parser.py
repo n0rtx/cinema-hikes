@@ -17,9 +17,10 @@ DB_NAME = os.getenv("DB_NAME")
 
 DB_DSN = f"postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}"
 
+# Базовая ссылка БЕЗ номера страницы. Номер задаётся только через START_PAGE / MAX_PAGES.
 START_URL = "https://rezka.ag/?filter=popular&genre=1"
 START_PAGE = 1
-MAX_PAGES = 1
+MAX_PAGES = 15  # последняя обрабатываемая страница (включительно)
 LINK_PATTERN = r"/films/[a-zA-Z0-9\-_]+/(\d+)-[a-zA-Z0-9\-_]+\.html"
 
 REZKA_IP = "179.43.189.162"
@@ -79,7 +80,14 @@ async def goto_with_retry(page, url, ready_selector, max_attempts=10, timeout_ms
     return False
 
 
+async def load_existing_links(conn):
+    """Загружает из БД все уже сохранённые ссылки, чтобы пропускать повторы."""
+    rows = await conn.fetch('SELECT "PageUrl" FROM "VideoSources"')
+    return {row["PageUrl"] for row in rows}
+
+
 async def save_movie_to_db(conn, link, title, director):
+    """Сохраняет фильм. Возвращает True при успехе, False при ошибке."""
     try:
         year_match = re.search(r'-(\d{4})(?:-[a-z]+)?\.html$', link)
         release_year = int(year_match.group(1)) if year_match else 0
@@ -97,108 +105,124 @@ async def save_movie_to_db(conn, link, title, director):
                                INSERT INTO "VideoSources" ("MovieId", "ProviderName", "PageUrl", "Priority", "Status")
                                VALUES ($1, $2, $3, $4, $5)
                                ''', movie_id, "Rezka", link, 1, 1)
+        return True
 
     except Exception as e:
         print(f"[!] Ошибка при сохранении в БД фильма {title}: {e}")
+        return False
 
 
 async def main():
     print("[*] Подключение к базе данных...")
     db_conn = await asyncpg.connect(DB_DSN)
 
-    async with Stealth().use_async(async_playwright()) as p:
-        browser = await p.chromium.launch(
-            headless=False,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                f"--host-resolver-rules=MAP rezka.ag {REZKA_IP}",
-            ]
-        )
+    try:
+        existing_links = await load_existing_links(db_conn)
+        print(f"[*] В базе уже есть фильмов: {len(existing_links)}")
 
-        context = await browser.new_context(
-            viewport={"width": 1280, "height": 800},
-            ignore_https_errors=True
-        )
-        page = await context.new_page()
-        base_domain = "https://rezka.ag"
+        async with Stealth().use_async(async_playwright()) as p:
+            browser = await p.chromium.launch(
+                headless=False,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    f"--host-resolver-rules=MAP rezka.ag {REZKA_IP}",
+                ]
+            )
 
-        for page_num in range(START_PAGE, MAX_PAGES + 1):
-            valid_links = set()
+            context = await browser.new_context(
+                viewport={"width": 1280, "height": 800},
+                ignore_https_errors=True
+            )
+            page = await context.new_page()
+            base_domain = "https://rezka.ag"
 
-            if page_num == 1:
-                current_url = START_URL
-            else:
+            for page_num in range(START_PAGE, MAX_PAGES + 1):
+                valid_links = set()
+
                 parsed_url = urlparse(START_URL)
-                current_url = f"{parsed_url.scheme}://{parsed_url.netloc}/page/{page_num}/?{parsed_url.query}"
+                if page_num == 1:
+                    current_url = START_URL
+                else:
+                    current_url = f"{parsed_url.scheme}://{parsed_url.netloc}/page/{page_num}/?{parsed_url.query}"
 
-            print(f"\n=========================================")
-            print(f"[*] ПАРСИНГ СТРАНИЦЫ КАТАЛОГА: {page_num}")
-            print(f"=========================================")
+                print(f"\n=========================================")
+                print(f"[*] ПАРСИНГ СТРАНИЦЫ КАТАЛОГА: {page_num}")
+                print(f"    {current_url}")
+                print(f"=========================================")
 
-            try:
-                ok = await goto_with_retry(page, current_url, ".b-content__inline_item")
-                if not ok:
-                    print(f"[!] Не удалось загрузить страницу {page_num}")
-                    continue
-
-                hrefs = await page.eval_on_selector_all(
-                    ".b-content__inline_item a",
-                    "elements => elements.map(el => el.getAttribute('href'))"
-                )
-                if not hrefs:
-                    hrefs = await page.eval_on_selector_all("a",
-                                                            "elements => elements.map(el => el.getAttribute('href'))")
-
-                for href in hrefs:
-                    if href and re.search(LINK_PATTERN, href):
-                        full_url = href if href.startswith("http") else f"{base_domain}{href}"
-                        valid_links.add(full_url)
-
-            except Exception as e:
-                print(f"[!] Ошибка при сборе ссылок на странице {page_num}: {e}")
                 try:
-                    await page.screenshot(path=f"error_page_{page_num}.png")
-                    print(f"    Скриншот сохранён: error_page_{page_num}.png")
-                except Exception:
-                    pass
-                continue
-
-            print(f"[+] Найдено фильмов на странице {page_num}: {len(valid_links)}. Начинаем обход и сохранение...")
-
-            for link in sorted(valid_links):
-                print(f"  [*] Открываю: {link}")
-                try:
-                    ok = await goto_with_retry(page, link, ".b-post__title h1")
+                    ok = await goto_with_retry(page, current_url, ".b-content__inline_item")
                     if not ok:
-                        print(f"    [!] Не удалось открыть {link}")
+                        print(f"[!] Не удалось загрузить страницу {page_num}")
                         continue
 
-                    title_locator = page.locator(".b-post__title h1")
-                    title = await title_locator.inner_text() if await title_locator.count() > 0 else "Неизвестно"
-                    title = title.strip()
+                    hrefs = await page.eval_on_selector_all(
+                        ".b-content__inline_item a",
+                        "elements => elements.map(el => el.getAttribute('href'))"
+                    )
+                    if not hrefs:
+                        hrefs = await page.eval_on_selector_all(
+                            "a",
+                            "elements => elements.map(el => el.getAttribute('href'))"
+                        )
 
-                    director_locator = page.locator("tr").filter(has_text="Режиссер").locator("td").nth(1)
-                    director = await director_locator.inner_text() if await director_locator.count() > 0 else "Неизвестно"
-                    director = director.strip()
-
-                    print(f"    [>] Сохраняю в БД: {title} | {director}")
-
-                    await save_movie_to_db(db_conn, link, title, director)
+                    for href in hrefs:
+                        if href and re.search(LINK_PATTERN, href):
+                            full_url = href if href.startswith("http") else f"{base_domain}{href}"
+                            valid_links.add(full_url)
 
                 except Exception as e:
-                    print(f"    [!] Ошибка при парсинге фильма {link}: {e}")
+                    print(f"[!] Ошибка при сборе ссылок на странице {page_num}: {e}")
                     try:
-                        await page.screenshot(path="error_movie.png")
+                        await page.screenshot(path=f"error_page_{page_num}.png")
+                        print(f"    Скриншот сохранён: error_page_{page_num}.png")
                     except Exception:
                         pass
+                    continue
 
-            print(f"[+] Страница {page_num} полностью обработана и надежно сохранена в БД.")
+                new_links = [l for l in sorted(valid_links) if l not in existing_links]
+                skipped = len(valid_links) - len(new_links)
 
-        await browser.close()
+                print(f"[+] Найдено фильмов на странице {page_num}: {len(valid_links)} "
+                      f"(новых: {len(new_links)}, уже в БД: {skipped}). Начинаем обход и сохранение...")
+
+                for link in new_links:
+                    print(f"  [*] Открываю: {link}")
+                    try:
+                        ok = await goto_with_retry(page, link, ".b-post__title h1")
+                        if not ok:
+                            print(f"    [!] Не удалось открыть {link}")
+                            continue
+
+                        title_locator = page.locator(".b-post__title h1")
+                        title = await title_locator.inner_text() if await title_locator.count() > 0 else "Неизвестно"
+                        title = title.strip()
+
+                        director_locator = page.locator("tr").filter(has_text="Режиссер").locator("td").nth(1)
+                        director = await director_locator.inner_text() if await director_locator.count() > 0 else "Неизвестно"
+                        director = director.strip()
+
+                        print(f"    [>] Сохраняю в БД: {title} | {director}")
+
+                        if await save_movie_to_db(db_conn, link, title, director):
+                            existing_links.add(link)
+
+                    except Exception as e:
+                        print(f"    [!] Ошибка при парсинге фильма {link}: {e}")
+                        try:
+                            await page.screenshot(path="error_movie.png")
+                        except Exception:
+                            pass
+
+                print(f"[+] Страница {page_num} полностью обработана.")
+
+            await browser.close()
+            print("\n[Готово] Сбор данных полностью завершен.")
+
+    finally:
         await db_conn.close()
-        print("\n[Готово] Сбор данных полностью завершен.")
 
 
 if __name__ == "__main__":
