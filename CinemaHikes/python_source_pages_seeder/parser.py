@@ -26,9 +26,8 @@ REZKA_IP = "179.43.189.162"
 
 ANUBIS_TIMEOUT_MS = 90000
 
-# Текст страницы с ошибкой (503 и т.п.)
 ERROR_RE = re.compile(r"503|Service Unavailable|не отвечает|not responding", re.I)
-# Текст кнопки / ссылки «Обновить»
+
 RETRY_RE = re.compile(r"обновить|обновите|refresh|reload|try again|повторить", re.I)
 
 
@@ -49,11 +48,9 @@ async def goto_with_retry(page, url, ready_selector, max_attempts=10, timeout_ms
         deadline = loop.time() + timeout_ms / 1000
         while loop.time() < deadline:
             try:
-                # 1) страница нормально загрузилась
                 if await page.locator(ready_selector).count() > 0:
                     return True
 
-                # 2) страница с ошибкой -> ищем кнопку/ссылку «Обновить»
                 body_text = await page.locator("body").inner_text(timeout=2000)
                 if ERROR_RE.search(body_text):
                     retry_btn = (
@@ -69,11 +66,10 @@ async def goto_with_retry(page, url, ready_selector, max_attempts=10, timeout_ms
                         print(f"    [~] Кнопки нет, делаю reload (попытка {attempt})")
                         await page.reload(wait_until="domcontentloaded")
 
-                    await asyncio.sleep(3)  # пауза, чтобы сервер успел очухаться
+                    await asyncio.sleep(3)
                     continue
 
             except Exception:
-                # во время навигации/клика контекст страницы может пересоздаваться — это нормально
                 pass
 
             await asyncio.sleep(1)
