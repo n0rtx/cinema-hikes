@@ -4,8 +4,10 @@ using System.Text;
 using CinemaHikes.Application.Dtos.Admin;
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services.Admin;
+using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Enums;
 using CinemaHikes.Domain.Interfaces;
+using CinemaHikes.Domain.Specifications;
 
 namespace CinemaHikes.Application.Services.Admin
 {
@@ -25,7 +27,11 @@ namespace CinemaHikes.Application.Services.Admin
         }
         public async Task<List<ReviewDto>> GetPagedAsync(ReviewStatus? status, int? movieId, int? userId, int page, int pageSize, CancellationToken ct)
         {
+            var specification = new ReviewFilterSpecification(status, movieId, userId, page, pageSize);
+            var reviews = await uow.Reviews.ListAsync(specification, ct);
+            return reviews.Select(MapReviews).ToList();
 
         }
+        private static ReviewDto MapReviews(Review r) => new(r.Id, r.MovieId, r.UserId, r.Text, r.Rating, r.Status, r.CreatedAt);
     }
 }
