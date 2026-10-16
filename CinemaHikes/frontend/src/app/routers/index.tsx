@@ -17,7 +17,7 @@ import { AdminProtectedRoute } from "./ProtectedRoute";
 import { AdminLayout } from "../../layouts/AdminLayout";
 import { MoviesMgmtPage } from "../../pages/admin/MoviesMgmtPage";
 import { AnalyticsMgmtPage } from "../../pages/admin/AnalyticsMgmtPage";
-import { ReviewMgmtPage } from "../../pages/admin/UsersMgmtPage";
+import { ReviewMgmtPage } from "../../pages/admin/ReviewsMgmtPage";
 export const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   { path: "/login", element: <LoginPage /> },
