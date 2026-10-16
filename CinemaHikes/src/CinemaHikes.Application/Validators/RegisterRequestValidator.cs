@@ -9,22 +9,22 @@ namespace CinemaHikes.Application.Validators
         {
             RuleFor(x => x.Username)
                 .NotEmpty()
-                .WithMessage("Enter your name")
+                .WithMessage("Введите свое имя.")
                 .Matches(@"^[a-zA-Z0-9_-]+$")
                 .MinimumLength(3);
             RuleFor(x =>x.Email).NotEmpty()
-                .WithMessage("Email can not be empty.")
+                .WithMessage("Email не может быть пустым.")
                 .EmailAddress()
-                .WithMessage("Incorrect email address.")
+                .WithMessage("Неверный формат email.")
                 .MaximumLength(255)
-                .WithMessage("Email is too long..");
+                .WithMessage("Email слишком длинный");
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .WithMessage("Password can not be empty.")
+                .WithMessage("Пароль не может быть пустым.")
                 .MinimumLength(6)
-                .WithMessage("Password is too short.") 
+                .WithMessage("Пароль слишком короткий.") 
                 .MaximumLength(100)
-                .WithMessage("Password is too long.");
+                .WithMessage("Пароль слишком длинный.");
         }
     }
 }

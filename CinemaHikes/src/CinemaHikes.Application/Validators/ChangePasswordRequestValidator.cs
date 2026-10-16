@@ -8,17 +8,17 @@ namespace CinemaHikes.Application.Validators
         {
             RuleFor(x => x.OldPassword)
                 .NotEmpty()
-                .WithMessage("Old password can not be empty");
+                .WithMessage("Старый пароль не может быть пустым");
 
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
-                .WithMessage("Your new password is empty..")
+                .WithMessage("Новый пароль пустой.")
                 .MinimumLength(6)
-                .WithMessage("New password is too short")
+                .WithMessage("Новый пароль слишком короткий")
                 .MaximumLength(100)
-                .WithMessage("Password is too long")
+                .WithMessage("Новый пароль слишком длинный")
                 .NotEqual(x => x.OldPassword)
-                .WithMessage("New password is new password not old...");
+                .WithMessage("Новый пароль одинаковый с прошлым паролем");
         }
     }
 }
