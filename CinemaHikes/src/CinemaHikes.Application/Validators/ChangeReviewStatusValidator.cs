@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CinemaHikes.Application.Dtos.Admin;
+using CinemaHikes.Domain.Enums;
 using FluentValidation;
 
 namespace CinemaHikes.Application.Validators
@@ -10,10 +11,9 @@ namespace CinemaHikes.Application.Validators
     {
         public ChangeReviewStatusValidator()
         {
-            RuleFor(x => x.ReviewId)
+            RuleFor(x => x.newStatus).IsInEnum()
                 .NotEmpty()
-                .WithMessage("Айди Review которое хотите поменять не может быть пустым");
-            RuleFor(x => x.AdminId).NotNull().NotEmpty().WithMessage("Айди админа должно быть явно указано.");
+                .WithMessage("Новый статус не может быть пустым");
         }
     }
 }
