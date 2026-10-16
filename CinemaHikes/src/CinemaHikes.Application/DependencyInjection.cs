@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminSourceService, AdminSourceService>();
         services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
         services.AddScoped<IAdminUserService, AdminUserService>();
+        services.AddScoped<IAdminReviewService, AdminReviewService>();
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
