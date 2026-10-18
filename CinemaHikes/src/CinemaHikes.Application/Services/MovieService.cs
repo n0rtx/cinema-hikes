@@ -1,9 +1,11 @@
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services;
 using CinemaHikes.Domain.Entities.Catalog;
+using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Specifications;
+using Microsoft.AspNetCore.Identity;
 
 namespace CinemaHikes.Application.Services;
 
@@ -12,10 +14,12 @@ namespace CinemaHikes.Application.Services;
 /// </summary>
 public sealed class MovieService(
     IUnitOfWork uow,
-    IMovieMetadataClient metadata) : IMovieService
+    IMovieMetadataClient metadata,
+    UserManager<AppUser> userManager) : IMovieService
 {
     private IUnitOfWork Uow { get; } = uow;
     private IMovieMetadataClient Metadata { get; } = metadata;
+    private UserManager<AppUser> UserManager { get; } = userManager;
 
     /// <summary>
     /// Retrieves a paginated list of movies based on genre, release year, and minimum rating.
@@ -41,13 +45,33 @@ public sealed class MovieService(
     /// <param name="query">The text search query for movie title.</param>
     /// <param name="page">The 1-based page index.</param>
     /// <param name="pageSize">The number of results to fetch per page.</param>
+    /// <param name="userId">Optional identifier of the user who triggered the search; receives a hat when new movies are added from external metadata.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A list of <see cref="MovieListItemDto"/> matching the query.</returns>
-    public async Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, CancellationToken ct)
+    public async Task<List<MovieListItemDto>> SearchAsync(
+        string query, int page, int pageSize, int? userId, CancellationToken ct)
     {
-        var local = await Uow.Movies.ListAsync(new MovieSearchSpecification(query, page, pageSize), ct);
+        var local = await Uow.Movies.ListAsync(
+            new MovieSearchSpecification(query, page, pageSize), ct);
+
         if (local.Count > 0)
+        {
+            var dirty = local.Where(NeedsEnrichment).ToList();
+            foreach (var movie in dirty)
+            {
+                var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
+                var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
+                if (best is null)
+                    continue;
+
+                ApplyMissingFields(movie, best);
+            }
+
+            if (dirty.Count > 0)
+                await Uow.SaveChangesAsync(ct);
+
             return local.Select(MapListItem).ToList();
+        }
 
         var external = await Metadata.SearchAsync(query, pageSize, ct);
         var saved = new List<Movie>();
@@ -56,7 +80,10 @@ public sealed class MovieService(
             saved.Add(await UpsertFromExternalAsync(item, ct));
 
         if (saved.Count > 0)
+        {
             await Uow.SaveChangesAsync(ct);
+            await AwardHatAsync(userId, ct);
+        }
 
         return saved.Select(MapListItem).ToList();
     }
@@ -70,16 +97,49 @@ public sealed class MovieService(
     public async Task<MovieDetailsDto?> GetDetailsAsync(int id, CancellationToken ct)
     {
         var movie = await Uow.Movies.GetWithDetailsAsync(id, ct);
-        return movie is null ? null : MapDetails(movie);
+        if (movie is null)
+            return null;
+
+        if (NeedsEnrichment(movie))
+        {
+            var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
+            var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
+            if (best is not null)
+            {
+                ApplyMissingFields(movie, best);
+                await Uow.SaveChangesAsync(ct);
+            }
+        }
+
+        return MapDetails(movie);
+    }
+
+    private async Task AwardHatAsync(int? userId, CancellationToken ct)
+    {
+        if (userId is null)
+            return;
+
+        var user = await UserManager.FindByIdAsync(userId.Value.ToString());
+        if (user is null)
+            return;
+
+        user.AmountOfHats += 1;
+        await UserManager.UpdateAsync(user);
     }
 
     private async Task<Movie> UpsertFromExternalAsync(ExternalMovieData data, CancellationToken ct)
     {
-        var existing = (await Uow.Movies.ListAsync(new MovieSearchSpecification(data.RuTitle, 1, 5), ct))
-            .FirstOrDefault(m => m.RuTitle == data.RuTitle && m.ReleaseYear == data.ReleaseYear);
+        var existing = (await Uow.Movies.ListAsync(
+                new MovieSearchSpecification(data.RuTitle, 1, 5), ct))
+            .FirstOrDefault(m =>
+                m.RuTitle == data.RuTitle && m.ReleaseYear == data.ReleaseYear);
 
         if (existing is not null)
+        {
+            if (NeedsEnrichment(existing))
+                ApplyMissingFields(existing, data);
             return existing;
+        }
 
         var movie = new Movie
         {
@@ -110,9 +170,105 @@ public sealed class MovieService(
         return movie;
     }
 
+    private static bool NeedsEnrichment(Movie m) =>
+        string.IsNullOrWhiteSpace(m.PosterUrl)
+        || string.IsNullOrWhiteSpace(m.Description)
+        || m.KpRating <= 0;
+
+    private static ExternalMovieData? PickBestMatch(
+        IReadOnlyList<ExternalMovieData> candidates,
+        string dbTitle,
+        string dbDirector,
+        short dbYear)
+    {
+        if (candidates.Count == 0)
+            return null;
+
+        var title = Normalize(dbTitle);
+        var director = Normalize(dbDirector);
+
+        ExternalMovieData? best = null;
+        var bestScore = 0;
+
+        foreach (var c in candidates)
+        {
+            var apiTitle = Normalize(c.RuTitle);
+            var apiAlt = Normalize(c.RuInEngTitle);
+            var apiDirector = Normalize(c.Director);
+
+            var score = 0;
+
+            if (apiTitle == title || apiAlt == title)
+                score += 100;
+            else if (apiTitle.Contains(title, StringComparison.Ordinal)
+                     || title.Contains(apiTitle, StringComparison.Ordinal)
+                     || apiAlt.Contains(title, StringComparison.Ordinal)
+                     || title.Contains(apiAlt, StringComparison.Ordinal))
+                score += 50;
+
+            if (!string.IsNullOrEmpty(director) && !string.IsNullOrEmpty(apiDirector))
+            {
+                if (apiDirector == director)
+                    score += 80;
+                else if (apiDirector.Contains(director, StringComparison.Ordinal)
+                         || director.Contains(apiDirector, StringComparison.Ordinal))
+                    score += 40;
+            }
+
+            if (dbYear > 0 && c.ReleaseYear == dbYear)
+                score += 30;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = c;
+            }
+        }
+
+        return bestScore >= 50 ? best : null;
+    }
+
+    private static void ApplyMissingFields(Movie movie, ExternalMovieData data)
+    {
+        if (string.IsNullOrWhiteSpace(movie.PosterUrl)
+            && !string.IsNullOrWhiteSpace(data.PosterUrl))
+            movie.PosterUrl = data.PosterUrl;
+
+        if (string.IsNullOrWhiteSpace(movie.Description)
+            && !string.IsNullOrWhiteSpace(data.Description))
+            movie.Description = data.Description;
+
+        if (movie.KpRating <= 0 && data.KpRating > 0)
+            movie.KpRating = data.KpRating;
+
+        if (string.IsNullOrWhiteSpace(movie.Director)
+            || string.Equals(movie.Director, "Unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrWhiteSpace(data.Director)
+                && !string.Equals(data.Director, "Unknown", StringComparison.OrdinalIgnoreCase))
+                movie.Director = data.Director;
+        }
+
+        if (string.IsNullOrWhiteSpace(movie.UaTitle) && !string.IsNullOrWhiteSpace(data.UaTitle))
+            movie.UaTitle = data.UaTitle;
+
+        if (string.IsNullOrWhiteSpace(movie.RuInEngTitle)
+            && !string.IsNullOrWhiteSpace(data.RuInEngTitle))
+            movie.RuInEngTitle = data.RuInEngTitle;
+    }
+
+    private static string Normalize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        return value.Trim().ToLowerInvariant().Replace('ё', 'е');
+    }
+
     private static MovieListItemDto MapListItem(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),m.Director,m.Description);
+        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),
+        m.Director, m.Description);
 
     private static MovieDetailsDto MapDetails(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.Description, m.Director,

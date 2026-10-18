@@ -1,10 +1,12 @@
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Services;
 using CinemaHikes.Domain.Entities.Catalog;
+using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Specifications;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
 
@@ -14,11 +16,17 @@ public class MovieServiceTests
 {
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly Mock<IMovieMetadataClient> _metadata = new();
+    private readonly Mock<UserManager<AppUser>> _userManager;
     private readonly MovieService _sut;
 
     public MovieServiceTests()
     {
-        _sut = new MovieService(_uow.Object, _metadata.Object);
+        var store = new Mock<IUserStore<AppUser>>();
+        _userManager = new Mock<UserManager<AppUser>>(
+            store.Object,
+            null!, null!, null!, null!, null!, null!, null!, null!);
+
+        _sut = new MovieService(_uow.Object, _metadata.Object, _userManager.Object);
     }
 
     [Fact]
@@ -48,7 +56,7 @@ public class MovieServiceTests
         await _sut.GetPagedAsync(5, 2020, 7.5, 1, 20, CancellationToken.None);
 
         _uow.Verify(x => x.Movies.ListAsync(
-            It.Is<MovieFilterSpecification>(s => true),
+            It.IsAny<MovieFilterSpecification>(),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -59,10 +67,12 @@ public class MovieServiceTests
         _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(local);
 
-        var result = await _sut.SearchAsync("Дюна", 1, 10, CancellationToken.None);
+        var result = await _sut.SearchAsync("Дюна", 1, 10, userId: null, CancellationToken.None);
 
         result.Should().HaveCount(1);
-        _metadata.Verify(x => x.SearchAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        _metadata.Verify(
+            x => x.SearchAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]
@@ -73,7 +83,8 @@ public class MovieServiceTests
 
         var external = new List<ExternalMovieData>
         {
-            new(1,"Новый фильм", "Новий", "New Film", "Desc", "Director", 2024, "poster.jpg", 8.1, new[] { "Боевик" })
+            new(1, "Новый фильм", "Новий", "New Film", "Desc", "Director", 2024, "poster.jpg", 8.1,
+                new[] { "Боевик" })
         };
         _metadata.Setup(x => x.SearchAsync("Новый", 10, It.IsAny<CancellationToken>()))
             .ReturnsAsync(external);
@@ -87,11 +98,54 @@ public class MovieServiceTests
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        var result = await _sut.SearchAsync("Новый", 1, 10, CancellationToken.None);
+        var result = await _sut.SearchAsync("Новый", 1, 10, userId: null, CancellationToken.None);
 
         result.Should().HaveCount(1);
         result[0].RuTitle.Should().Be("Новый фильм");
         _uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _userManager.Verify(x => x.FindByIdAsync(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SearchAsync_WhenLocalEmpty_AndUserIdProvided_AwardsHat()
+    {
+        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Movie>());
+
+        var external = new List<ExternalMovieData>
+        {
+            new(1, "Новый фильм", "Новий", "New Film", "Desc", "Director", 2024, "poster.jpg", 8.1,
+                new[] { "Боевик" })
+        };
+        _metadata.Setup(x => x.SearchAsync("Новый", 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(external);
+
+        _uow.Setup(x => x.Genres.GetByNameAsync("Боевик", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Genre?)null);
+        _uow.Setup(x => x.Genres.AddAsync(It.IsAny<Genre>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        var user = new AppUser
+        {
+            Id = 7,
+            UserName = "tester",
+            Email = "t@t.com",
+            RegisteredAt = DateTime.UtcNow,
+            AmountOfHats = 3
+        };
+        _userManager.Setup(x => x.FindByIdAsync("7")).ReturnsAsync(user);
+        _userManager.Setup(x => x.UpdateAsync(It.IsAny<AppUser>()))
+            .ReturnsAsync(IdentityResult.Success);
+
+        var result = await _sut.SearchAsync("Новый", 1, 10, userId: 7, CancellationToken.None);
+
+        result.Should().HaveCount(1);
+        user.AmountOfHats.Should().Be(4);
+        _userManager.Verify(x => x.UpdateAsync(user), Times.Once);
     }
 
     [Fact]
@@ -143,7 +197,7 @@ public class MovieServiceTests
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        await _sut.SearchAsync("Фильм", 1, 5, CancellationToken.None);
+        await _sut.SearchAsync("Фильм", 1, 5, userId: null, CancellationToken.None);
 
         _uow.Verify(x => x.Genres.AddAsync(It.IsAny<Genre>(), It.IsAny<CancellationToken>()), Times.Never);
     }

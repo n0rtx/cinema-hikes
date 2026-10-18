@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -101,8 +102,13 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         page = Math.Max(page, 1);
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
+        int? userId = null;
+        var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (int.TryParse(idClaim, out var parsedId))
+            userId = parsedId;
+
         var movies = await MovieService.SearchAsync(
-            query.Trim(), page, pageSize, cancellationToken);
+            query.Trim(), page, pageSize, userId, cancellationToken);
 
         return Ok(movies);
     }
