@@ -1,5 +1,6 @@
 import { axiosClient } from "../../../../shared/api/axiosClient";
+import type { AssignRoleDto } from "../../../../shared/types/DTO/AdminDtos/AssignRoleDto";
 
-export const AssignRole = async(userId:number,rolename:string):Promise<void> => {
-    await axiosClient.post("")
-}
+export const AssignRole = async (dto: AssignRoleDto): Promise<void> => {
+  await axiosClient.post("/api/AdminUser", dto);
+};
