@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CinemaHikes.Application.Interfaces.Services.Admin;
+
 using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.Repositories;
