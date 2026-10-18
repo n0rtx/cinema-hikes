@@ -22,12 +22,21 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
             var users = await AdminUserService.GetAllAsync(ct);
             return Ok(users);
         }
-        [HttpPost]
+        [HttpPost("add-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddRoleToUserAsync([FromBody] AdminUserRoleDto dto,CancellationToken ct)
         {
             await AdminUserService.AssignRoleAsync(dto, ct);
+            return Ok();
+        }
+        [HttpPost("remove-role")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> RemoveRoleAsync([FromBody] AdminUserRoleDto dto,CancellationToken ct)
+        {
+            await AdminUserService.RemoveRoleAsync(dto, ct);
             return Ok();
         }
     }
