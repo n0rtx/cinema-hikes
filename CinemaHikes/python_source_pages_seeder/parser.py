@@ -27,7 +27,7 @@ REZKA_IP = "179.43.189.162"
 
 ANUBIS_TIMEOUT_MS = 90000
 
-ERROR_RE = re.compile(r"503|Service Unavailable|не отвечает|not responding", re.I)
+ERROR_RE = re.compile(r"503|504|Service Unavailable|не отвечает|not responding", re.I)
 
 RETRY_RE = re.compile(r"обновить|обновите|refresh|reload|try again|повторить", re.I)
 
