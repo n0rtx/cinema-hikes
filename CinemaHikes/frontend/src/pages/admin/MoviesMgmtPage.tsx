@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateMovie } from "../../features/admin/api/CreateMovie";
-import { UpdateMovie } from "../../features/admin/api/UpdateMovie";
+import { CreateMovie } from "../../features/admin/api/Movies/CreateMovie";
+import { UpdateMovie } from "../../features/admin/api/Movies/UpdateMovie";
 import { fetchMovies } from "../../features/catalog/api/fetchMovies";
-import { DeleteMovie } from "../../features/admin/api/DeleteMovie";
+import { DeleteMovie } from "../../features/admin/api/Movies/DeleteMovie";
 import {
   Table,
   Button,
