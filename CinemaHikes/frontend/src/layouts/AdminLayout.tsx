@@ -5,6 +5,7 @@ import {
   VideoCameraOutlined,
   TeamOutlined,
   CommentOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 const { Sider, Content } = Layout;
 
@@ -15,7 +16,8 @@ export const AdminLayout = () => {
     { key: "/admin/analytic", icon: <DashboardOutlined />, label: "Дашборд" },
     { key: "/admin/movies", icon: <VideoCameraOutlined />, label: "Фильмы" },
     { key: "/admin/users", icon: <TeamOutlined />, label: "Пользователи" },
-    { key: "/admin/reviews", icon: <CommentOutlined  />, label: "Отзывы" },
+    { key: "/admin/reviews", icon: <CommentOutlined />, label: "Отзывы" },
+    { key: "/", icon: <HomeOutlined />, label: "На главную" },
   ];
   return (
     <Layout style={{ minHeight: "100vh", background: "#141414" }}>
@@ -28,6 +30,7 @@ export const AdminLayout = () => {
           onClick={({ key }) => navigate(key)}
           style={{ background: "#1c1c1c" }}
         />
+     
       </Sider>
       <Content style={{ padding: 24 }}>
         <Outlet />
