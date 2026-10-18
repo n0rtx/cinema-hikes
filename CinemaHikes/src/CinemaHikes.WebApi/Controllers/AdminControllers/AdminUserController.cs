@@ -25,9 +25,9 @@ namespace CinemaHikes.WebApi.Controllers.AdminControllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> AddRoleToUserAsync([FromBody] AddRoleDto dto,CancellationToken ct)
+        public async Task<IActionResult> AddRoleToUserAsync([FromBody] AdminUserRoleDto dto,CancellationToken ct)
         {
-            await AdminUserService.AssignRoleAsync(dto.UserId,dto.RoleToAdd, ct);
+            await AdminUserService.AssignRoleAsync(dto, ct);
             return Ok();
         }
     }

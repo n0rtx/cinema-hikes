@@ -4,5 +4,5 @@ using System.Text;
 
 namespace CinemaHikes.Application.Dtos.Admin
 {
-    public sealed record AddRoleDto(int UserId, string RoleToAdd);
+    public sealed record AdminUserRoleDto(int UserId, string RoleToAdd);
 }

@@ -42,19 +42,34 @@ public sealed class AdminUserService(
     /// <param name="roleName">The name of the target role.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <exception cref="InvalidOperationException">Thrown when user does not exist, role does not exist, or assignment fails.</exception>
-    public async Task AssignRoleAsync(int userId, string roleName, CancellationToken ct)
+    public async Task AssignRoleAsync(AdminUserRoleDto dto, CancellationToken ct)
     {
-        var user = await userManager.FindByIdAsync(userId.ToString())
-                   ?? throw new InvalidOperationException($"User {userId} not found.");
+        var user = await userManager.FindByIdAsync(dto.UserId.ToString())
+                   ?? throw new InvalidOperationException($"User {dto.UserId} not found.");
 
-        if (!await roleManager.RoleExistsAsync(roleName))
-            throw new InvalidOperationException($"Role '{roleName}' does not exist.");
+        if (!await roleManager.RoleExistsAsync(dto.RoleToAdd))
+            throw new InvalidOperationException($"Role '{dto.RoleToAdd}' does not exist.");
 
         var currentRoles = await userManager.GetRolesAsync(user);
         if (currentRoles.Count > 0)
             await userManager.RemoveFromRolesAsync(user, currentRoles);
 
-        var result = await userManager.AddToRoleAsync(user, roleName);
+        var result = await userManager.AddToRoleAsync(user, dto.RoleToAdd);
+        if (!result.Succeeded)
+            throw new InvalidOperationException(
+                string.Join("; ", result.Errors.Select(e => e.Description)));
+    }
+    public async Task RemoveRoleAsync(AdminUserRoleDto dto,CancellationToken ct)
+    {
+        var user = await userManager.FindByIdAsync(dto.UserId.ToString()) ?? throw new InvalidOperationException($"User {dto.UserId} not found."); ;
+        if (!await roleManager.RoleExistsAsync(dto.RoleToAdd))
+            throw new InvalidOperationException($"Role '{dto.RoleToAdd}' does not exist.");
+        var currentRoles = await userManager.GetRolesAsync(user);
+        if(!currentRoles.Contains(dto.RoleToAdd))
+        {
+            throw new InvalidOperationException($"Role '{dto.RoleToAdd}' does not have user.");
+        }
+        var result = await userManager.RemoveFromRoleAsync(user, dto.RoleToAdd);
         if (!result.Succeeded)
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));

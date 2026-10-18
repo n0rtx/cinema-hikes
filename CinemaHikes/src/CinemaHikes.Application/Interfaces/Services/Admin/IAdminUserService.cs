@@ -23,5 +23,6 @@ public interface IAdminUserService
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the user is not found.</exception>
     /// <exception cref="InvalidOperationException">Thrown when role assignment fails.</exception>
-    Task AssignRoleAsync(int userId, string roleName, CancellationToken ct);
+    Task AssignRoleAsync(AdminUserRoleDto dto, CancellationToken ct);
+    Task RemoveRoleAsync(AdminUserRoleDto dto, CancellationToken ct);
 }
