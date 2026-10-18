@@ -4,7 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import { RemoveRole } from "../../features/admin/api/Users/RemoveRole";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { AssignRoleDto } from "../../shared/types/DTO/AdminDtos/AssignRoleDto";
-import { message, Table, Typography } from "antd";
+import { message, Table, Tag, Typography } from "antd";
 
 import type { UserDto } from "../../shared/types/DTO/UserDtos/UserDto";
 const { Title } = Typography;
@@ -59,8 +59,14 @@ export const UsersMgmtPage = () => {
       title: "Role",
       dataIndex: "roles",
       key: "roles",
-      render: (text: string[]) => <strong>{text?.join(", ") || "Нет Ролей"}</strong>,
-    },
+      render: (roles: string[]) =>
+        roles?.length
+          ? roles.map((r) => (
+              <Tag key={r} color={statusColors[r]}>
+                {r}
+              </Tag>
+            ))
+          : "Нет ролей",
   ];
   return (
     <div>
