@@ -136,7 +136,7 @@ export const ReviewMgmtPage = () => {
         }}
       >
         <Title level={3} style={{ color: "#fff", margin: 0 }}>
-          {"Title"}
+          {"Отзывы пользователей"}
         </Title>
         <Segmented
           value={status ?? "all"}
