@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Formats.Cbor;
 using System.Text;
-
 using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
 using CinemaHikes.Domain.Interfaces.Repositories;
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
+
 namespace CinemaHikes.Infrastructure.Repositories.Users
 {
-    public sealed class UserWithRolesReadRepository(CinemaHikesDbContext db):IUserwithRolesReadRepository
+    public sealed class UserWithRolesReadRepository(CinemaHikesDbContext db) : IUserwithRolesReadRepository
     {
         public async Task<List<UserWithRoles>> GetAllUsersWithRolesAsync(CancellationToken ct)
         {
@@ -18,6 +18,7 @@ namespace CinemaHikes.Infrastructure.Repositories.Users
            
             return users.Select(x => new UserWithRoles (  x.Id, x.UserName!,  x.Email!,  x.Roles )).ToList();
             
+            return users.Select(x => new UserWithRoles(x.Id, x.UserName!, x.Email!, x.Roles)).ToList();
         }
     }
 }
