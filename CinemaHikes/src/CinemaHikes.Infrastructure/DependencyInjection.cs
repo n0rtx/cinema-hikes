@@ -63,7 +63,7 @@ public static class DependencyInjection
         services.AddHttpClient<IGitHubOAuthClient, GitHubOAuthClient>();
         services.AddScoped<IVideoSizeChecker, VideoSizeChecker>();
         services.AddHttpClient<IVideoSizeChecker, VideoSizeChecker>();
-
+        services.AddScoped<IUserwithRolesReadRepository,UserWithRolesReadRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.Configure<PoiskKinoOptions>(configuration.GetSection(PoiskKinoOptions.SectionName));
