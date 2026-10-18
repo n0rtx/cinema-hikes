@@ -67,6 +67,7 @@ export const UsersMgmtPage = () => {
               </Tag>
             ))
           : "Нет ролей",
+        },
   ];
   return (
     <div>
