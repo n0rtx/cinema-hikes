@@ -1,6 +1,7 @@
 using CinemaHikes.Application.Dtos.Admin;
 using CinemaHikes.Application.Interfaces.Services.Admin;
 using CinemaHikes.Domain.Entities.Users;
+using CinemaHikes.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 namespace CinemaHikes.Application.Services.Admin;
@@ -10,7 +11,7 @@ namespace CinemaHikes.Application.Services.Admin;
 /// </summary>
 public sealed class AdminUserService(
     UserManager<AppUser> userManager,
-    RoleManager<IdentityRole<int>> roleManager) : IAdminUserService
+    RoleManager<IdentityRole<int>> roleManager, IUserwithRolesReadRepository userwithRolesRead) : IAdminUserService
 {
     /// <summary>
     /// Retrieves all registered users in the system alongside their assigned roles.
@@ -19,20 +20,8 @@ public sealed class AdminUserService(
     /// <returns>A list of <see cref="UserDto"/> representing each user with their roles.</returns>
     public async Task<List<UserDto>> GetAllAsync(CancellationToken ct)
     {
-        var users = userManager.Users.ToList();
-        var result = new List<UserDto>(users.Count);
-
-        foreach (var user in users)
-        {
-            var roles = await userManager.GetRolesAsync(user);
-            result.Add(new UserDto(
-                user.Id,
-                user.UserName!,
-                user.Email!,
-                roles.ToList()));
-        }
-
-        return result;
+        var users = await userwithRolesRead.GetAllUsersWithRolesAsync(ct);
+        return users.Select(MapToDto).ToList();
     }
 
     /// <summary>
@@ -74,4 +63,5 @@ public sealed class AdminUserService(
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
     }
+    private static UserDto MapToDto(UserWithRoles dto) => new (dto.Id, dto.Username, dto.Email, dto.Roles);
 }
