@@ -8,6 +8,11 @@ import { message, Table, Typography } from "antd";
 
 import type { UserDto } from "../../shared/types/DTO/UserDtos/UserDto";
 const { Title } = Typography;
+const statusColors: Record<string, string> = {
+  "Admin":"gold",
+  "User":"green",
+  "Moderator":"blue",
+};
 export const UsersMgmtPage = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -54,7 +59,7 @@ export const UsersMgmtPage = () => {
       title: "Role",
       dataIndex: "roles",
       key: "roles",
-      render: (text: string) => <strong>{text}</strong>,
+      render: (text: string[]) => <strong>{text?.join(", ") || "Нет Ролей"}</strong>,
     },
   ];
   return (
