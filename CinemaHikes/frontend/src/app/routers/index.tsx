@@ -17,6 +17,7 @@ import { AdminProtectedRoute } from "./ProtectedRoute";
 import { AdminLayout } from "../../layouts/AdminLayout";
 import { MoviesMgmtPage } from "../../pages/admin/MoviesMgmtPage";
 import { AnalyticsMgmtPage } from "../../pages/admin/AnalyticsMgmtPage";
+import { ReviewMgmtPage } from "../../pages/admin/ReviewsMgmtPage";
 export const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "movies", element: <MoviesMgmtPage /> },
       { path: "analytic", element: <AnalyticsMgmtPage /> },
+      {path:"reviews",element:<ReviewMgmtPage />}
     ],
   },
   { path: "/auth/github/callback", element: <GitHubCallbackPage /> },
