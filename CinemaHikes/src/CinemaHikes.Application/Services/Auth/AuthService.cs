@@ -37,7 +37,13 @@ public sealed class AuthService(
         if (!result.Succeeded)
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
-        
+        var roleResult = await userManager.AddToRoleAsync(user, "User");
+        if(!roleResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+        }
+
         var token = jwtTokenService.GenerateToken(
             new TokenClaimsData(user.Id, user.UserName!, user.Email!, new[] {"User"}));
 
@@ -111,7 +117,7 @@ public sealed class AuthService(
     /// <exception cref="InvalidOperationException">Thrown when GitHub profile fetch or user registration fails.</exception>
     public async Task<AuthResponseDto> LoginWithGitHubAsync(string code,CancellationToken ct = default)
     {
-        var providerMasafaka = "GitHub";
+        const string providerMasafaka = "GitHub";
         var gh = await gitHubClient.GetUserByCodeAsync(code,ct);
         var providerKey = gh.Id.ToString();
         var user = await userManager.FindByLoginAsync(providerMasafaka, providerKey);
@@ -134,11 +140,20 @@ public sealed class AuthService(
                     
                     
                 };
+
                 var create = await userManager.CreateAsync(user);
+                
+                
                 if (!create.Succeeded)
                 {
                     throw new InvalidOperationException(
                         string.Join("; ", create.Errors.Select(e => e.Description)));
+                }
+                var roleAdd = await userManager.AddToRoleAsync(user, "User");
+                if(!roleAdd.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        string.Join("; ", roleAdd.Errors.Select(e => e.Description)));
                 }
             }
             var link = await userManager.AddLoginAsync(user, new UserLoginInfo(providerMasafaka, providerKey, providerMasafaka));

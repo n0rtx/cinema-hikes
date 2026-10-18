@@ -3,6 +3,7 @@ using CinemaHikes.Infrastructure;
 using CinemaHikes.Infrastructure.Persistence.Extensions;
 using CinemaHikes.WebApi.Extensions;
 using CinemaHikes.WebApi.Middlewares;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider
+        .GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+    foreach (var role in new[] { "Admin", "Moderator", "User" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+    }
+}
 
 await app.Services.InitializeDatabaseAsync(app.Lifetime.ApplicationStopping);
 if (app.Environment.IsDevelopment())
