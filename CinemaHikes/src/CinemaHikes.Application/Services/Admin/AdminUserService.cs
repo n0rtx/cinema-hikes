@@ -63,5 +63,5 @@ public sealed class AdminUserService(
             throw new InvalidOperationException(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
     }
-    private static UserDto MapToDto(UserWithRoles dto) => new (dto.Id, dto.Username, dto.Email, dto.Roles);
+    private static UserDto MapToDto(UserWithRoles dto) => new (dto.Id, dto.Username, dto.Email, dto.Roles, dto.AmountOfHats);
 }

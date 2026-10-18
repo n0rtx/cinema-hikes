@@ -29,7 +29,7 @@ public interface IMovieService
     /// <param name="pageSize">The number of results per page.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A list of <see cref="MovieListItemDto"/> matching the search query.</returns>
-    Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, CancellationToken ct);
+    Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId,CancellationToken ct);
 
     /// <summary>
     /// Retrieves comprehensive details for a specific movie including genres, video sources, and reviews.
