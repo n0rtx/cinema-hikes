@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
-import { fetchAnalytics } from "../../features/admin/api/fetchAnalytic";
+import { fetchAnalytics } from "../../features/admin/api/Analytics/fetchAnalytic";
 const {Title} = Typography;
 export const AnalyticsMgmtPage = () => {
   const { data, isLoading, isFetching, refetch } = useQuery({

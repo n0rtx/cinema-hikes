@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChangeReviewStatus } from "../../features/admin/api/ChangeReviews";
+import { ChangeReviewStatus } from "../../features/admin/api/Reviews/ChangeReviews";
 import type { ChangeReviewStatusDto } from "../../shared/types/DTO/AdminDtos/ChangeReviewStatusDto";
 
 import { ReviewStatus } from "../../shared/types/Enums/ReviewStatus";
 import { Button, Rate, Segmented, Table, Tag, Typography } from "antd";
 import { useState } from "react";
-import { fetchReviews } from "../../features/admin/api/fetchReviews";
+import { fetchReviews } from "../../features/admin/api/Reviews/fetchReviews";
 import { message } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { ReviewDto } from "../../shared/types/DTO/CatalogDtos/ReviewDto";
@@ -136,7 +136,7 @@ export const ReviewMgmtPage = () => {
         }}
       >
         <Title level={3} style={{ color: "#fff", margin: 0 }}>
-          {"Title"}
+          {"Отзывы пользователей"}
         </Title>
         <Segmented
           value={status ?? "all"}

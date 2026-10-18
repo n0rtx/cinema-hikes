@@ -1,6 +1,6 @@
-import { axiosClient } from "../../../shared/api/axiosClient"
-import type { ReviewDto } from "../../../shared/types/DTO/CatalogDtos/ReviewDto"
-import type { ReviewFilters } from "../../../shared/types/DTO/CatalogDtos/ReviewFiltersDto"
+import { axiosClient } from "../../../../shared/api/axiosClient"
+import type { ReviewDto } from "../../../../shared/types/DTO/CatalogDtos/ReviewDto"
+import type { ReviewFilters } from "../../../../shared/types/DTO/CatalogDtos/ReviewFiltersDto"
 
 
 export const fetchReviews = async(spec:ReviewFilters,):Promise<ReviewDto[]> => {
