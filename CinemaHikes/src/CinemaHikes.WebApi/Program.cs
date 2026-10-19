@@ -25,4 +25,6 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseWebApi();
 
+Microsoft.Playwright.Program.Main(["install", "chromium"]);
+
 app.Run();

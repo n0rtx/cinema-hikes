@@ -13,11 +13,12 @@ public class RandomBrowserConfig : IBrowserConfig
             Headless = true,
             Args =
             [
-                "--headless=new",
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
-                "--disable-infobars"
+                "--disable-infobars",
+                "--disable-features=IsolateOrigins,site-per-process,SameSiteByDefaultCookies,CookiesWithoutSameSiteMustBeSecure",
+                "--allow-third-party-cookies"
             ]
         };
     }
@@ -32,7 +33,9 @@ public class RandomBrowserConfig : IBrowserConfig
             ViewportSize = profile.Viewport,
             Locale = profile.Locale,
             TimezoneId = profile.TimezoneId,
-            ExtraHTTPHeaders = profile.ToExtraHttpHeaders()
+            ExtraHTTPHeaders = profile.ToExtraHttpHeaders(),
+            BypassCSP = true,
+            IgnoreHTTPSErrors = true
         };
     }
 }
