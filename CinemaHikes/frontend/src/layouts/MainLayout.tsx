@@ -199,6 +199,7 @@ export const MainLayout = () => {
             icon={
               <SearchOutlined style={{ fontSize: "18px", color: "#fff" }} />
             }
+            onClick={() => navigate("/catalog")}
           />
           <Button
             type="text"

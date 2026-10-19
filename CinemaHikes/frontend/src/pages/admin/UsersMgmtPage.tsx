@@ -1,10 +1,10 @@
 import { fetchUsers } from "../../features/admin/api/Users/fetchUsers";
-import { AssignRole } from "../../features/admin/api/Users/AssignRole";
+// import { AssignRole } from "../../features/admin/api/Users/AssignRole";
 import type { ColumnsType } from "antd/es/table";
-import { RemoveRole } from "../../features/admin/api/Users/RemoveRole";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import type { AssignRoleDto } from "../../shared/types/DTO/AdminDtos/AssignRoleDto";
-import { message, Table, Tag, Typography } from "antd";
+// import { RemoveRole } from "../../features/admin/api/Users/RemoveRole";
+import { /*useMutation,*/ useQuery } from "@tanstack/react-query";
+//import type { AssignRoleDto } from "../../shared/types/DTO/AdminDtos/AssignRoleDto";
+import { /*message,*/ Table, Tag, Typography } from "antd";
 
 import type { UserDto } from "../../shared/types/DTO/UserDtos/UserDto";
 
@@ -22,7 +22,7 @@ export const UsersMgmtPage = () => {
     queryFn: fetchUsers,
   });
 
-  const removeRole = useMutation({
+  /*const removeRole = useMutation({
     mutationFn: (dto: AssignRoleDto) => RemoveRole(dto),
     onSuccess: () => {
       message.success("Роль успешно удаленна.");
@@ -40,7 +40,7 @@ export const UsersMgmtPage = () => {
     onError: () => {
       message.error("Не удалось добавить роль.");
     },
-  });
+  });*/
 
   const colums: ColumnsType<UserDto> = [
     {
@@ -68,10 +68,10 @@ export const UsersMgmtPage = () => {
       render: (roles: string[]) =>
         roles?.length
           ? roles.map((r) => (
-              <Tag key={r} color={statusColors[r]}>
-                {r}
-              </Tag>
-            ))
+            <Tag key={r} color={statusColors[r]}>
+              {r}
+            </Tag>
+          ))
           : "Нет ролей",
     },
     {
