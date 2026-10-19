@@ -7,6 +7,7 @@ using CinemaHikes.Domain.Interfaces.ExternalAuth;
 using CinemaHikes.Domain.Interfaces.Repositories;
 using CinemaHikes.Infrastructure.Bot.Checkers;
 using CinemaHikes.Infrastructure.Bot.Facades;
+using CinemaHikes.Infrastructure.External.Omdb;
 using CinemaHikes.Infrastructure.External.PoiskKino;
 using CinemaHikes.Infrastructure.ExternalAuth;
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
@@ -68,6 +69,9 @@ public static class DependencyInjection
 
         services.Configure<PoiskKinoOptions>(configuration.GetSection(PoiskKinoOptions.SectionName));
         services.AddHttpClient<IMovieMetadataClient, PoiskKinoClient>();
+        
+        services.Configure<OmdbOptions>(configuration.GetSection(OmdbOptions.SectionName));
+        services.AddHttpClient<IOmdbClient, OmdbClient>();
 
         return services;
     }

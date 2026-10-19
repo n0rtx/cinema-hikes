@@ -2,9 +2,7 @@ using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services;
 using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Entities.Users;
-using CinemaHikes.Domain.Enums;
 using CinemaHikes.Domain.Interfaces;
-using CinemaHikes.Domain.Interfaces.Bot;
 using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Specifications;
 using Microsoft.AspNetCore.Identity;
@@ -17,16 +15,13 @@ namespace CinemaHikes.Application.Services;
 public sealed class MovieService(
     IUnitOfWork uow,
     IMovieMetadataClient metadata,
-    UserManager<AppUser> userManager,
-    IMovieParserFacade parser) : IMovieService
+    IOmdbClient omdb,
+    UserManager<AppUser> userManager) : IMovieService
 {
-    private const string EmptyPlaceholder = "empty";
-    private static readonly TimeSpan LinkTtl = TimeSpan.FromHours(24);
-
     private IUnitOfWork Uow { get; } = uow;
     private IMovieMetadataClient Metadata { get; } = metadata;
+    private IOmdbClient Omdb { get; } = omdb;
     private UserManager<AppUser> UserManager { get; } = userManager;
-    private IMovieParserFacade Parser { get; } = parser;
 
     /// <summary>
     /// Retrieves a paginated list of movies based on genre, release year, and minimum rating.
@@ -71,7 +66,7 @@ public sealed class MovieService(
                 if (best is null)
                     continue;
 
-                ApplyMissingFields(movie, best);
+                await ApplyMissingFieldsAsync(movie, best, ct);
             }
 
             if (dirty.Count > 0)
@@ -113,126 +108,12 @@ public sealed class MovieService(
             var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
             if (best is not null)
             {
-                ApplyMissingFields(movie, best);
+                await ApplyMissingFieldsAsync(movie, best, ct);
                 await Uow.SaveChangesAsync(ct);
             }
         }
 
-        await EnsureFreshMovieLinksAsync(movie, ct);
-
         return MapDetails(movie);
-    }
-
-    private async Task EnsureFreshMovieLinksAsync(Movie movie, CancellationToken ct)
-    {
-        var links = movie.MovieLinks?.ToList() ?? new List<MovieLink>();
-
-        if (links.Count == 0)
-        {
-            var url = await TryResolveStreamUrlAsync(movie.Id, VideoQuality.FullHd, ct);
-            if (url is null)
-                url = await TryResolveStreamUrlAsync(movie.Id, VideoQuality.High, ct);
-
-            if (url is null)
-                return;
-
-            await UpsertMovieLinkAsync(movie, VideoQuality.FullHd, url, ct);
-            await Uow.SaveChangesAsync(ct);
-
-            var refreshed = await Uow.Movies.GetWithDetailsAsync(movie.Id, ct);
-            if (refreshed is not null)
-            {
-                movie.MovieLinks = refreshed.MovieLinks;
-                movie.VideoSources = refreshed.VideoSources;
-            }
-
-            return;
-        }
-
-        var changed = false;
-
-        foreach (var link in links)
-        {
-            if (IsFresh(link))
-                continue;
-
-            var url = await TryResolveStreamUrlAsync(movie.Id, link.VideoQuality, ct);
-            if (url is null)
-                continue;
-
-            link.Url = url;
-            link.UpdatedAt = DateTime.UtcNow;
-            changed = true;
-        }
-
-        if (changed)
-            await Uow.SaveChangesAsync(ct);
-    }
-
-    private static bool IsFresh(MovieLink? link)
-    {
-        if (link is null || string.IsNullOrWhiteSpace(link.Url) || IsMissing(link.Url))
-            return false;
-
-        var age = DateTime.UtcNow - link.UpdatedAt.ToUniversalTime();
-        return age < LinkTtl;
-    }
-
-    private async Task<string?> TryResolveStreamUrlAsync(
-        int movieId,
-        VideoQuality quality,
-        CancellationToken ct)
-    {
-        var sources = (await Uow.VideoSources.GetByMovieIdAsync(movieId, ct))
-            .Where(s => s.Status == SourceStatus.Active)
-            .OrderBy(s => s.Priority)
-            .ToList();
-
-        if (sources.Count == 0)
-            return null;
-
-        foreach (var source in sources)
-        {
-            try
-            {
-                var url = await Parser.GetMovieSrcAsync(source.PageUrl, quality);
-
-                if (!string.IsNullOrWhiteSpace(url) && !IsMissing(url))
-                    return url;
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Не смог получить ссылку на фильм: {ex.Message}");
-                Console.ResetColor();
-            }
-        }
-
-        return null;
-    }
-
-    private async Task UpsertMovieLinkAsync(
-        Movie movie,
-        VideoQuality quality,
-        string url,
-        CancellationToken ct)
-    {
-        var studio = await Uow.TranslationStudios.GetByNameAsync("Default", ct)
-                     ?? new TranslationStudio { Name = "Default" };
-
-        if (studio.Id == 0)
-            await Uow.TranslationStudios.AddAsync(studio, ct);
-
-        await Uow.MovieLinks.UpsertAsync(new MovieLink
-        {
-            MovieId = movie.Id,
-            TranslationStudioId = studio.Id == 0 ? 1 : studio.Id,
-            VideoQuality = quality,
-            Url = url,
-            UpdatedAt = DateTime.UtcNow,
-            Movie = movie,
-            TranslationStudio = studio
-        }, ct);
     }
 
     private async Task AwardHatAsync(int? userId, CancellationToken ct)
@@ -258,26 +139,28 @@ public sealed class MovieService(
         if (existing is not null)
         {
             if (NeedsEnrichment(existing))
-                ApplyMissingFields(existing, data);
+                await ApplyMissingFieldsAsync(existing, data, ct);
             return existing;
         }
 
+        var poster = await ResolvePosterAsync(data, ct);
+
         var movie = new Movie
         {
-            RuTitle = CoalesceRequired(data.RuTitle, EmptyPlaceholder),
-            UaTitle = CoalesceRequired(data.UaTitle, EmptyPlaceholder),
-            RuInEngTitle = CoalesceRequired(data.RuInEngTitle, EmptyPlaceholder),
-            Description = CoalesceRequired(data.Description, EmptyPlaceholder),
-            Director = CoalesceRequired(data.Director, EmptyPlaceholder),
+            RuTitle = data.RuTitle,
+            UaTitle = data.UaTitle,
+            RuInEngTitle = data.RuInEngTitle,
+            Description = data.Description,
+            Director = data.Director,
             ReleaseYear = data.ReleaseYear,
-            PosterUrl = CoalesceRequired(data.PosterUrl, EmptyPlaceholder),
+            PosterUrl = poster ?? string.Empty,
             KpRating = data.KpRating,
             CreatedAt = DateTime.UtcNow
         };
 
         foreach (var genreName in data.GenreNames.Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            if (IsMissing(genreName))
+            if (string.IsNullOrWhiteSpace(genreName))
                 continue;
 
             var genre = await Uow.Genres.GetByNameAsync(genreName, ct);
@@ -294,33 +177,30 @@ public sealed class MovieService(
         return movie;
     }
 
+    private async Task<string?> ResolvePosterAsync(ExternalMovieData data, CancellationToken ct)
+    {
+        if (!string.IsNullOrWhiteSpace(data.RuInEngTitle) && data.ReleaseYear > 0)
+        {
+            var poster = await Omdb.GetPosterByTitleAndYearAsync(data.RuInEngTitle, data.ReleaseYear, ct);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"OMDB poster for '{data.RuInEngTitle}' ({data.ReleaseYear}): {poster ?? "NULL"}");
+            Console.ResetColor();
+            
+            if (!string.IsNullOrWhiteSpace(poster))
+                return poster;
+        }
+
+        if (!string.IsNullOrWhiteSpace(data.RuTitle) && data.ReleaseYear > 0)
+            return await Omdb.GetPosterByTitleAndYearAsync(data.RuTitle, data.ReleaseYear, ct);
+
+        return null;
+    }
+
     private static bool NeedsEnrichment(Movie m) =>
-        IsMissing(m.PosterUrl)
-        || IsMissing(m.Description)
-        || m.KpRating <= 0
-        || IsMissing(m.Director);
-
-    private static bool IsMissing(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return true;
-
-        return string.Equals(value.Trim(), EmptyPlaceholder, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string CoalesceRequired(string? value, string fallback)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return fallback;
-
-        var trimmed = value.Trim();
-        if (string.Equals(trimmed, EmptyPlaceholder, StringComparison.OrdinalIgnoreCase))
-            return fallback;
-
-        return trimmed;
-    }
-
-    private static bool HasRealValue(string? value) => !IsMissing(value);
+        string.IsNullOrWhiteSpace(m.PosterUrl)
+        || string.IsNullOrWhiteSpace(m.Description)
+        || m.KpRating <= 0;
 
     private static ExternalMovieData? PickBestMatch(
         IReadOnlyList<ExternalMovieData> candidates,
@@ -347,15 +227,13 @@ public sealed class MovieService(
 
             if (apiTitle == title || apiAlt == title)
                 score += 100;
-            else if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(apiTitle)
-                                                  && (apiTitle.Contains(title, StringComparison.Ordinal)
-                                                      || title.Contains(apiTitle, StringComparison.Ordinal)
-                                                      || apiAlt.Contains(title, StringComparison.Ordinal)
-                                                      || title.Contains(apiAlt, StringComparison.Ordinal)))
+            else if (apiTitle.Contains(title, StringComparison.Ordinal)
+                     || title.Contains(apiTitle, StringComparison.Ordinal)
+                     || apiAlt.Contains(title, StringComparison.Ordinal)
+                     || title.Contains(apiAlt, StringComparison.Ordinal))
                 score += 50;
 
-            if (!string.IsNullOrEmpty(director) && !string.IsNullOrEmpty(apiDirector)
-                                                && !string.Equals(director, EmptyPlaceholder, StringComparison.Ordinal))
+            if (!string.IsNullOrEmpty(director) && !string.IsNullOrEmpty(apiDirector))
             {
                 if (apiDirector == director)
                     score += 80;
@@ -377,27 +255,36 @@ public sealed class MovieService(
         return bestScore >= 50 ? best : null;
     }
 
-    private static void ApplyMissingFields(Movie movie, ExternalMovieData data)
+    private async Task ApplyMissingFieldsAsync(Movie movie, ExternalMovieData data, CancellationToken ct)
     {
-        if (IsMissing(movie.PosterUrl) && HasRealValue(data.PosterUrl))
-            movie.PosterUrl = data.PosterUrl.Trim();
+        if (string.IsNullOrWhiteSpace(movie.PosterUrl))
+        {
+            var poster = await ResolvePosterAsync(data, ct);
+            if (!string.IsNullOrWhiteSpace(poster))
+                movie.PosterUrl = poster;
+        }
 
-        if (IsMissing(movie.Description) && HasRealValue(data.Description))
-            movie.Description = data.Description.Trim();
+        if (string.IsNullOrWhiteSpace(movie.Description)
+            && !string.IsNullOrWhiteSpace(data.Description))
+            movie.Description = data.Description;
 
         if (movie.KpRating <= 0 && data.KpRating > 0)
             movie.KpRating = data.KpRating;
 
-        if (IsMissing(movie.Director) && HasRealValue(data.Director)
-                                      && !string.Equals(data.Director.Trim(), "Unknown",
-                                          StringComparison.OrdinalIgnoreCase))
-            movie.Director = data.Director.Trim();
+        if (string.IsNullOrWhiteSpace(movie.Director)
+            || string.Equals(movie.Director, "Unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrWhiteSpace(data.Director)
+                && !string.Equals(data.Director, "Unknown", StringComparison.OrdinalIgnoreCase))
+                movie.Director = data.Director;
+        }
 
-        if (IsMissing(movie.UaTitle) && HasRealValue(data.UaTitle))
-            movie.UaTitle = data.UaTitle.Trim();
+        if (string.IsNullOrWhiteSpace(movie.UaTitle) && !string.IsNullOrWhiteSpace(data.UaTitle))
+            movie.UaTitle = data.UaTitle;
 
-        if (IsMissing(movie.RuInEngTitle) && HasRealValue(data.RuInEngTitle))
-            movie.RuInEngTitle = data.RuInEngTitle.Trim();
+        if (string.IsNullOrWhiteSpace(movie.RuInEngTitle)
+            && !string.IsNullOrWhiteSpace(data.RuInEngTitle))
+            movie.RuInEngTitle = data.RuInEngTitle;
     }
 
     private static string Normalize(string? value)
@@ -405,36 +292,17 @@ public sealed class MovieService(
         if (string.IsNullOrWhiteSpace(value))
             return string.Empty;
 
-        var trimmed = value.Trim().ToLowerInvariant().Replace('ё', 'е');
-        if (string.Equals(trimmed, EmptyPlaceholder, StringComparison.Ordinal))
-            return string.Empty;
-
-        return trimmed;
+        return value.Trim().ToLowerInvariant().Replace('ё', 'е');
     }
 
     private static MovieListItemDto MapListItem(Movie m) => new(
-        m.Id,
-        m.RuTitle,
-        m.UaTitle,
-        m.RuInEngTitle,
-        m.PosterUrl,
-        m.ReleaseYear,
-        m.KpRating,
+        m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
         m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),
-        m.Director,
-        m.Description);
+        m.Director, m.Description);
 
     private static MovieDetailsDto MapDetails(Movie m) => new(
-        m.Id,
-        m.RuTitle,
-        m.UaTitle,
-        m.RuInEngTitle,
-        m.Description,
-        m.Director,
-        m.ReleaseYear,
-        m.PosterUrl,
-        m.KpRating,
-        m.CreatedAt,
+        m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.Description, m.Director,
+        m.ReleaseYear, m.PosterUrl, m.KpRating, m.CreatedAt,
         m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),
         m.VideoSources.Select(vs => new VideoSourceDto(
             vs.Id, vs.MovieId, vs.ProviderName, vs.PageUrl, vs.Priority, vs.Status)).ToList(),
