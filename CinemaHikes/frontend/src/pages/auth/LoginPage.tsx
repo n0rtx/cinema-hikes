@@ -132,7 +132,11 @@ export const LoginPage = () => {
                   style={{
                     fontSize: "28px",
                     color: "#E50914",
-                    fontWeight: "bold",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
                   }}
                 >
                   10K+
@@ -146,7 +150,11 @@ export const LoginPage = () => {
                   style={{
                     fontSize: "28px",
                     color: "#E50914",
-                    fontWeight: "bold",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
                   }}
                 >
                   50K+
@@ -160,7 +168,11 @@ export const LoginPage = () => {
                   style={{
                     fontSize: "28px",
                     color: "#E50914",
-                    fontWeight: "bold",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
                   }}
                 >
                   24/7

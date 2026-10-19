@@ -90,6 +90,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
   const videoRef = useRef<HTMLVideoElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const qualityMenuRef = useRef<HTMLDivElement>(null);
 
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -99,6 +100,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [qualityMenuOpen, setQualityMenuOpen] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mp4Links = useMemo(
@@ -136,7 +138,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
     hasDirect ? "direct" : "iframe"
   );
   const [studioKey, setStudioKey] = useState("");
-  const [quality, setQuality] = useState<number | null>(null);
+  const [quality, setQuality] = useState<number>(VideoQuality.High);
   const [providerIdx, setProviderIdx] = useState(0);
 
   useEffect(() => {
@@ -157,42 +159,52 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
     });
   }, [mp4Links, studioKey]);
 
-  const qualities = useMemo(() => {
+  const availableQualities = useMemo(() => {
     const set = new Set<number>();
     for (const l of studioLinks) {
       if (l.url && l.videoQuality != null) set.add(Number(l.videoQuality));
     }
-    return QUALITY_ORDER.filter((q) => set.has(q));
+    return set;
   }, [studioLinks]);
 
-  useEffect(() => {
-    if (qualities.length === 0) {
-      setQuality(null);
-      return;
-    }
-    if (quality == null || !qualities.includes(quality as VideoQuality)) {
-      setQuality(qualities[0]);
-    }
-  }, [qualities, quality]);
-
   const currentDirectUrl = useMemo(() => {
-    if (quality == null) return studioLinks.find((l) => l.url)?.url ?? "";
-    return (
-      studioLinks.find((l) => Number(l.videoQuality) === quality && l.url)?.url ??
-      studioLinks.find((l) => l.url)?.url ??
-      ""
-    );
+    const withUrl = studioLinks.filter((l) => l.url);
+    if (withUrl.length === 0) return "";
+
+    const exact = withUrl.find((l) => Number(l.videoQuality) === quality);
+    if (exact) return exact.url;
+
+    const idx = (q: number) => QUALITY_ORDER.indexOf(q as VideoQuality);
+    const target = idx(quality);
+    const sorted = [...withUrl]
+      .filter((l) => idx(Number(l.videoQuality)) >= 0)
+      .sort(
+        (a, b) =>
+          Math.abs(idx(Number(a.videoQuality)) - target) -
+          Math.abs(idx(Number(b.videoQuality)) - target)
+      );
+    return (sorted[0] ?? withUrl[0]).url;
   }, [studioLinks, quality]);
 
   const currentIframe = providers[providerIdx] ?? providers[0];
 
-  // reset playback state when source changes
   useEffect(() => {
     setPlaying(false);
     setCurrentTime(0);
     setDuration(0);
     setBuffered(0);
   }, [currentDirectUrl]);
+
+  useEffect(() => {
+    if (!qualityMenuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!qualityMenuRef.current?.contains(e.target as Node)) {
+        setQualityMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [qualityMenuOpen]);
 
   const scheduleHide = useCallback(() => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -328,7 +340,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
 
   return (
     <div>
-      {/* TOP CONTROLS */}
       <div
         style={{
           backgroundColor: "#1a1a1a",
@@ -406,7 +417,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
         )}
       </div>
 
-      {/* VIDEO BLOCK */}
       <div
         ref={containerRef}
         style={{
@@ -425,46 +435,112 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
           if (playing) setShowControls(false);
         }}
       >
-        {/* Quality pills */}
-        {mode === "direct" && qualities.length > 0 && (
+        {mode === "direct" && (
           <div
+            ref={qualityMenuRef}
             style={{
               position: "absolute",
               top: 12,
               right: 12,
-              zIndex: 6,
-              display: "flex",
-              gap: 6,
-              opacity: showControls ? 1 : 0,
+              zIndex: 7,
+              opacity: showControls || qualityMenuOpen || !playing ? 1 : 0,
               transition: "opacity 0.2s",
             }}
           >
-            {qualities.map((q) => (
-              <button
-                key={q}
-                type="button"
-                onClick={() => setQuality(q)}
+            <button
+              type="button"
+              onClick={() => setQualityMenuOpen((o) => !o)}
+              aria-haspopup="listbox"
+              aria-expanded={qualityMenuOpen}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "6px 10px",
+                borderRadius: 4,
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                color: "#fff",
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                border: "1px solid rgba(255,255,255,0.25)",
+                userSelect: "none",
+              }}
+            >
+              {qualityLabel(quality)}
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
                 style={{
-                  padding: "4px 10px",
-                  borderRadius: "3px",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  border:
-                    quality === q
-                      ? "1px solid #E50914"
-                      : "1px solid rgba(255,255,255,0.25)",
-                  backgroundColor:
-                    quality === q
-                      ? "rgba(229, 9, 20, 0.9)"
-                      : "rgba(0, 0, 0, 0.65)",
-                  color: "#fff",
-                  userSelect: "none",
+                  transform: qualityMenuOpen ? "rotate(180deg)" : "none",
+                  transition: "transform 0.15s",
                 }}
               >
-                {qualityLabel(q)}
-              </button>
-            ))}
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {qualityMenuOpen && (
+              <div
+                role="listbox"
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 6px)",
+                  right: 0,
+                  minWidth: 130,
+                  padding: 4,
+                  borderRadius: 6,
+                  backgroundColor: "rgba(20, 20, 20, 0.95)",
+                  border: "1px solid #333",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+                }}
+              >
+                {QUALITY_ORDER.map((q) => {
+                  const active = quality === q;
+                  const available = availableQualities.has(q);
+                  return (
+                    <div
+                      key={q}
+                      role="option"
+                      aria-selected={active}
+                      onClick={() => {
+                        setQuality(q);
+                        setQualityMenuOpen(false);
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 12,
+                        padding: "7px 10px",
+                        borderRadius: 4,
+                        fontSize: 13,
+                        fontWeight: active ? 700 : 500,
+                        cursor: "pointer",
+                        color: available ? "#fff" : "#777",
+                        backgroundColor: active ? "#E50914" : "transparent",
+                        userSelect: "none",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) e.currentTarget.style.backgroundColor = "#2a2a2a";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
+                      <span>{qualityLabel(q)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -495,7 +571,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
               <source src={currentDirectUrl} type="video/mp4" />
             </video>
 
-            {/* Center play button (when paused) */}
             {!playing && (
               <button
                 type="button"
@@ -520,7 +595,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                   padding: 0,
                 }}
               >
-                {/* white triangle */}
                 <span
                   style={{
                     width: 0,
@@ -534,7 +608,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
               </button>
             )}
 
-            {/* Bottom controls bar */}
             <div
               style={{
                 position: "absolute",
@@ -550,7 +623,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                 pointerEvents: showControls || !playing ? "auto" : "none",
               }}
             >
-              {/* Progress bar — RED */}
               <div
                 ref={barRef}
                 onClick={onBarClick}
@@ -564,7 +636,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                   marginBottom: 10,
                 }}
               >
-                {/* buffered */}
                 <div
                   style={{
                     position: "absolute",
@@ -576,7 +647,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                     borderRadius: 3,
                   }}
                 />
-                {/* played — RED */}
                 <div
                   style={{
                     position: "absolute",
@@ -588,7 +658,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                     borderRadius: 3,
                   }}
                 />
-                {/* thumb */}
                 <div
                   style={{
                     position: "absolute",
@@ -612,7 +681,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                   gap: 12,
                 }}
               >
-                {/* Small round play/pause */}
                 <button
                   type="button"
                   onClick={togglePlay}
@@ -632,7 +700,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                   }}
                 >
                   {playing ? (
-                    /* pause icon */
                     <span style={{ display: "flex", gap: 3 }}>
                       <span
                         style={{
@@ -671,7 +738,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
 
                 <div style={{ flex: 1 }} />
 
-                {/* Volume */}
                 <button
                   type="button"
                   onClick={toggleMute}
@@ -717,7 +783,6 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                   }}
                 />
 
-                {/* Fullscreen */}
                 <button
                   type="button"
                   onClick={toggleFullscreen}
