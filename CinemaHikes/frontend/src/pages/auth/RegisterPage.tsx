@@ -145,7 +145,17 @@ export const RegisterPage = () => {
 
             <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
+                  }}
+                >
                   10K+
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
@@ -153,7 +163,17 @@ export const RegisterPage = () => {
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
+                  }}
+                >
                   100%
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
@@ -161,7 +181,17 @@ export const RegisterPage = () => {
                 </Text>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "28px", color: "#E50914", fontWeight: "bold" }}>
+                <div
+                  style={{
+                    fontSize: "28px",
+                    color: "#E50914",
+                    fontWeight: 900,
+                    letterSpacing: "1px",
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                    lineHeight: 1.2,
+                  }}
+                >
                   HD
                 </div>
                 <Text style={{ color: "#999", fontSize: "14px" }}>
