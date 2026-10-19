@@ -1,5 +1,5 @@
 import { Card, Typography, Tag } from "antd";
-import { StarFilled } from "@ant-design/icons";
+import { StarFilled, VideoCameraOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { MovieListItem } from "../../types/DTO/CatalogDtos/MoveListItemDto";
@@ -28,36 +28,56 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
         overflow: "hidden",
         cursor: "pointer",
       }}
-      bodyStyle={{ padding: "16px" }}
+      styles={{ body: { padding: "16px" } }}
       cover={
         <div style={{ position: "relative", paddingTop: "150%" }}>
-          <img
-            alt={displayTitle}
-            src={movie.posterUrl}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-          <Tag
-            color="#E50914"
-            style={{
-              position: "absolute",
-              top: "12px",
-              right: "8px",
-              margin: 0,
-              fontWeight: "bold",
-              borderRadius: "4px",
-              border: "none",
-            }}
-          >
-            <StarFilled style={{ marginRight: "4px" }} />
-            {movie.kpRating.toFixed(1)}
-          </Tag>
+          {movie.posterUrl ? (
+            <img
+              alt={displayTitle}
+              src={movie.posterUrl}
+              referrerPolicy="no-referrer"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#141414",
+                color: "#E50914",
+                fontSize: 40,
+              }}
+            >
+              <VideoCameraOutlined />
+            </div>
+          )}
+          {movie.kpRating > 0 && (
+            <Tag
+              color="#E50914"
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "8px",
+                margin: 0,
+                fontWeight: "bold",
+                borderRadius: "4px",
+                border: "none",
+              }}
+            >
+              <StarFilled style={{ marginRight: "4px" }} />
+              {movie.kpRating.toFixed(1)}
+            </Tag>
+          )}
         </div>
       }
     >

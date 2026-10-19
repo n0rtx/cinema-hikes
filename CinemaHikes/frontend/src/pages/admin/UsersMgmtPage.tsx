@@ -7,17 +7,21 @@ import type { AssignRoleDto } from "../../shared/types/DTO/AdminDtos/AssignRoleD
 import { message, Table, Tag, Typography } from "antd";
 
 import type { UserDto } from "../../shared/types/DTO/UserDtos/UserDto";
+
 const { Title } = Typography;
+
 const statusColors: Record<string, string> = {
-  "Admin":"gold",
-  "User":"green",
-  "Moderator":"blue",
+  Admin: "gold",
+  User: "green",
+  Moderator: "blue",
 };
+
 export const UsersMgmtPage = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: fetchUsers,
   });
+
   const removeRole = useMutation({
     mutationFn: (dto: AssignRoleDto) => RemoveRole(dto),
     onSuccess: () => {
@@ -27,6 +31,7 @@ export const UsersMgmtPage = () => {
       message.error("Не удалось удалить роль.");
     },
   });
+
   const assignRole = useMutation({
     mutationFn: (dto: AssignRoleDto) => AssignRole(dto),
     onSuccess: () => {
@@ -36,6 +41,7 @@ export const UsersMgmtPage = () => {
       message.error("Не удалось добавить роль.");
     },
   });
+
   const colums: ColumnsType<UserDto> = [
     {
       title: "Id",
@@ -67,8 +73,15 @@ export const UsersMgmtPage = () => {
               </Tag>
             ))
           : "Нет ролей",
-        },
+    },
+    {
+      title: "Шляпы",
+      dataIndex: "amountOfHats",
+      key: "amountOfHats",
+      render: (hats: number) => <strong>{hats ?? 0}</strong>,
+    },
   ];
+
   return (
     <div>
       <div>
