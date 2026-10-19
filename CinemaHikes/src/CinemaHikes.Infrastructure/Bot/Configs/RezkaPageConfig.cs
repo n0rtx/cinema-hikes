@@ -1,5 +1,6 @@
 using CinemaHikes.Domain.Interfaces.Bot;
 using Microsoft.Playwright;
+using System.Threading.Tasks;
 
 namespace CinemaHikes.Infrastructure.Bot.Configs;
 
@@ -13,6 +14,19 @@ public class RezkaPageConfig : IPageConfig
             Timeout = 60000
         });
 
-        await page.WaitForTimeoutAsync(3500);
+        bool isAnubis = await page.Locator("text=Anubis").CountAsync() > 0 || await page.TitleAsync() == "О нет!";
+        
+        if (isAnubis)
+        {
+            await page.WaitForSelectorAsync("#oframecdnplayer, video", new PageWaitForSelectorOptions 
+            { 
+                Timeout = 25000 
+            });
+            await Task.Delay(2000);
+        }
+        else
+        {
+            await Task.Delay(3500);
+        }
     }
 }

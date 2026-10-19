@@ -3,6 +3,7 @@ using CinemaHikes.Application.Services;
 using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Entities.Users;
 using CinemaHikes.Domain.Interfaces;
+using CinemaHikes.Domain.Interfaces.Bot;
 using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Specifications;
 using FluentAssertions;
@@ -25,8 +26,9 @@ public class MovieServiceTests
         _userManager = new Mock<UserManager<AppUser>>(
             store.Object,
             null!, null!, null!, null!, null!, null!, null!, null!);
-
-        _sut = new MovieService(_uow.Object, _metadata.Object, _userManager.Object);
+        
+        var parser = new Mock<IMovieParserFacade>();
+        _sut = new MovieService(_uow.Object, _metadata.Object, _userManager.Object, parser.Object);
     }
 
     [Fact]
