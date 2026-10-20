@@ -7,32 +7,39 @@ export const fetchMovies = async (f: MovieFilters): Promise<MoviesPage> => {
   const hasSearch = Boolean(f.search?.trim());
 
   if (hasSearch) {
-    const { data } = await axiosClient.get<MovieListItem[]>("/api/movies/search", {
+    const { data } = await axiosClient.get<{ items: MovieListItem[]; total: number }>(
+      "/api/movies/search",
+      {
+        params: {
+          query: f.search!.trim(),
+          page: f.page,
+          pageSize: f.pageSize,
+        },
+      }
+    );
+
+    return {
+      items: data.items ?? [],
+      total: data.total ?? 0,
+    };
+  }
+
+  const { data } = await axiosClient.get<{ items: MovieListItem[]; total: number }>(
+    "/api/movies",
+    {
       params: {
-        query: f.search!.trim(),
+        genreId: f.genreId,
+        year: f.year,
+        minRating: f.minRating,
+        sort: f.sort,
         page: f.page,
         pageSize: f.pageSize,
       },
-    });
+    }
+  );
 
-    const items = Array.isArray(data) ? data : [];
-    return { items, total: items.length };
-  }
-
-  const { data } = await axiosClient.get("/api/movies", {
-    params: {
-      genreId: f.genreId,
-      year: f.year,
-      minRating: f.minRating,
-      sort: f.sort,
-      page: f.page,
-      pageSize: f.pageSize,
-    },
-  });
-
-  if (Array.isArray(data)) return { items: data, total: data.length };
   return {
     items: data.items ?? [],
-    total: data.total ?? data.totalCount ?? 0,
+    total: data.total ?? 0,
   };
 };
