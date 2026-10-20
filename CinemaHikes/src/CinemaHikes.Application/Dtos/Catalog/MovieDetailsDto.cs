@@ -10,7 +10,7 @@ public sealed record MovieDetailsDto(
     short ReleaseYear,
     string PosterUrl,
     double KpRating,
-    DateTime CreatedAt,
+    DateTime? CreatedAt,
     IReadOnlyList<GenreDto> Genres,
     IReadOnlyList<VideoSourceDto> VideoSources,
     IReadOnlyList<MovieLinkDto> MovieLinks,
