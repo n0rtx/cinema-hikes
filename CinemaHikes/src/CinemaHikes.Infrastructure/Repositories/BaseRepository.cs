@@ -46,7 +46,7 @@ public class BaseRepository<T>(CinemaHikesDbContext dbContext) : IRepository<T> 
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>The total number of matching items in the database table.</returns>
     public async Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken)
-        => await ApplySpecification(spec, true).CountAsync(cancellationToken);
+        => await ApplySpecification(spec, false).CountAsync(cancellationToken);
 
     /// <summary>
     /// Asynchronously begins tracking a new entity in the Added state.
