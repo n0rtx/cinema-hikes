@@ -55,13 +55,12 @@ namespace CinemaHikes.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamptz");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(350)
-                        .HasColumnType("character varying(350)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Director")
                         .IsRequired()
@@ -72,15 +71,13 @@ namespace CinemaHikes.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(3,1)");
 
                     b.Property<string>("PosterUrl")
-                        .IsRequired()
-                        .HasMaxLength(350)
-                        .HasColumnType("character varying(350)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<short>("ReleaseYear")
                         .HasColumnType("smallint");
 
                     b.Property<string>("RuInEngTitle")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
@@ -90,7 +87,6 @@ namespace CinemaHikes.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<string>("UaTitle")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 

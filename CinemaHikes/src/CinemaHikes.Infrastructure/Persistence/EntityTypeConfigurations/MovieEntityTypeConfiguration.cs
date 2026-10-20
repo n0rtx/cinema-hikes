@@ -16,35 +16,25 @@ public sealed class MovieEntityTypeConfiguration : IEntityTypeConfiguration<Movi
             .IsRequired();
 
         builder.Property(m => m.UaTitle)
-            .HasMaxLength(255)
-            .IsRequired();
+            .HasMaxLength(255);
 
         builder.Property(m => m.RuInEngTitle)
-            .HasMaxLength(255)
-            .IsRequired();
+            .HasMaxLength(255);
 
         builder.Property(m => m.Description)
-            .HasMaxLength(350)
-            .IsRequired();
+            .HasMaxLength(1000);
 
         builder.Property(m => m.Director)
-            .HasMaxLength(150)
-            .IsRequired();
-
-        builder.Property(m => m.ReleaseYear)
-            .IsRequired();
+            .HasMaxLength(150);
 
         builder.Property(m => m.PosterUrl)
-            .HasMaxLength(350)
-            .IsRequired();
+            .HasMaxLength(1000);
 
         builder.Property(m => m.KpRating)
-            .HasColumnType("numeric(3,1)")
-            .IsRequired();
+            .HasColumnType("numeric(3,1)");
 
         builder.Property(m => m.CreatedAt)
-            .HasColumnType("timestamptz")
-            .IsRequired();
+            .HasColumnType("timestamptz");
         
         builder.HasIndex(m => m.RuTitle)
             .HasMethod("gin")
