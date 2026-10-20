@@ -17,7 +17,9 @@ public class MovieServiceTests
 {
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly Mock<IMovieMetadataClient> _metadata = new();
+    private readonly Mock<IOmdbClient> _omdb = new();
     private readonly Mock<UserManager<AppUser>> _userManager;
+    private readonly Mock<IMovieParserFacade> _parser = new();
     private readonly MovieService _sut;
 
     public MovieServiceTests()
@@ -26,9 +28,13 @@ public class MovieServiceTests
         _userManager = new Mock<UserManager<AppUser>>(
             store.Object,
             null!, null!, null!, null!, null!, null!, null!, null!);
-        
-        var parser = new Mock<IMovieParserFacade>();
-        _sut = new MovieService(_uow.Object, _metadata.Object, _userManager.Object, parser.Object);
+
+        _sut = new MovieService(
+            _uow.Object,
+            _metadata.Object,
+            _omdb.Object,
+            _userManager.Object,
+            _parser.Object);
     }
 
     [Fact]
@@ -219,8 +225,8 @@ public class MovieServiceTests
     {
         Id = id,
         RuTitle = title,
-        UaTitle = title,
-        RuInEngTitle = title,
+        UaTitle = title + " UA",
+        RuInEngTitle = title + " Eng",
         Description = "desc",
         Director = "dir",
         ReleaseYear = year,
