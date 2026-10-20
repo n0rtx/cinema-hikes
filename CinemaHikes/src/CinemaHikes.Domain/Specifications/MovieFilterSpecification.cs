@@ -4,7 +4,7 @@ namespace CinemaHikes.Domain.Specifications;
 
 public sealed class MovieFilterSpecification : BaseSpecification<Movie>
 {
-    public MovieFilterSpecification(int? genreId, int? year, double? minRating, int page, int pageSize)
+    public MovieFilterSpecification(int? genreId, int? year, double? minRating, int? page = null, int? pageSize = null)
     {
         AddCriteria(m =>
             (!genreId.HasValue || m.MovieGenres.Any(mg => mg.GenreId == genreId)) &&
@@ -16,6 +16,7 @@ public sealed class MovieFilterSpecification : BaseSpecification<Movie>
         ApplyOrderByDescending(m => m.KpRating);
         AddThenBy(m => m.Id);
 
-        ApplyPaging((page - 1) * pageSize, pageSize);
+        if (page.HasValue && pageSize.HasValue)
+            ApplyPaging((page.Value - 1) * pageSize.Value, pageSize.Value);
     }
 }

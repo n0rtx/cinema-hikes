@@ -17,6 +17,19 @@ var app = builder.Build();
 
 
 await app.Services.InitializeDatabaseAsync(app.Lifetime.ApplicationStopping);
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider
+        .GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+    foreach (var role in new[] { "Admin", "Moderator", "User" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -31,11 +31,11 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <param name="page">The 1-based page index (defaults to 1).</param>
     /// <param name="pageSize">The number of items to retrieve per page (defaults to 20, max 50).</param>
-    /// <returns>A list of <see cref="MovieListItemDto"/> matching the specified filter criteria.</returns>
+    /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the specified filter criteria.</returns>
     /// <response code="200">Returns the filtered and paginated movie list.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(List<MovieListItemDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<MovieListItemDto>>> GetPagedAsync(
+    [ProducesResponseType(typeof(PagedResultDto<MovieListItemDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<MovieListItemDto>>> GetPagedAsync(
         [FromQuery] int? genreId,
         [FromQuery] int? year,
         [FromQuery] double? minRating,
@@ -46,10 +46,10 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         page = Math.Max(page, 1);
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
-        var movies = await MovieService.GetPagedAsync(
+        var result = await MovieService.GetPagedAsync(
             genreId, year, minRating, page, pageSize, ct);
 
-        return Ok(movies);
+        return Ok(result);
     }
 
     /// <summary>
@@ -84,13 +84,13 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <param name="page">The 1-based page index (defaults to 1).</param>
     /// <param name="pageSize">The number of items per page (defaults to 20, max 50).</param>
-    /// <returns>A list of <see cref="MovieListItemDto"/> matching the query.</returns>
+    /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the query.</returns>
     /// <response code="200">Returns matching movies.</response>
     /// <response code="400">The query is null, empty, or shorter than 2 characters.</response>
     [HttpGet("search")]
-    [ProducesResponseType(typeof(List<MovieListItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResultDto<MovieListItemDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<List<MovieListItemDto>>> SearchAsync(
+    public async Task<ActionResult<PagedResultDto<MovieListItemDto>>> SearchAsync(
         [FromQuery] string query,
         CancellationToken cancellationToken,
         [FromQuery] int page = 1,
@@ -107,9 +107,9 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         if (int.TryParse(idClaim, out var parsedId))
             userId = parsedId;
 
-        var movies = await MovieService.SearchAsync(
+        var result = await MovieService.SearchAsync(
             query.Trim(), page, pageSize, userId, cancellationToken);
 
-        return Ok(movies);
+        return Ok(result);
     }
 }

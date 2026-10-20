@@ -17,8 +17,8 @@ public interface IMovieService
     /// <param name="page">The 1-based page index.</param>
     /// <param name="pageSize">The number of items per page.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>A list of <see cref="MovieListItemDto"/> matching the filter criteria.</returns>
-    Task<List<MovieListItemDto>> GetPagedAsync(
+    /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the filter criteria.</returns>
+    Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
         int? genreId, int? year, double? minRating, int page, int pageSize, CancellationToken ct);
 
     /// <summary>
@@ -28,8 +28,8 @@ public interface IMovieService
     /// <param name="page">The 1-based page index.</param>
     /// <param name="pageSize">The number of results per page.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>A list of <see cref="MovieListItemDto"/> matching the search query.</returns>
-    Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId,CancellationToken ct);
+    /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the search query.</returns>
+    Task<PagedResultDto<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId, CancellationToken ct);
 
     /// <summary>
     /// Retrieves comprehensive details for a specific movie including genres, video sources, and reviews.
