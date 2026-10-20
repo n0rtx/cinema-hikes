@@ -19,7 +19,7 @@ namespace CinemaHikes.Infrastructure.Repositories.Users
                 u.Id, u.UserName, u.Email, u.AmountOfHats,
                 Roles = (from ur in db.UserRoles
                     join r in db.Roles on ur.RoleId equals r.Id
-                    where ur.UserId == u.Id
+                    where ur.UserId ==  u.Id
                     select r.Name!).ToList()
             }).ToListAsync(ct);
 
