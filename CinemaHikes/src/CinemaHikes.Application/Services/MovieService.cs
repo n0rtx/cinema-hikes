@@ -56,34 +56,15 @@ public sealed class MovieService(
     /// <param name="userId">Optional identifier of the user who triggered the search; receives a hat when new movies are added from external metadata.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the query.</returns>
-    public async Task<PagedResultDto<MovieListItemDto>> SearchAsync(
-        string query, int page, int pageSize, int? userId, CancellationToken ct)
+    public async Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId,
+        CancellationToken ct)
     {
-        var pagedSpec = new MovieSearchSpecification(query, page, pageSize);
-        var countSpec = new MovieSearchSpecification(query);
+        var local = await Uow.Movies.ListAsync(
+            new MovieSearchSpecification(query, page, pageSize), ct);
 
-        var local = await Uow.Movies.ListAsync(pagedSpec, ct);
-        var total = await Uow.Movies.CountAsync(countSpec, ct);
-
-        if (local.Count > 0 || total > 0)
+        if (local.Count > 0)
         {
-            var dirty = local.Where(NeedsEnrichment).ToList();
-            foreach (var movie in dirty)
-            {
-                var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
-                var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
-                if (best is null)
-                    continue;
-
-                await ApplyMissingFieldsAsync(movie, best, ct);
-            }
-
-            if (dirty.Count > 0)
-                await Uow.SaveChangesAsync(ct);
-
-            return new PagedResultDto<MovieListItemDto>(
-                local.Select(MapListItem).ToList(),
-                total);
+            return local.Select(MapListItem).ToList();
         }
 
         var external = await Metadata.SearchAsync(query, pageSize, ct);
@@ -98,9 +79,7 @@ public sealed class MovieService(
             await AwardHatAsync(userId, ct);
         }
 
-        return new PagedResultDto<MovieListItemDto>(
-            saved.Select(MapListItem).ToList(),
-            saved.Count);
+        return saved.Select(MapListItem).ToList();
     }
 
     /// <summary>
@@ -199,7 +178,7 @@ public sealed class MovieService(
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"OMDB poster for '{data.RuInEngTitle}' ({data.ReleaseYear}): {poster ?? "NULL"}");
             Console.ResetColor();
-            
+
             if (!string.IsNullOrWhiteSpace(poster))
                 return poster;
         }
