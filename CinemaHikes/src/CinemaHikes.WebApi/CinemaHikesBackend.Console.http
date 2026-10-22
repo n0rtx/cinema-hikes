@@ -1,6 +1,1 @@
 @CinemaHikes.WebApi_HostAddress = http://localhost:5171
-
-GET {{CinemaHikes.WebApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
