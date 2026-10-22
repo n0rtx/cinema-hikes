@@ -31,20 +31,21 @@ public sealed class MovieService(
     /// <param name="minRating">Optional minimum rating threshold for filtering.</param>
     /// <param name="page">The 1-based page index.</param>
     /// <param name="pageSize">The number of items per page.</param>
+    /// <param name="onlyWithPoster">Display only movies with the poster</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of mapped <see cref="MovieListItemDto"/> matching the specification.</returns>
     public async Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
-        int? genreId, int? year, double? minRating, int page, int pageSize, CancellationToken ct)
+        int? genreId, int? year, double? minRating, int page, int pageSize,
+        bool onlyWithPoster, CancellationToken ct)
     {
-        var pagedSpec = new MovieFilterSpecification(genreId, year, minRating, page, pageSize);
-        var countSpec = new MovieFilterSpecification(genreId, year, minRating);
+        var pagedSpec = new MovieFilterSpecification(genreId, year, minRating, page, pageSize, onlyWithPoster);
+        var countSpec = new MovieFilterSpecification(genreId, year, minRating, onlyWithPoster: onlyWithPoster);
 
         var total = await Uow.Movies.CountAsync(countSpec, ct);
         var movies = await Uow.Movies.ListAsync(pagedSpec, ct);
 
         return new PagedResultDto<MovieListItemDto>(
-            movies.Select(MapListItem).ToList(),
-            total);
+            movies.Select(MapListItem).ToList(), total);
     }
 
     /// <summary>

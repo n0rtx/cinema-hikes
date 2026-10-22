@@ -16,10 +16,11 @@ public interface IMovieService
     /// <param name="minRating">Optional minimum rating threshold.</param>
     /// <param name="page">The 1-based page index.</param>
     /// <param name="pageSize">The number of items per page.</param>
+    /// <param name="onlyWithPoster">Display only movies with the poster</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the filter criteria.</returns>
     Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
-        int? genreId, int? year, double? minRating, int page, int pageSize, CancellationToken ct);
+        int? genreId, int? year, double? minRating, int page, int pageSize, bool onlyWithPoster, CancellationToken ct);
 
     /// <summary>
     /// Searches for movies by title query in the local repository and queries external metadata services if not found locally.
