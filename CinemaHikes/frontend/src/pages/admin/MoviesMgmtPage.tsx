@@ -30,7 +30,7 @@ import type { CreateMovieDto } from "../../shared/types/DTO/CatalogDtos/CreateMo
 import type { UpdateMovieDto } from "../../shared/types/DTO/CatalogDtos/UpdateMovieDto";
 import type { MovieListItem } from "../../shared/types/DTO/CatalogDtos/MoveListItemDto";
 import type { GenreDto } from "../../shared/types/DTO/CatalogDtos/GenreDto";
-import { fetchGenres } from "../../features/catalog/api/fetchGenrest";
+import { fetchGenres } from "../../features/catalog/api/fetchGenres";
 
 const { Title } = Typography;
 
