@@ -32,6 +32,7 @@ export const MovieCarousel = ({
     refetch,
   } = useMoviesQuery({
     minRating,
+    onlyWithPoster: true,
     pageSize,
   });
 
