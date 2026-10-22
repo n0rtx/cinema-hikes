@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../shared/hooks/useDebounce";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchGenres } from "../../features/catalog/api/fetchGenrest";
+import { fetchGenres } from "../../features/catalog/api/fetchGenres";
 import { fetchMovies } from "../../features/catalog/api/fetchMovies";
 import "../../features/catalog/components/CatalogPage.css";
 import {

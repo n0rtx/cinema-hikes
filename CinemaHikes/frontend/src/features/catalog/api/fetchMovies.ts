@@ -3,43 +3,28 @@ import type { MovieFilters } from "../../../shared/types/DTO/CatalogDtos/MovieFi
 import type { MoviesPage } from "../../../shared/types/DTO/CatalogDtos/MoviesPageDto";
 import type { MovieListItem } from "../../../shared/types/DTO/CatalogDtos/MoveListItemDto";
 
+type Raw = { items: MovieListItem[]; total: number };
+
 export const fetchMovies = async (f: MovieFilters): Promise<MoviesPage> => {
-  const hasSearch = Boolean(f.search?.trim());
+  const search = f.search?.trim();
 
-  if (hasSearch) {
-    const { data } = await axiosClient.get<{ items: MovieListItem[]; total: number }>(
-      "/api/movies/search",
-      {
-        params: {
-          query: f.search!.trim(),
-          page: f.page,
-          pageSize: f.pageSize,
-        },
-      }
-    );
-
-    return {
-      items: data.items ?? [],
-      total: data.total ?? 0,
-    };
+  if (search) {
+    const { data } = await axiosClient.get<Raw>("/api/movies/search", {
+      params: { query: search, page: f.page, pageSize: f.pageSize },
+    });
+    return { items: data.items ?? [], total: data.total ?? 0 };
   }
 
-  const { data } = await axiosClient.get<{ items: MovieListItem[]; total: number }>(
-    "/api/movies",
-    {
-      params: {
-        genreId: f.genreId,
-        year: f.year,
-        minRating: f.minRating,
-        sort: f.sort,
-        page: f.page,
-        pageSize: f.pageSize,
-      },
-    }
-  );
-
-  return {
-    items: data.items ?? [],
-    total: data.total ?? 0,
-  };
+  const { data } = await axiosClient.get<Raw>("/api/movies", {
+    params: {
+      genreIds: f.genreId,
+      year: f.year,
+      minRating: f.minRating,
+      sort: f.sort,
+      page: f.page,
+      pageSize: f.pageSize,
+    },
+    paramsSerializer: { indexes: null },
+  });
+  return { items: data.items ?? [], total: data.total ?? 0 };
 };
