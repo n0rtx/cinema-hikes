@@ -37,10 +37,12 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<MovieListItemDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResultDto<MovieListItemDto>>> GetPagedAsync(
-        [FromQuery] int? genreId,
+        [FromQuery] int[]? genreIds,
         [FromQuery] int? year,
         [FromQuery] double? minRating,
+        [FromQuery] string? sort,
         CancellationToken ct,
+        [FromQuery] bool matchAllGenres = false,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] bool onlyWithPoster = false)
@@ -49,7 +51,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
         var result = await MovieService.GetPagedAsync(
-            genreId, year, minRating, page, pageSize, onlyWithPoster, ct);
+            genreIds, year, minRating, sort, matchAllGenres, page, pageSize, onlyWithPoster, ct);
 
         return Ok(result);
     }

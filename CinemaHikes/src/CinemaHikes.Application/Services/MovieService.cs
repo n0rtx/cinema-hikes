@@ -35,11 +35,14 @@ public sealed class MovieService(
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of mapped <see cref="MovieListItemDto"/> matching the specification.</returns>
     public async Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
-        int? genreId, int? year, double? minRating, int page, int pageSize,
-        bool onlyWithPoster, CancellationToken ct)
+        IReadOnlyCollection<int>? genreIds, int? year, double? minRating,
+        string? sort, bool matchAllGenres,
+        int page, int pageSize, bool onlyWithPoster, CancellationToken ct)
     {
-        var pagedSpec = new MovieFilterSpecification(genreId, year, minRating, page, pageSize, onlyWithPoster);
-        var countSpec = new MovieFilterSpecification(genreId, year, minRating, onlyWithPoster: onlyWithPoster);
+        var pagedSpec = new MovieFilterSpecification(
+            genreIds, year, minRating, sort, matchAllGenres, page, pageSize, onlyWithPoster);
+        var countSpec = new MovieFilterSpecification(
+            genreIds, year, minRating, sort, matchAllGenres, onlyWithPoster: onlyWithPoster);
 
         var total = await Uow.Movies.CountAsync(countSpec, ct);
         var movies = await Uow.Movies.ListAsync(pagedSpec, ct);
@@ -73,10 +76,11 @@ public sealed class MovieService(
         }
 
         var external = await Metadata.SearchAsync(query, pageSize, ct);
+        var genreMap = await LoadGenreMapAsync(ct);
         var saved = new List<Movie>();
 
         foreach (var item in external)
-            saved.Add(await UpsertFromExternalAsync(item, ct));
+            saved.Add(await UpsertFromExternalAsync(item, genreMap, ct));
 
         if (saved.Count > 0)
         {
@@ -128,7 +132,10 @@ public sealed class MovieService(
         await UserManager.UpdateAsync(user);
     }
 
-    private async Task<Movie> UpsertFromExternalAsync(ExternalMovieData data, CancellationToken ct)
+    private async Task<Movie> UpsertFromExternalAsync(
+        ExternalMovieData data,
+        IReadOnlyDictionary<string, Genre> genreMap,
+        CancellationToken ct)
     {
         var existing = (await Uow.Movies.ListAsync(
                 new MovieSearchSpecification(data.RuTitle, 1, 5), ct))
@@ -147,29 +154,20 @@ public sealed class MovieService(
         var movie = new Movie
         {
             RuTitle = data.RuTitle,
-            UaTitle = data.UaTitle,
-            RuInEngTitle = data.RuInEngTitle,
-            Description = data.Description,
-            Director = data.Director,
+            UaTitle = NullIfEmpty(data.UaTitle),
+            RuInEngTitle = NullIfEmpty(data.RuInEngTitle),
+            Description = NullIfEmpty(data.Description),
+            Director = NullIfEmpty(data.Director) ?? "Unknown",
             ReleaseYear = data.ReleaseYear,
-            PosterUrl = poster ?? string.Empty,
+            PosterUrl = NullIfEmpty(poster),
             KpRating = data.KpRating,
             CreatedAt = DateTime.UtcNow
         };
 
-        foreach (var genreName in data.GenreNames.Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var name in data.GenreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
         {
-            if (string.IsNullOrWhiteSpace(genreName))
-                continue;
-
-            var genre = await Uow.Genres.GetByNameAsync(genreName, ct);
-            if (genre is null)
-            {
-                genre = new Genre { Name = genreName };
-                await Uow.Genres.AddAsync(genre, ct);
-            }
-
-            movie.MovieGenres.Add(new MovieGenre { Genre = genre, Movie = movie });
+            if (genreMap.TryGetValue(name, out var genre))
+                movie.MovieGenres.Add(new MovieGenre { Movie = movie, Genre = genre, GenreId = genre.Id });
         }
 
         await Uow.Movies.AddAsync(movie, ct);
@@ -181,10 +179,6 @@ public sealed class MovieService(
         if (!string.IsNullOrWhiteSpace(data.RuInEngTitle) && data.ReleaseYear > 0)
         {
             var poster = await Omdb.GetPosterByTitleAndYearAsync(data.RuInEngTitle, data.ReleaseYear, ct);
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"OMDB poster for '{data.RuInEngTitle}' ({data.ReleaseYear}): {poster ?? "NULL"}");
-            Console.ResetColor();
 
             if (!string.IsNullOrWhiteSpace(poster))
                 return poster;
@@ -285,6 +279,17 @@ public sealed class MovieService(
             && !string.IsNullOrWhiteSpace(data.RuInEngTitle))
             movie.RuInEngTitle = data.RuInEngTitle;
     }
+
+    private async Task<Dictionary<string, Genre>> LoadGenreMapAsync(CancellationToken ct)
+    {
+        var genres = await Uow.Genres.ListAsync(new EmptySpecification<Genre>(), ct);
+        var map = new Dictionary<string, Genre>();
+        foreach (var g in genres)
+            map.TryAdd(Normalize(g.Name), g);
+        return map;
+    }
+
+    private static string? NullIfEmpty(string? s) => string.IsNullOrWhiteSpace(s) ? null : s;
 
     private static string Normalize(string? value)
     {

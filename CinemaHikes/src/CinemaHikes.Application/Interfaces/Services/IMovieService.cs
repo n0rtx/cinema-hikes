@@ -2,7 +2,6 @@ using CinemaHikes.Application.Dtos.Catalog;
 
 namespace CinemaHikes.Application.Interfaces.Services;
 
-
 /// <summary>
 /// Defines service operations for querying and searching movies in the catalog.
 /// </summary>
@@ -19,8 +18,10 @@ public interface IMovieService
     /// <param name="onlyWithPoster">Display only movies with the poster</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the filter criteria.</returns>
-    Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
-        int? genreId, int? year, double? minRating, int page, int pageSize, bool onlyWithPoster, CancellationToken ct);
+    public Task<PagedResultDto<MovieListItemDto>> GetPagedAsync(
+        IReadOnlyCollection<int>? genreIds, int? year, double? minRating,
+        string? sort, bool matchAllGenres,
+        int page, int pageSize, bool onlyWithPoster, CancellationToken ct);
 
     /// <summary>
     /// Searches for movies by title query in the local repository and queries external metadata services if not found locally.
@@ -31,7 +32,8 @@ public interface IMovieService
     /// <param name="userId"></param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the search query.</returns>
-    Task<PagedResultDto<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId, CancellationToken ct);
+    Task<PagedResultDto<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId,
+        CancellationToken ct);
 
     /// <summary>
     /// Retrieves comprehensive details for a specific movie including genres, video sources, and reviews.

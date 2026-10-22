@@ -1,6 +1,5 @@
 using CinemaHikes.Infrastructure.Persistence.DbContexts;
 using CinemaHikes.Infrastructure.Persistence.Seed;
-using CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,10 +28,8 @@ public static class DatabaseExtensions
             {
                 await db.Database.EnsureCreatedAsync(cancellationToken);
             }
-            await RolesSeeder.SeedAsync(services, cancellationToken);
-            await CatalogSeeder.SeedAsync(services, cancellationToken);
-            await AdminSeeder.SeedAsync(services, cancellationToken);
-           
+
+            // await CatalogSeeder.SeedAsync(services, cancellationToken);
             logger.LogInformation("Database migrated and seeded successfully");
         }
         catch (Exception ex)
