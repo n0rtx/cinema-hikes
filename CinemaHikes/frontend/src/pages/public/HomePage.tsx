@@ -71,7 +71,7 @@ export const HomePage = () => {
         </div>
       </div>
 
-      <MovieCarousel sectionTitle={t("home.topSection")} minRating={7} pageSize={12} />
+      <MovieCarousel sectionTitle={t("home.topSection")} minRating={7} pageSize={24} />
     </div>
   );
 };
