@@ -56,15 +56,19 @@ public sealed class MovieService(
     /// <param name="userId">Optional identifier of the user who triggered the search; receives a hat when new movies are added from external metadata.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the query.</returns>
-    public async Task<List<MovieListItemDto>> SearchAsync(string query, int page, int pageSize, int? userId,
-        CancellationToken ct)
+    public async Task<PagedResultDto<MovieListItemDto>> SearchAsync(
+        string query, int page, int pageSize, int? userId, CancellationToken ct)
     {
         var local = await Uow.Movies.ListAsync(
             new MovieSearchSpecification(query, page, pageSize), ct);
 
         if (local.Count > 0)
         {
-            return local.Select(MapListItem).ToList();
+            var total = await Uow.Movies.CountAsync(new MovieSearchSpecification(query), ct);
+
+            return new PagedResultDto<MovieListItemDto>(
+                local.Select(MapListItem).ToList(),
+                total);
         }
 
         var external = await Metadata.SearchAsync(query, pageSize, ct);
@@ -79,7 +83,9 @@ public sealed class MovieService(
             await AwardHatAsync(userId, ct);
         }
 
-        return saved.Select(MapListItem).ToList();
+        return new PagedResultDto<MovieListItemDto>(
+            saved.Select(MapListItem).ToList(),
+            saved.Count);
     }
 
     /// <summary>
