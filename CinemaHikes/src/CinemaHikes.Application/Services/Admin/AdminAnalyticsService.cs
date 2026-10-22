@@ -22,7 +22,8 @@ public sealed class AdminAnalyticsService(IUnitOfWork uow) : IAdminAnalyticsServ
     public async Task<AnalyticsSummaryDto> GetSummaryAsync(CancellationToken ct)
     {
         var top = await Uow.Movies.ListAsync(
-            new MovieFilterSpecification(null, null, null, 1, 10), ct);
+            new MovieFilterSpecification(
+                genreIds: null, year: null, minRating: null, page: 1, pageSize: 10), ct);
         var movieCount = await Uow.Movies.CountAsync(new EmptySpecification<Movie>(), ct);
         var reviewCount = await Uow.Reviews.CountAsync(new EmptySpecification<Review>(), ct);
 
@@ -33,6 +34,7 @@ public sealed class AdminAnalyticsService(IUnitOfWork uow) : IAdminAnalyticsServ
             0,
             top.Select(m => new MovieListItemDto(
                 m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-                m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),m.Director,m.Description)).ToList());
+                m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(), m.Director,
+                m.Description)).ToList());
     }
 }
