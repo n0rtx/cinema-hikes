@@ -12,8 +12,7 @@ namespace CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding
         public static async Task SeedAsync(IServiceProvider service,CancellationToken ct)
         {
             await using var scope = service.CreateAsyncScope();
-            var roleManager = service.GetRequiredService <RoleManager<IdentityRole<int>>>();
-            var db = scope.ServiceProvider.GetRequiredService<CinemaHikesDbContext>();
+            var roleManager = scope.ServiceProvider.GetRequiredService <RoleManager<IdentityRole<int>>>();
             var roles = new[] { "Admin", "Moderator", "User" };
             foreach(var role in roles)
             {
@@ -22,7 +21,7 @@ namespace CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding
                     await roleManager.CreateAsync(new IdentityRole<int>(role));
                 }
             }
-            await db.SaveChangesAsync(ct);
+           
             
         }
     }
