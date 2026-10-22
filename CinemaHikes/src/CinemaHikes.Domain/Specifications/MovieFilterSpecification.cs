@@ -4,12 +4,13 @@ namespace CinemaHikes.Domain.Specifications;
 
 public sealed class MovieFilterSpecification : BaseSpecification<Movie>
 {
-    public MovieFilterSpecification(int? genreId, int? year, double? minRating, int? page = null, int? pageSize = null)
+    public MovieFilterSpecification(int? genreId, int? year, double? minRating, int? page = null, int? pageSize = null, bool onlyWithPoster = false)
     {
         AddCriteria(m =>
             (!genreId.HasValue || m.MovieGenres.Any(mg => mg.GenreId == genreId)) &&
             (!year.HasValue || m.ReleaseYear == year) &&
-            (!minRating.HasValue || m.KpRating >= minRating));
+            (!minRating.HasValue || m.KpRating >= minRating) &&
+            (!onlyWithPoster || (m.PosterUrl != null && m.PosterUrl != "")));
 
         AddInclude("MovieGenres.Genre");
 

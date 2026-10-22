@@ -31,6 +31,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <param name="page">The 1-based page index (defaults to 1).</param>
     /// <param name="pageSize">The number of items to retrieve per page (defaults to 20, max 50).</param>
+    /// <param name="onlyWithPoster">Display only movies with the poster</param>
     /// <returns>A paginated result of <see cref="MovieListItemDto"/> matching the specified filter criteria.</returns>
     /// <response code="200">Returns the filtered and paginated movie list.</response>
     [HttpGet]
@@ -41,13 +42,14 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         [FromQuery] double? minRating,
         CancellationToken ct,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20)
+        [FromQuery] int pageSize = 20,
+        [FromQuery] bool onlyWithPoster = false)
     {
         page = Math.Max(page, 1);
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
         var result = await MovieService.GetPagedAsync(
-            genreId, year, minRating, page, pageSize, ct);
+            genreId, year, minRating, page, pageSize, onlyWithPoster, ct);
 
         return Ok(result);
     }
