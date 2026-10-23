@@ -8,16 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding
 {
-   
     public static class AdminSeeder
     {
         private sealed record AdminChickChick(string Username, string Role, string Email, string Password);
-        public static async Task SeedAsync(IServiceProvider service,CancellationToken ct)
+
+        public static async Task SeedAsync(IServiceProvider service, CancellationToken ct)
         {
             await using var scope = service.CreateAsyncScope();
-            
+
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-            var admins = new List<AdminChickChick>() { new("alexOdessa", "Admin", "pirattv@gmail.com", "alexOdessa777!Q") };
+            var admins = new List<AdminChickChick>()
+                { new("admin", "Admin", "admin@gmail.com", "Admin_1234") };
 
 
             foreach (var admin in admins)
@@ -31,7 +32,6 @@ namespace CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding
                         Email = admin.Email,
                         EmailConfirmed = true,
                         RegisteredAt = DateTime.UtcNow,
-
                     };
                     var result = await userManager.CreateAsync(administrator, admin.Password);
                     if (result.Succeeded)
@@ -40,9 +40,6 @@ namespace CinemaHikes.Infrastructure.Persistence.Seed.AdminRolesSeeding
                     }
                 }
             }
-            
-           
         }
     }
-
 }
