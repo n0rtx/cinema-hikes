@@ -45,27 +45,101 @@ public class MovieServiceTests
             CreateMovie(1, "Матрица", 1999),
             CreateMovie(2, "Интерстеллар", 2014)
         };
+
+        _uow.Setup(x => x.Movies.CountAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(2);
         _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(movies);
 
-        var result = await _sut.GetPagedAsync(null, null, null, 1, 10, CancellationToken.None);
+        var result = await _sut.GetPagedAsync(
+            genreIds: null,
+            year: null,
+            minRating: null,
+            sort: null,
+            matchAllGenres: false,
+            page: 1,
+            pageSize: 10,
+            onlyWithPoster: false,
+            ct: CancellationToken.None);
 
-        result.Should().HaveCount(2);
-        result[0].RuTitle.Should().Be("Матрица");
-        result[1].ReleaseYear.Should().Be(2014);
+        result.Items.Should().HaveCount(2);
+        result.Total.Should().Be(2);
+        result.Items[0].RuTitle.Should().Be("Матрица");
+        result.Items[1].ReleaseYear.Should().Be(2014);
     }
 
     [Fact]
     public async Task GetPagedAsync_WithGenreFilter_PassesSpec()
     {
+        _uow.Setup(x => x.Movies.CountAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
         _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Movie>());
 
-        await _sut.GetPagedAsync(5, 2020, 7.5, 1, 20, CancellationToken.None);
+        await _sut.GetPagedAsync(
+            genreIds: new[] { 5 },
+            year: 2020,
+            minRating: 7.5,
+            sort: "rating",
+            matchAllGenres: false,
+            page: 1,
+            pageSize: 20,
+            onlyWithPoster: false,
+            ct: CancellationToken.None);
 
         _uow.Verify(x => x.Movies.ListAsync(
             It.IsAny<MovieFilterSpecification>(),
             It.IsAny<CancellationToken>()), Times.Once);
+        _uow.Verify(x => x.Movies.CountAsync(
+            It.IsAny<MovieFilterSpecification>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetPagedAsync_WithMultipleGenres_PassesSpec()
+    {
+        _uow.Setup(x => x.Movies.CountAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
+        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Movie>());
+
+        await _sut.GetPagedAsync(
+            genreIds: new[] { 1, 5, 12 },
+            year: null,
+            minRating: null,
+            sort: null,
+            matchAllGenres: false,
+            page: 1,
+            pageSize: 24,
+            onlyWithPoster: false,
+            ct: CancellationToken.None);
+
+        _uow.Verify(x => x.Movies.ListAsync(
+            It.IsAny<MovieFilterSpecification>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetPagedAsync_EmptyResult_ReturnsEmptyList()
+    {
+        _uow.Setup(x => x.Movies.CountAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
+        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Movie>());
+
+        var result = await _sut.GetPagedAsync(
+            genreIds: new[] { 1 },
+            year: 2020,
+            minRating: 8.0,
+            sort: null,
+            matchAllGenres: false,
+            page: 1,
+            pageSize: 10,
+            onlyWithPoster: false,
+            ct: CancellationToken.None);
+
+        result.Items.Should().BeEmpty();
+        result.Total.Should().Be(0);
     }
 
     [Fact]
@@ -74,10 +148,13 @@ public class MovieServiceTests
         var local = new List<Movie> { CreateMovie(1, "Дюна", 2021) };
         _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(local);
+        _uow.Setup(x => x.Movies.CountAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var result = await _sut.SearchAsync("Дюна", 1, 10, userId: null, ct: CancellationToken.None);
 
-        result.Should().HaveCount(1);
+        result.Items.Should().HaveCount(1);
+        result.Total.Should().Be(1);
         _metadata.Verify(
             x => x.SearchAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -97,19 +174,21 @@ public class MovieServiceTests
         _metadata.Setup(x => x.SearchAsync("Новый", 10, It.IsAny<CancellationToken>()))
             .ReturnsAsync(external);
 
-        _uow.Setup(x => x.Genres.GetByNameAsync("Боевик", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Genre?)null);
-        _uow.Setup(x => x.Genres.AddAsync(It.IsAny<Genre>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.Genres.ListAsync(It.IsAny<EmptySpecification<Genre>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Genre>());
         _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
+        _omdb.Setup(x => x.GetPosterByTitleAndYearAsync(
+                It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string?)null);
+
         var result = await _sut.SearchAsync("Новый", 1, 10, userId: null, ct: CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].RuTitle.Should().Be("Новый фильм");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].RuTitle.Should().Be("Новый фильм");
         _uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _userManager.Verify(x => x.FindByIdAsync(It.IsAny<string>()), Times.Never);
     }
@@ -128,14 +207,16 @@ public class MovieServiceTests
         _metadata.Setup(x => x.SearchAsync("Новый", 10, It.IsAny<CancellationToken>()))
             .ReturnsAsync(external);
 
-        _uow.Setup(x => x.Genres.GetByNameAsync("Боевик", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Genre?)null);
-        _uow.Setup(x => x.Genres.AddAsync(It.IsAny<Genre>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.Genres.ListAsync(It.IsAny<EmptySpecification<Genre>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Genre>());
         _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
+
+        _omdb.Setup(x => x.GetPosterByTitleAndYearAsync(
+                It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string?)null);
 
         var user = new AppUser
         {
@@ -151,9 +232,41 @@ public class MovieServiceTests
 
         var result = await _sut.SearchAsync("Новый", 1, 10, userId: 7, ct: CancellationToken.None);
 
-        result.Should().HaveCount(1);
+        result.Items.Should().HaveCount(1);
         user.AmountOfHats.Should().Be(4);
         _userManager.Verify(x => x.UpdateAsync(user), Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchAsync_ExternalWithExistingGenre_ReusesGenre()
+    {
+        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Movie>());
+
+        var external = new List<ExternalMovieData>
+        {
+            new(2, "Фильм", "Фільм", "Film", "D", "Dir", 2023, "p.jpg", 7.0, new[] { "Драма" })
+        };
+        _metadata.Setup(x => x.SearchAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(external);
+
+        var existingGenre = new Genre { Id = 3, Name = "Драма" };
+        _uow.Setup(x => x.Genres.ListAsync(It.IsAny<EmptySpecification<Genre>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Genre> { existingGenre });
+        _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        _omdb.Setup(x => x.GetPosterByTitleAndYearAsync(
+                It.IsAny<string>(), It.IsAny<short>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string?)null);
+
+        await _sut.SearchAsync("Фильм", 1, 5, userId: null, ct: CancellationToken.None);
+
+        _uow.Verify(x => x.Movies.AddAsync(
+            It.Is<Movie>(m => m.MovieGenres.Any(mg => mg.GenreId == 3 || mg.Genre.Id == 3)),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -182,43 +295,6 @@ public class MovieServiceTests
         var result = await _sut.GetDetailsAsync(999, CancellationToken.None);
 
         result.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task SearchAsync_ExternalWithExistingGenre_ReusesGenre()
-    {
-        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieSearchSpecification>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Movie>());
-
-        var external = new List<ExternalMovieData>
-        {
-            new(2, "Фильм", "Фільм", "Film", "D", "Dir", 2023, "p.jpg", 7.0, new[] { "Драма" })
-        };
-        _metadata.Setup(x => x.SearchAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(external);
-
-        var existingGenre = new Genre { Id = 3, Name = "Драма" };
-        _uow.Setup(x => x.Genres.GetByNameAsync("Драма", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(existingGenre);
-        _uow.Setup(x => x.Movies.AddAsync(It.IsAny<Movie>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-        _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        await _sut.SearchAsync("Фильм", 1, 5, userId: null, ct: CancellationToken.None);
-
-        _uow.Verify(x => x.Genres.AddAsync(It.IsAny<Genre>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task GetPagedAsync_EmptyResult_ReturnsEmptyList()
-    {
-        _uow.Setup(x => x.Movies.ListAsync(It.IsAny<MovieFilterSpecification>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Movie>());
-
-        var result = await _sut.GetPagedAsync(1, 2020, 8.0, 1, 10, CancellationToken.None);
-
-        result.Should().BeEmpty();
     }
 
     private static Movie CreateMovie(int id, string title, short year) => new()
