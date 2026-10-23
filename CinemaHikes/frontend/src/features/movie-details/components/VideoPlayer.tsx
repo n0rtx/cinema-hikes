@@ -86,7 +86,11 @@ const iconButton: React.CSSProperties = {
   justifyContent: "center",
 };
 
-export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerProps) => {
+export const VideoPlayer = ({
+  movieLinks,
+  videoSources,
+  poster,
+}: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,7 +109,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
 
   const mp4Links = useMemo(
     () => (movieLinks ?? []).filter((l) => isMp4Url(l.url)),
-    [movieLinks]
+    [movieLinks],
   );
 
   const studios = useMemo(() => {
@@ -135,7 +139,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
   const hasIframe = providers.length > 0;
 
   const [mode, setMode] = useState<"direct" | "iframe">(
-    hasDirect ? "direct" : "iframe"
+    hasDirect ? "direct" : "iframe",
   );
   const [studioKey, setStudioKey] = useState("");
   const [quality, setQuality] = useState<number>(VideoQuality.High);
@@ -181,7 +185,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
       .sort(
         (a, b) =>
           Math.abs(idx(Number(a.videoQuality)) - target) -
-          Math.abs(idx(Number(b.videoQuality)) - target)
+          Math.abs(idx(Number(b.videoQuality)) - target),
       );
     return (sorted[0] ?? withUrl[0]).url;
   }, [studioLinks, quality]);
@@ -395,26 +399,27 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
           </div>
         )}
 
-        {(mode === "iframe" || (!hasDirect && hasIframe)) && providers.length > 0 && (
-          <div>
-            <Text style={sectionLabel}>Источник</Text>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {providers.map((p, i) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => {
-                    setProviderIdx(i);
-                    setMode("iframe");
-                  }}
-                  style={providerIdx === i ? chipActive : chipBase}
-                >
-                  {p.name}
-                </button>
-              ))}
+        {(mode === "iframe" || (!hasDirect && hasIframe)) &&
+          providers.length > 0 && (
+            <div>
+              <Text style={sectionLabel}>Источник</Text>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {providers.map((p, i) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      setProviderIdx(i);
+                      setMode("iframe");
+                    }}
+                    style={providerIdx === i ? chipActive : chipBase}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       <div
@@ -529,10 +534,12 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                         userSelect: "none",
                       }}
                       onMouseEnter={(e) => {
-                        if (!active) e.currentTarget.style.backgroundColor = "#2a2a2a";
+                        if (!active)
+                          e.currentTarget.style.backgroundColor = "#2a2a2a";
                       }}
                       onMouseLeave={(e) => {
-                        if (!active) e.currentTarget.style.backgroundColor = "transparent";
+                        if (!active)
+                          e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
                       <span>{qualityLabel(q)}</span>
@@ -616,8 +623,7 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                 bottom: 0,
                 zIndex: 5,
                 padding: "8px 12px 10px",
-                background:
-                  "linear-gradient(transparent, rgba(0,0,0,0.85))",
+                background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
                 opacity: showControls || !playing ? 1 : 0,
                 transition: "opacity 0.2s",
                 pointerEvents: showControls || !playing ? "auto" : "none",
@@ -755,7 +761,10 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                     strokeLinejoin="round"
                     aria-hidden="true"
                   >
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#fff" />
+                    <polygon
+                      points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+                      fill="#fff"
+                    />
                     {muted || volume === 0 ? (
                       <>
                         <line x1="22" y1="9" x2="16" y2="15" />
@@ -763,7 +772,9 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
                       </>
                     ) : (
                       <>
-                        {volume > 0.5 && <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />}
+                        {volume > 0.5 && (
+                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                        )}
                         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                       </>
                     )}
@@ -811,20 +822,73 @@ export const VideoPlayer = ({ movieLinks, videoSources, poster }: VideoPlayerPro
             </div>
           </>
         ) : mode === "iframe" && currentIframe ? (
-          <iframe
-            key={currentIframe.url}
-            src={currentIframe.url}
-            title={currentIframe.name}
-            allowFullScreen
+          <div
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              border: "none",
+              inset: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              backgroundColor: "#0a0a0a",
+              backgroundImage: poster
+                ? `linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url(${poster})`
+                : undefined,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
-          />
+          >
+            <Text style={{ color: "#ccc", fontSize: 15 }}>
+              Смотреть на источнике: {currentIframe.name}
+            </Text>
+            <a
+              href={currentIframe.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "12px 28px",
+                borderRadius: 8,
+                backgroundColor: "#E50914",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 600,
+                textDecoration: "none",
+                boxShadow: "0 4px 20px rgba(229, 9, 20, 0.4)",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 24px rgba(229, 9, 20, 0.55)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 20px rgba(229, 9, 20, 0.4)";
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              Открыть на сайте источника
+            </a>
+          </div>
         ) : (
           <div
             style={{
