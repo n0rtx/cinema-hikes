@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -14,22 +13,38 @@ import {
   Skeleton,
   Button,
   Typography,
+  Modal,
 } from "antd";
 import {
   SearchOutlined,
   PlayCircleOutlined,
   VideoCameraOutlined,
   ReloadOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 import { getMovieTitle } from "../../shared/utils/getMovieTitle";
 import i18n from "../../shared/i18n";
+
 const { Text, Title } = Typography;
 const Page_Size = 24;
+
+const parseGenreIds = (raw: string | null): number[] => {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((s) => Number(s.trim()))
+    .filter((n) => !Number.isNaN(n) && n > 0);
+};
+
 export const CatalogPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const genreId = params.get("genre") ? Number(params.get("genre")) : undefined;
+
+  const genreIds = useMemo(
+    () => parseGenreIds(params.get("genre")),
+    [params],
+  );
   const year = params.get("year") ? Number(params.get("year")) : undefined;
   const minRating = params.get("rating")
     ? Number(params.get("rating"))
@@ -39,6 +54,8 @@ export const CatalogPage = () => {
   const urlSearch = params.get("q") ?? "";
   const [searchInput, setSearchInput] = useState(urlSearch);
   const debouncedSearch = useDebounce(searchInput, 400);
+  const [genresModalOpen, setGenresModalOpen] = useState(false);
+
   const update = (patch: Record<string, string | number | undefined>) => {
     const next = new URLSearchParams(params);
     Object.entries(patch).forEach(([k, v]) => {
@@ -48,9 +65,11 @@ export const CatalogPage = () => {
     if (!("page" in patch)) next.delete("page");
     setParams(next, { replace: true });
   };
+
   useEffect(() => {
     if (debouncedSearch !== urlSearch) update({ q: debouncedSearch });
   }, [debouncedSearch]);
+
   const { data: genres = [] } = useQuery({
     queryKey: ["genres"],
     queryFn: fetchGenres,
@@ -58,11 +77,11 @@ export const CatalogPage = () => {
   });
 
   const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ["movies", urlSearch, genreId, year, minRating, sort, page],
+    queryKey: ["movies", urlSearch, genreIds, year, minRating, sort, page],
     queryFn: () =>
       fetchMovies({
         search: urlSearch,
-        genreId,
+        genreIds: genreIds.length ? genreIds : undefined,
         year,
         minRating,
         sort,
@@ -76,12 +95,34 @@ export const CatalogPage = () => {
     const current = new Date().getFullYear();
     return Array.from({ length: current - 1949 }, (_, i) => current - i);
   }, []);
-  const hasFilters = !!(urlSearch || genreId || year || minRating);
+
+  const selectedGenres = useMemo(
+    () => genres.filter((g) => genreIds.includes(g.id)),
+    [genres, genreIds],
+  );
+
+  const hasFilters = !!(urlSearch || genreIds.length || year || minRating);
+
   const resetAll = () => {
     setSearchInput("");
     setParams({}, { replace: true });
   };
+
+  /** Toggle genre: add if missing, remove if already selected */
+  const toggleGenre = (id: number) => {
+    const next = genreIds.includes(id)
+      ? genreIds.filter((g) => g !== id)
+      : [...genreIds, id];
+    update({ genre: next.length ? next.join(",") : undefined });
+  };
+
+  /** Clear all genres */
+  const clearGenres = () => {
+    update({ genre: undefined });
+  };
+
   const selectStyle = { minWidth: 140 };
+
   return (
     <div
       style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 16px 56px" }}
@@ -105,7 +146,6 @@ export const CatalogPage = () => {
         )}
       </div>
 
-     
       <div className="cat-filters">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <Input
@@ -164,24 +204,62 @@ export const CatalogPage = () => {
 
         <div className="cat-chips">
           <span
-            className={`cat-chip ${!genreId ? "active" : ""}`}
-            onClick={() => update({ genre: undefined })}
+            className={`cat-chip ${genreIds.length === 0 ? "active" : ""}`}
+            onClick={clearGenres}
+          >
+            {t("catalog.allGenres")}
+          </span>
+
+          {selectedGenres.map((g) => (
+            <span
+              key={g.id}
+              className="cat-chip active"
+              onClick={() => toggleGenre(g.id)}
+              title="Убрать жанр"
+            >
+              {g.name}
+            </span>
+          ))}
+
+          <span
+            className="cat-chip cat-chip-select"
+            onClick={() => setGenresModalOpen(true)}
+          >
+            <AppstoreOutlined style={{ marginRight: 6 }} />
+            {t("catalog.selectGenre")}
+          </span>
+        </div>
+      </div>
+
+      <Modal
+        title={t("catalog.selectGenreTitle")}
+        open={genresModalOpen}
+        onCancel={() => setGenresModalOpen(false)}
+        footer={null}
+        centered
+        width={560}
+        className="cat-genres-modal"
+        destroyOnClose
+      >
+        <div className="cat-genres-grid">
+          <span
+            className={`cat-genre-item ${genreIds.length === 0 ? "active" : ""}`}
+            onClick={clearGenres}
           >
             {t("catalog.allGenres")}
           </span>
           {genres.map((g) => (
             <span
               key={g.id}
-              className={`cat-chip ${genreId === g.id ? "active" : ""}`}
-              onClick={() => update({ genre: g.id })}
+              className={`cat-genre-item ${genreIds.includes(g.id) ? "active" : ""}`}
+              onClick={() => toggleGenre(g.id)}
             >
               {g.name}
             </span>
           ))}
         </div>
-      </div>
+      </Modal>
 
-      
       {isLoading ? (
         <div className="cat-grid">
           {Array.from({ length: 12 }).map((_, i) => (
@@ -283,7 +361,6 @@ export const CatalogPage = () => {
           ))}
         </div>
       )}
-
 
       {data && data.total > Page_Size && (
         <div

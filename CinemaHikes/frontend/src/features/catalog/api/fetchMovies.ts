@@ -17,7 +17,7 @@ export const fetchMovies = async (f: MovieFilters): Promise<MoviesPage> => {
 
   const { data } = await axiosClient.get<Raw>("/api/movies", {
     params: {
-      genreIds: f.genreId,
+      genreIds: f.genreIds?.length ? f.genreIds : undefined,
       year: f.year,
       minRating: f.minRating,
       sort: f.sort,

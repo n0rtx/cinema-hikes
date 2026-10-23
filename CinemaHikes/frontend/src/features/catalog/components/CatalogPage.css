@@ -14,7 +14,9 @@
   padding: 12px 0 4px;
   scrollbar-width: none;
 }
-.cat-chips::-webkit-scrollbar { display: none; }
+.cat-chips::-webkit-scrollbar {
+  display: none;
+}
 
 .cat-chip {
   flex: 0 0 auto;
@@ -28,13 +30,29 @@
   transition: all 0.2s ease;
   user-select: none;
 }
-.cat-chip:hover { border-color: #e50914; color: #fff; }
+.cat-chip:hover {
+  border-color: #e50914;
+  color: #fff;
+}
 .cat-chip.active {
   background: #e50914;
   border-color: #e50914;
   color: #fff;
   font-weight: 600;
   box-shadow: 0 4px 14px rgba(229, 9, 20, 0.4);
+}
+
+.cat-chip-select {
+  display: inline-flex;
+  align-items: center;
+  border-style: dashed;
+  border-color: #555;
+  color: #ccc;
+}
+.cat-chip-select:hover {
+  border-color: #e50914;
+  color: #fff;
+  border-style: solid;
 }
 
 .cat-grid {
@@ -48,7 +66,9 @@
   cursor: pointer;
   transition: transform 0.25s ease;
 }
-.cat-card:hover { transform: translateY(-6px); }
+.cat-card:hover {
+  transform: translateY(-6px);
+}
 
 .cat-poster {
   position: relative;
@@ -70,7 +90,9 @@
   display: block;
   transition: transform 0.4s ease;
 }
-.cat-card:hover .cat-poster img { transform: scale(1.06); }
+.cat-card:hover .cat-poster img {
+  transform: scale(1.06);
+}
 
 .cat-badge {
   position: absolute;
@@ -97,9 +119,15 @@
   opacity: 0;
   transition: opacity 0.25s ease;
 }
-.cat-card:hover .cat-overlay { opacity: 1; }
+.cat-card:hover .cat-overlay {
+  opacity: 1;
+}
 
-.cat-genres { color: #ccc; font-size: 11px; line-height: 1.4; }
+.cat-genres {
+  color: #ccc;
+  font-size: 11px;
+  line-height: 1.4;
+}
 .cat-play {
   align-self: flex-start;
   padding: 4px 12px;
@@ -121,7 +149,11 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.cat-year { color: #888; font-size: 12px; margin-top: 2px; }
+.cat-year {
+  color: #888;
+  font-size: 12px;
+  margin-top: 2px;
+}
 
 .cat-empty {
   display: flex;
@@ -130,4 +162,71 @@
   gap: 12px;
   padding: 80px 16px;
   text-align: center;
+}
+
+.cat-genres-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 0 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.cat-genre-item {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid #3a3a3a;
+  background: #2a2a2a;
+  color: #ddd;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  line-height: 1.3;
+}
+.cat-genre-item:hover {
+  border-color: #e50914;
+  color: #fff;
+  background: #333;
+}
+.cat-genre-item.active {
+  background: #e50914;
+  border-color: #e50914;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.45);
+}
+
+/* Модалка — скругления и тёмный фон */
+.cat-genres-modal .ant-modal-content {
+  background: #1c1c1c !important;
+  border-radius: 16px !important;
+  border: 1px solid #333 !important;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+.cat-genres-modal .ant-modal-header {
+  background: #1c1c1c !important;
+  border-bottom: 1px solid #2e2e2e !important;
+  border-radius: 16px 16px 0 0 !important;
+  padding: 18px 24px 14px !important;
+}
+.cat-genres-modal .ant-modal-title {
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 17px !important;
+}
+.cat-genres-modal .ant-modal-body {
+  background: #1c1c1c !important;
+  padding: 16px 24px 22px !important;
+}
+.cat-genres-modal .ant-modal-close {
+  color: #888 !important;
+  top: 16px !important;
+}
+.cat-genres-modal .ant-modal-close:hover {
+  color: #fff !important;
+  background: #333 !important;
+  border-radius: 8px;
 }
