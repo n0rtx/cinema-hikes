@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { HeartFilled,HeartOutlined } from "@ant-design/icons";
+import { HeartFilled, HeartOutlined, StarFilled } from "@ant-design/icons";
 import {
   Typography,
   Tag,
-  Spin,
   Empty,
   Divider,
   Input,
@@ -14,7 +13,6 @@ import {
   Button,
   message,
 } from "antd";
-import { StarFilled } from "@ant-design/icons";
 import { fetchMovieDetails } from "../../features/movie-details/api/fetchMovieDetails";
 import { createReview } from "../../features/movie-details/api/createReview";
 import { VideoPlayer } from "../../features/movie-details/components/VideoPlayer";
@@ -22,7 +20,7 @@ import { ReviewStatus } from "../../shared/types/Enums/ReviewStatus";
 import { getMovieTitle } from "../../shared/utils/getMovieTitle";
 import { axiosClient } from "../../shared/api/axiosClient";
 import type { FavoriteDto } from "../../shared/types/DTO/UserDtos/FavoriteDto";
-import { useEffect } from "react";
+
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
@@ -41,6 +39,12 @@ const metaRow: React.CSSProperties = {
   lineHeight: 1.5,
 };
 
+const LOADING_PHRASES = [
+  "Поднимаем паруса...",
+  "Набираем команду...",
+  "Поднимаем якоря...",
+];
+
 export const MoviePage = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
@@ -49,6 +53,7 @@ export const MoviePage = () => {
   const isAuth = !!localStorage.getItem("authToken");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const { t, i18n } = useTranslation();
 
   const {
@@ -60,6 +65,14 @@ export const MoviePage = () => {
     queryFn: () => fetchMovieDetails(Number(id)),
     enabled: !!id && !Number.isNaN(Number(id)),
   });
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const timer = setInterval(() => {
+      setPhraseIndex((i) => (i + 1) % LOADING_PHRASES.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [isLoading]);
 
   const mutation = useMutation({
     mutationFn: createReview,
@@ -73,6 +86,7 @@ export const MoviePage = () => {
       message.error(t("movie.reviewError"));
     },
   });
+
   const { data: favorites } = useQuery({
     queryKey: ["favorites"],
     queryFn: () =>
@@ -94,6 +108,7 @@ export const MoviePage = () => {
     },
     onError: () => message.error(t("movie.favoriteError")),
   });
+
   const handleFavorite = () => {
     if (!isAuth) {
       message.info(t("movie.loginRequired"));
@@ -102,6 +117,7 @@ export const MoviePage = () => {
     }
     favoriteMutation.mutate(!isFavorite);
   };
+
   useEffect(() => {
     if (isAuth && movieId) {
       axiosClient
@@ -113,9 +129,47 @@ export const MoviePage = () => {
   if (isLoading) {
     return (
       <div
-        style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 28,
+          padding: "120px 16px",
+          minHeight: 360,
+        }}
       >
-        <Spin size="large" />
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            border: "3px solid #2a2a2a",
+            borderTopColor: "#E50914",
+            animation: "movie-page-spin 0.9s linear infinite",
+          }}
+        />
+        <div
+          key={phraseIndex}
+          style={{
+            color: "#ccc",
+            fontSize: 16,
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+            animation: "movie-page-fade 0.45s ease",
+          }}
+        >
+          {LOADING_PHRASES[phraseIndex]}
+        </div>
+        <style>{`
+          @keyframes movie-page-spin {
+            to { transform: rotate(360deg); }
+          }
+          @keyframes movie-page-fade {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -266,6 +320,7 @@ export const MoviePage = () => {
               </span>
             </div>
           )}
+
           <Button
             size="large"
             icon={isFavorite ? <HeartFilled /> : <HeartOutlined />}
@@ -283,6 +338,7 @@ export const MoviePage = () => {
               ? t("movie.removeFromFavorites")
               : t("movie.addToFavorites")}
           </Button>
+
           <Divider style={{ borderColor: "#2a2a2a", margin: "14px 0" }} />
 
           <Paragraph
@@ -440,16 +496,23 @@ export const MoviePage = () => {
                 >
                   <Rate
                     disabled
-                    value={Math.round(r.rating)}
-                    style={{ color: "#E50914", fontSize: 16 }}
+                    value={r.rating}
+                    style={{ color: "#E50914", fontSize: 14 }}
                   />
                   <Text style={{ color: "#666", fontSize: 12 }}>
                     {r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString("ru-RU")
+                      ? new Date(r.createdAt).toLocaleDateString()
                       : ""}
                   </Text>
                 </div>
-                <Paragraph style={{ color: "#ccc", margin: 0, fontSize: 14 }}>
+                <Paragraph
+                  style={{
+                    color: "#ccc",
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
                   {r.text}
                 </Paragraph>
               </div>
