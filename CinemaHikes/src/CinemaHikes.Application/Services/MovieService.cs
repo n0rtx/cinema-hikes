@@ -84,11 +84,6 @@ public sealed class MovieService(
         var external = await Metadata.SearchAsync(query, pageSize, ct);
         var genreMap = await LoadGenreMapAsync(ct);
         var saved = new List<Movie>();
-        
-        Console.WriteLine($"genreMap: {genreMap.Count} [{string.Join(", ", genreMap.Keys)}]");
-        foreach (var item in external)
-            Console.WriteLine($"{item.RuTitle}: genres = [{string.Join(", ", item.GenreNames)}]");
-        
         foreach (var item in external)
             saved.Add(await UpsertFromExternalAsync(item, genreMap, ct));
 
@@ -116,7 +111,7 @@ public sealed class MovieService(
             return null;
 
         var needsLinks = NeedsLinkRefresh(movie);
-        var needsGenres = needsLinks && movie.MovieGenres.Count == 0;
+        var needsGenres = movie.MovieGenres.Count == 0;
         var needsEnrichment = NeedsEnrichment(movie);
 
         if (needsEnrichment || needsGenres)
@@ -246,6 +241,10 @@ public sealed class MovieService(
         {
             if (NeedsEnrichment(existing))
                 await ApplyMissingFieldsAsync(existing, data, ct);
+
+            if (existing.MovieGenres.Count == 0)
+                AttachGenres(existing, data.GenreNames, genreMap);
+
             return existing;
         }
 
@@ -264,15 +263,7 @@ public sealed class MovieService(
             CreatedAt = DateTime.UtcNow
         };
 
-        foreach (var name in data.GenreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(name);
-            Console.ResetColor();
-
-            if (genreMap.TryGetValue(name, out var genre))
-                movie.MovieGenres.Add(new MovieGenre { Movie = movie, Genre = genre, GenreId = genre.Id });
-        }
+        AttachGenres(movie, data.GenreNames, genreMap);
 
         await Uow.Movies.AddAsync(movie, ct);
         return movie;
@@ -392,16 +383,23 @@ public sealed class MovieService(
     private async Task ApplyGenresAsync(Movie movie, ExternalMovieData data, CancellationToken ct)
     {
         var genreMap = await LoadGenreMapAsync(ct);
+        AttachGenres(movie, data.GenreNames, genreMap);
+    }
+
+    private static void AttachGenres(
+        Movie movie,
+        IEnumerable<string> genreNames,
+        IReadOnlyDictionary<string, Genre> genreMap)
+    {
         var existingIds = movie.MovieGenres.Select(mg => mg.GenreId).ToHashSet();
 
-        foreach (var name in data.GenreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
+        foreach (var name in genreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
         {
             if (genreMap.TryGetValue(name, out var genre) && existingIds.Add(genre.Id))
             {
                 movie.MovieGenres.Add(new MovieGenre
                 {
                     MovieId = movie.Id,
-                    Movie = movie,
                     GenreId = genre.Id,
                     Genre = genre
                 });
@@ -430,13 +428,13 @@ public sealed class MovieService(
 
     private static MovieListItemDto MapListItem(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.PosterUrl, m.ReleaseYear, m.KpRating,
-        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),
+        m.MovieGenres.Where(mg => mg.Genre is not null).Select(mg => new GenreDto(mg.Genre!.Id, mg.Genre.Name)).ToList(),
         m.Director, m.Description);
 
     private static MovieDetailsDto MapDetails(Movie m) => new(
         m.Id, m.RuTitle, m.UaTitle, m.RuInEngTitle, m.Description, m.Director,
         m.ReleaseYear, m.PosterUrl, m.KpRating, m.CreatedAt,
-        m.MovieGenres.Select(mg => new GenreDto(mg.Genre.Id, mg.Genre.Name)).ToList(),
+        m.MovieGenres.Where(mg => mg.Genre is not null).Select(mg => new GenreDto(mg.Genre!.Id, mg.Genre.Name)).ToList(),
         m.VideoSources.Select(vs => new VideoSourceDto(
             vs.Id, vs.MovieId, vs.ProviderName, vs.PageUrl, vs.Priority, vs.Status)).ToList(),
         m.MovieLinks.Select(ml => new MovieLinkDto(

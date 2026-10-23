@@ -80,6 +80,11 @@ public class BaseRepository<T>(CinemaHikesDbContext dbContext) : IRepository<T> 
             query = query.Include(include);
         }
 
+        foreach (var includeString in spec.IncludeStrings)
+        {
+            query = query.Include(includeString);
+        }
+
         if (spec.OrderBy is not null)
             query = query.OrderBy(spec.OrderBy);
         else if (spec.OrderByDescending is not null)
