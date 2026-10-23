@@ -1,6 +1,6 @@
 export interface MovieFilters {
   search?: string;
-  genreId?: number;
+  genreIds?: number[];
   year?: number;
   minRating?: number;
   sort?: string;
