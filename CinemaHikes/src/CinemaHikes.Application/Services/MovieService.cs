@@ -84,7 +84,11 @@ public sealed class MovieService(
         var external = await Metadata.SearchAsync(query, pageSize, ct);
         var genreMap = await LoadGenreMapAsync(ct);
         var saved = new List<Movie>();
-
+        
+        Console.WriteLine($"genreMap: {genreMap.Count} [{string.Join(", ", genreMap.Keys)}]");
+        foreach (var item in external)
+            Console.WriteLine($"{item.RuTitle}: genres = [{string.Join(", ", item.GenreNames)}]");
+        
         foreach (var item in external)
             saved.Add(await UpsertFromExternalAsync(item, genreMap, ct));
 
@@ -112,22 +116,42 @@ public sealed class MovieService(
             return null;
 
         var needsLinks = NeedsLinkRefresh(movie);
+        var needsGenres = needsLinks && movie.MovieGenres.Count == 0;
+        var needsEnrichment = NeedsEnrichment(movie);
 
-        if (NeedsEnrichment(movie))
+        if (needsEnrichment || needsGenres)
         {
-            var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
-            var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
-            if (best is not null)
+            try
             {
-                await ApplyMissingFieldsAsync(movie, best, ct);
-                await Uow.SaveChangesAsync(ct);
+                var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
+                var best = PickBestMatch(candidates, movie.RuTitle, movie.Director, movie.ReleaseYear);
+                if (best is not null)
+                {
+                    if (needsEnrichment)
+                        await ApplyMissingFieldsAsync(movie, best, ct);
+
+                    if (needsGenres)
+                        await ApplyGenresAsync(movie, best, ct);
+
+                    await Uow.SaveChangesAsync(ct);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Metadata enrichment failed for movie {movie.Id}: {ex.Message}");
+                Console.ResetColor();
+            }
+            catch (TaskCanceledException ex) when (!ct.IsCancellationRequested)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Metadata enrichment timed out for movie {movie.Id}: {ex.Message}");
+                Console.ResetColor();
             }
         }
 
         if (needsLinks)
-        {
             await RefreshLinksFromRezkaAsync(movie, ct);
-        }
 
         return MapDetails(movie);
     }
@@ -148,7 +172,6 @@ public sealed class MovieService(
         if (studio.Id == 0)
             await Uow.TranslationStudios.AddAsync(studio, ct);
 
-        // Все качества сразу
         var qualities = new[]
         {
             VideoQuality.FullHd,
@@ -243,6 +266,10 @@ public sealed class MovieService(
 
         foreach (var name in data.GenreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
         {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(name);
+            Console.ResetColor();
+
             if (genreMap.TryGetValue(name, out var genre))
                 movie.MovieGenres.Add(new MovieGenre { Movie = movie, Genre = genre, GenreId = genre.Id });
         }
@@ -360,6 +387,26 @@ public sealed class MovieService(
         if (string.IsNullOrWhiteSpace(movie.RuInEngTitle)
             && !string.IsNullOrWhiteSpace(data.RuInEngTitle))
             movie.RuInEngTitle = data.RuInEngTitle;
+    }
+
+    private async Task ApplyGenresAsync(Movie movie, ExternalMovieData data, CancellationToken ct)
+    {
+        var genreMap = await LoadGenreMapAsync(ct);
+        var existingIds = movie.MovieGenres.Select(mg => mg.GenreId).ToHashSet();
+
+        foreach (var name in data.GenreNames.Select(Normalize).Where(n => n.Length > 0).Distinct())
+        {
+            if (genreMap.TryGetValue(name, out var genre) && existingIds.Add(genre.Id))
+            {
+                movie.MovieGenres.Add(new MovieGenre
+                {
+                    MovieId = movie.Id,
+                    Movie = movie,
+                    GenreId = genre.Id,
+                    Genre = genre
+                });
+            }
+        }
     }
 
     private async Task<Dictionary<string, Genre>> LoadGenreMapAsync(CancellationToken ct)
