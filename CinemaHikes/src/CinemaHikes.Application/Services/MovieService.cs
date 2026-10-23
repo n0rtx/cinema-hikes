@@ -2,7 +2,9 @@ using CinemaHikes.Application.Dtos.Catalog;
 using CinemaHikes.Application.Interfaces.Services;
 using CinemaHikes.Domain.Entities.Catalog;
 using CinemaHikes.Domain.Entities.Users;
+using CinemaHikes.Domain.Enums;
 using CinemaHikes.Domain.Interfaces;
+using CinemaHikes.Domain.Interfaces.Bot;
 using CinemaHikes.Domain.Interfaces.External;
 using CinemaHikes.Domain.Specifications;
 using Microsoft.AspNetCore.Identity;
@@ -16,12 +18,16 @@ public sealed class MovieService(
     IUnitOfWork uow,
     IMovieMetadataClient metadata,
     IOmdbClient omdb,
-    UserManager<AppUser> userManager) : IMovieService
+    UserManager<AppUser> userManager,
+    IMovieParserFacade parserFacade) : IMovieService
 {
     private IUnitOfWork Uow { get; } = uow;
     private IMovieMetadataClient Metadata { get; } = metadata;
     private IOmdbClient Omdb { get; } = omdb;
     private UserManager<AppUser> UserManager { get; } = userManager;
+    private IMovieParserFacade ParserFacade { get; } = parserFacade;
+
+    private static readonly TimeSpan LinkTtl = TimeSpan.FromHours(24);
 
     /// <summary>
     /// Retrieves a paginated list of movies based on genre, release year, and minimum rating.
@@ -105,6 +111,8 @@ public sealed class MovieService(
         if (movie is null)
             return null;
 
+        var needsLinks = NeedsLinkRefresh(movie);
+
         if (NeedsEnrichment(movie))
         {
             var candidates = await Metadata.SearchAsync(movie.RuTitle, 10, ct);
@@ -116,7 +124,76 @@ public sealed class MovieService(
             }
         }
 
+        if (needsLinks)
+        {
+            await RefreshLinksFromRezkaAsync(movie, ct);
+        }
+
         return MapDetails(movie);
+    }
+
+    private async Task RefreshLinksFromRezkaAsync(Movie movie, CancellationToken ct)
+    {
+        var sources = movie.VideoSources
+            .Where(s => s.Status == SourceStatus.Active)
+            .OrderBy(s => s.Priority)
+            .ToList();
+
+        if (sources.Count == 0)
+            return;
+
+        var studio = await Uow.TranslationStudios.GetByNameAsync("Default", ct)
+                     ?? new TranslationStudio { Name = "Default" };
+
+        if (studio.Id == 0)
+            await Uow.TranslationStudios.AddAsync(studio, ct);
+
+        // Все качества сразу
+        var qualities = new[]
+        {
+            VideoQuality.FullHd,
+            VideoQuality.High,
+            VideoQuality.Medium,
+            VideoQuality.Low
+        };
+
+        foreach (var quality in qualities)
+        {
+            string? url = null;
+
+            foreach (var source in sources)
+            {
+                try
+                {
+                    url = await ParserFacade.GetMovieSrcAsync(source.PageUrl, quality);
+                    if (!string.IsNullOrWhiteSpace(url))
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Rezka parse failed for {source.PageUrl} [{quality}]: {ex.Message}");
+                    Console.ResetColor();
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(url))
+                continue;
+
+            await Uow.MovieLinks.UpsertAsync(new MovieLink
+            {
+                MovieId = movie.Id,
+                TranslationStudioId = studio.Id == 0 ? 1 : studio.Id,
+                VideoQuality = quality,
+                Url = url,
+                UpdatedAt = DateTime.UtcNow,
+                Movie = movie,
+                TranslationStudio = studio
+            }, ct);
+        }
+
+        movie.CreatedAt = DateTime.UtcNow;
+        await Uow.SaveChangesAsync(ct);
     }
 
     private async Task AwardHatAsync(int? userId, CancellationToken ct)
@@ -194,6 +271,11 @@ public sealed class MovieService(
         string.IsNullOrWhiteSpace(m.PosterUrl)
         || string.IsNullOrWhiteSpace(m.Description)
         || m.KpRating <= 0;
+
+    private static bool NeedsLinkRefresh(Movie movie) =>
+        movie.CreatedAt is null
+        || movie.CreatedAt == default
+        || DateTime.UtcNow - movie.CreatedAt.Value >= LinkTtl;
 
     private static ExternalMovieData? PickBestMatch(
         IReadOnlyList<ExternalMovieData> candidates,
