@@ -1,6 +1,6 @@
 # Cinema Hikes
 
-> A free, ad-free online cinema: movie catalog, online streaming, personal account, and a Telegram bot for downloads. A team course project by Hikers Team, built with ASP.NET Core and Clean Architecture.
+> A free, ad-free online cinema: movie catalog, online streaming, personal account, and a Telegram bot for downloads. A team pet project by Hikers Team, built with ASP.NET Core and Clean Architecture.
 
 [🌐 Live Demo](https://pirat-tv.online) — Backend is currently offline to avoid API costs; see screenshots. 
 
